@@ -16,7 +16,9 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         public IActionResult Index()
         {
             string uid = HttpContext.Session.GetString("UserID");
+            string role = HttpContext.Session.GetString("Role");
             ViewData["uid"] = uid;
+            ViewData["Role"] = role;
             return View();
         }
 
