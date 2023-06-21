@@ -43,5 +43,20 @@ namespace NPParcelDeliveryServiceAssignment.DALs
             }
             return staffList;
         }
+        public bool CheckStaff(string LoginID, string Password)
+        {
+            List<Staff> stafflist = GetAllStaff();
+            foreach (Staff staff in stafflist)
+            {
+                if (staff.LoginID == LoginID)
+                {
+                    if (staff.Password == Password)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
     }
 }

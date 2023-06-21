@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using NPParcelDeliveryServiceAssignment.DALs;
 using NPParcelDeliveryServiceAssignment.Models;
 using System.Diagnostics;
 
@@ -16,9 +15,8 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
 
         public IActionResult Index()
         {
-            StaffDAL sd = new StaffDAL();
-            List<Staff> ls = sd.GetAllStaff();
-            ViewData["StaffTest"] = ls;
+            string uid = HttpContext.Session.GetString("UserID");
+            ViewData["uid"] = uid;
             return View();
         }
 
