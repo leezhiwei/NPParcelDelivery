@@ -1,9 +1,29 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
+    if ((string)ViewData["TypeOfUser"] == "Front Office Staff")
+    {
+        Layout = "~/Views/Shared/_fostaffLayout.cshtml";
+    }
+    else if ((string)ViewData["TypeOfUser"] == "Station Manager")
+    {
+        Layout = "~/Views/Shared/_smanagerLayout.cshtml";
+    }
+    else if ((string)ViewData["TypeOfUser"] == "Admin Manager")
+    {
+        Layout = "~/Views/Shared/_amanagerLayout.cshtml";
+    }
+    else if ((string)ViewData["TypeOfUser"] == "Delivery Man")
+    {
+        Layout = "~/Views/Shared/_dmanLayout.cshtml";
+    }
+    else if ((string)ViewData["TypeOfUser"] == "Member")
+    {
+        Layout = "~/Views/Shared/_memberLayout.cshtml";
+    }
 }
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
     <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-    <p>Hello there, @ViewData["uid"], you are a @ViewData["Role"]</p>
+    <p>Hello there, @ViewData["uid"], you are a @ViewData["TypeOfUser"]</p>
 </div>

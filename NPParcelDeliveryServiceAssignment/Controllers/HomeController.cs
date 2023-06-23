@@ -15,16 +15,21 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
 
         public IActionResult Index()
         {
+            if (HttpContext.Session.GetString("UserID") is null)
+            {
+                return RedirectToAction("Index","Login");
+            }
             string uid = HttpContext.Session.GetString("UserID");
-            string role = HttpContext.Session.GetString("Role");
+            string tou = HttpContext.Session.GetString("TypeOfUser");
             ViewData["uid"] = uid;
-            ViewData["Role"] = role;
+            ViewData["typeofuser"] = tou;
             return View();
         }
 
-        public IActionResult Privacy()
+        public IActionResult LogOut()
         {
-            return View();
+            HttpContext.Session.Clear();
+            return RedirectToAction("Index", "Login");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

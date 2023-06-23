@@ -43,7 +43,7 @@ namespace NPParcelDeliveryServiceAssignment.DALs
             }
             return staffList;
         }
-        public bool CheckStaff(string LoginID, string Password)
+        public Staff CheckStaff(string LoginID, string Password)
         {
             List<Staff> stafflist = GetAllStaff();
             foreach (Staff staff in stafflist)
@@ -52,11 +52,11 @@ namespace NPParcelDeliveryServiceAssignment.DALs
                 {
                     if (staff.Password == Password)
                     {
-                        return true;
+                        return staff;
                     }
                 }
             }
-            return false;
+            return null;
         }
     }
 }

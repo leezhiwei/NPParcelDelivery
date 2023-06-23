@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.TagHelpers;
 using NPParcelDeliveryServiceAssignment.DALs;
+using NPParcelDeliveryServiceAssignment.Models;
 
 namespace NPParcelDeliveryServiceAssignment.Controllers
 {
@@ -12,6 +13,10 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         // GET: LoginController
         public ActionResult Index()
         {
+            if (HttpContext.Session.GetString("UserID") is not null)
+            {
+                return RedirectToAction("Index","Home");
+            }
             return View();
         }
         [HttpPost]
@@ -25,19 +30,21 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             }
             if (!isMember)
             {
-                if (sd.CheckStaff(userID, password))
+                Staff s = sd.CheckStaff(userID, password);
+                if (s is not null)
                 {
                     HttpContext.Session.SetString("UserID", userID);
-                    HttpContext.Session.SetString("Role", "Staff");
+                    HttpContext.Session.SetString("TypeOfUser", s.Appointment);
                     return RedirectToAction("Index","Home");
                 }
                 ViewData["ErrorMsg"] = "Invalid Username or Password";
                 return View();
             }
-            if (md.CheckMember(userID, password))
+            Member m = md.CheckMember(userID, password);
+            if (m is not null)
             {
                 HttpContext.Session.SetString("UserID", userID);
-                HttpContext.Session.SetString("Role", "Member");
+                HttpContext.Session.SetString("TypeOfUser", "Member");
                 return RedirectToAction("Index", "Home");
             }
             ViewData["ErrorMsg"] = "Invalid Username or Password";
