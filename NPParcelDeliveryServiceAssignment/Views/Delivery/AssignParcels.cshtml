@@ -1,0 +1,129 @@
+﻿@model NPParcelDeliveryServiceAssignment.Models.Parcel
+
+@{
+    ViewData["Title"] = "Update";
+    Layout = "~/Views/Shared/_smanagerLayout.cshtml";
+}
+
+<h1>Update</h1>
+
+<h4>Parcel</h4>
+<hr />
+<div class="row">
+    <form asp-controller="Delivery" asp-action="AssignParcels" method="post">
+        <label for="idbox">@Html.DisplayNameFor(Parcel => Parcel.ParcelID)</label><br />
+        <input type="text" id="idbox" name="idbox" />
+        <button type="submit">Show Parcel under ID</button>
+    </form>
+    <p style="color:green">@TempData["MessageSuccess"]</p>
+    @{
+        if ((bool)ViewData["Error"])
+        {
+            <p style="color:red">Sorry, but the Parcel ID input was not found</p>
+        }
+    }
+    @{
+        if ((bool)ViewData["ShowParcel"])
+        {
+            <form asp-action="UpdateParcel">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="ParcelID" class="control-label"></label>
+                    <input asp-for="ParcelID" class="form-control" />
+                    <span asp-validation-for="ParcelID" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="ItemDescription" class="control-label"></label>
+                    <input asp-for="ItemDescription" class="form-control" />
+                    <span asp-validation-for="ItemDescription" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="SenderName" class="control-label"></label>
+                    <input asp-for="SenderName" class="form-control" />
+                    <span asp-validation-for="SenderName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="SenderTelNo" class="control-label"></label>
+                    <input asp-for="SenderTelNo" class="form-control" />
+                    <span asp-validation-for="SenderTelNo" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="ReceiverName" class="control-label"></label>
+                    <input asp-for="ReceiverName" class="form-control" />
+                    <span asp-validation-for="ReceiverName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="ReceiverTelNo" class="control-label"></label>
+                    <input asp-for="ReceiverTelNo" class="form-control" />
+                    <span asp-validation-for="ReceiverTelNo" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="DeliveryAddress" class="control-label"></label>
+                    <input asp-for="DeliveryAddress" class="form-control" />
+                    <span asp-validation-for="DeliveryAddress" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="FromCity" class="control-label"></label>
+                    <input asp-for="FromCity" class="form-control" />
+                    <span asp-validation-for="FromCity" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="FromCountry" class="control-label"></label>
+                    <input asp-for="FromCountry" class="form-control" />
+                    <span asp-validation-for="FromCountry" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="ToCity" class="control-label"></label>
+                    <input asp-for="ToCity" class="form-control" />
+                    <span asp-validation-for="ToCity" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="ToCountry" class="control-label"></label>
+                    <input asp-for="ToCountry" class="form-control" />
+                    <span asp-validation-for="ToCountry" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="ParcelWeight" class="control-label"></label>
+                    <input asp-for="ParcelWeight" class="form-control" />
+                    <span asp-validation-for="ParcelWeight" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="DeliveryCharge" class="control-label"></label>
+                    <input asp-for="DeliveryCharge" class="form-control" />
+                    <span asp-validation-for="DeliveryCharge" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Currency" class="control-label"></label>
+                    <input asp-for="Currency" class="form-control" />
+                    <span asp-validation-for="Currency" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="TargetDeliveryDate" class="control-label"></label>
+                    <input asp-for="TargetDeliveryDate" class="form-control" />
+                    <span asp-validation-for="TargetDeliveryDate" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="DeliveryStatus" class="control-label"></label>
+                    <input asp-for="DeliveryStatus" class="form-control" />
+                    <span asp-validation-for="DeliveryStatus" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="DeliveryManID" class="control-label"></label>
+                    <input asp-for="DeliveryManID" class="form-control" />
+                    <span asp-validation-for="DeliveryManID" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Update" class="btn btn-primary" />
+                </div>
+            </form>
+        }
+    }
+</div>
+
+<div>
+    <a asp-controller="Home" asp-action="Index">Back to Home</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
