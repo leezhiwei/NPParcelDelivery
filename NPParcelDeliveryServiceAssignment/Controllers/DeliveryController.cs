@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using NPParcelDeliveryServiceAssignment.Models;
 using NPParcelDeliveryServiceAssignment.DALs;
 
@@ -19,14 +21,44 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         public ActionResult Details(int id)
         {
             return View();
-        }   
+        }
 
         // GET: DeliveryHistory/Insert
         public ActionResult Insert()
         {
             return View();
         }
+        // GET: shipping rate/Create
+        public ActionResult Create()
+        {
+            return View();
+        }
+        private List<SelectListItem> GetCountries()
+        {
+            List<SelectListItem> countries = new List<SelectListItem>();
+            countries.Add(new SelectListItem
+            {
+                Value = "Singapore",
+                Text = "Singapore"
+            });
+            countries.Add(new SelectListItem
+            {
+                Value = "Malaysia",
+                Text = "Malaysia"
+            });
+            countries.Add(new SelectListItem
+            {
+                Value = "Indonesia",
+                Text = "Indonesia"
+            });
+            countries.Add(new SelectListItem
+            {
+                Value = "China",
+                Text = "China"
+            });
 
+            return countries;
+        }
         // POST: DeliveryHistory/Insert
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -36,7 +68,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         }
 
         // GET: DeliveryController/Edit/5
-        public ActionResult Edit(int id)
+        public ActionResult Update()
         {
             return View();
         }
@@ -44,16 +76,10 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         // POST: DeliveryController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult Update(ShippingRate shippingRate)
         {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            srd.Update(shippingRate);
+            return RedirectToAction("Delivery", "ShowShippingRateInfo");
         }
 
         // GET: DeliveryController/Delete/5
@@ -89,6 +115,26 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         public ActionResult CreateShippingRate()
         {
             return View();
+        }
+
+        // POST: shipping rate/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Create(ShippingRate shippingRate)
+        {
+            if (ModelState.IsValid)
+            {
+                //Add staff record to database
+                shippingRate.ShippingRateID = srd.Add(shippingRate);//.Add(shippingRate);
+                //Redirect user to Staff/Index view
+                return RedirectToAction("Delivery", "ShowShippingRateInfo");
+            }
+            else
+            {
+                //Input validation fails, return to the Create view
+                //to display error message
+                return View(shippingRate);
+            }
         }
     }
 }
