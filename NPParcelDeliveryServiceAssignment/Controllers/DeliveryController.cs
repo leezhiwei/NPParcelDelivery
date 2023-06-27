@@ -15,7 +15,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         public ActionResult Details(int id)
         {
             return View();
-        }
+        }   
 
         // GET: DeliveryController/Create
         public ActionResult Create()
@@ -78,6 +78,10 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             {
                 return View();
             }
+        }
+        public ActionResult Update()
+        {
+            return View();
         }
     }
 }
