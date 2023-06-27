@@ -64,5 +64,46 @@ namespace NPParcelDeliveryServiceAssignment.DALs
             }
             return parcellist;
         }
+
+        public int Add(Parcel parcel)
+        {
+            //Create a SqlCommand object from connection object
+            SqlCommand cmd = conn.CreateCommand();
+            //Specify an INSERT SQL statement which will
+            //return the auto-generated StaffID after insertion
+            cmd.CommandText = @"INSERT INTO Parcel (ItemDesc, SenderName, SenderTelNo,
+                                ReceiverName, ReceiverTelNo, DeliveryAddrs, FromCity, ToCity, ToCountry, 
+                                ParcelWeight, DeliveryCharge, Currency, TargetDeliveryDate, DeliveryStatus, DeliveryManID)
+                                OUTPUT INSERTED.ParcelID
+                                VALUES(@itemDesc, @senderName, @senderTelNo, @receiverName, @receiverTelNo, @deliveryAddrs, 
+                                @fromCity, @toCity, @toCountry, @parcelWeight, @deliveryCharge, @currency, @targetDeliveryDate, 
+                                @deliveryStatus, @deliveryManID)";
+            //Define the parameters used in SQL statement, value for each parameter
+            //is retrieved from respective class's property.
+            cmd.Parameters.AddWithValue("@itemDesc", parcel.ItemDescription);
+            cmd.Parameters.AddWithValue("@senderName", parcel.SenderName);
+            cmd.Parameters.AddWithValue("@senderTelNo", parcel.SenderTelNo);
+            cmd.Parameters.AddWithValue("@receiverName", parcel.ReceiverName);
+            cmd.Parameters.AddWithValue("@receiverTelNo", parcel.ReceiverTelNo);
+            cmd.Parameters.AddWithValue("@deliveryAddrs", parcel.DeliveryAddress);
+            cmd.Parameters.AddWithValue("@fromCity", parcel.FromCity);
+            cmd.Parameters.AddWithValue("@toCity", parcel.ToCity);
+            cmd.Parameters.AddWithValue("@toCountry", parcel.ToCountry);
+            cmd.Parameters.AddWithValue("@parcelWeight", parcel.ParcelWeight);
+            cmd.Parameters.AddWithValue("@deliveryCharge", parcel.DeliveryCharge);
+            cmd.Parameters.AddWithValue("@currency", parcel.Currency);
+            cmd.Parameters.AddWithValue("@targetDeliveryDate", parcel.TargetDeliveryDate);
+            cmd.Parameters.AddWithValue("@deliveryStatus", parcel.DeliveryStatus);
+            cmd.Parameters.AddWithValue("@deliveryManID", parcel.DeliveryManID);
+            //A connection to database must be opened before any operations made.
+            conn.Open();
+            //ExecuteScalar is used to retrieve the auto-generated
+            //StaffID after executing the INSERT SQL statement
+            parcel.ParcelID = (int)cmd.ExecuteScalar();
+            //A connection should be closed after operations.
+            conn.Close();
+            //Return id when no error occurs.
+            return parcel.ParcelID;
+        }
     }
 }

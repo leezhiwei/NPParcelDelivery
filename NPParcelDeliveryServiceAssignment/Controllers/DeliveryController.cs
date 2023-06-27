@@ -107,10 +107,52 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             List<ShippingRate> ShippingRatelist = srd.GetAllShippingRate();
             return View(ShippingRatelist);
         }
-        public ActionResult InfoUpdate()
+        public ActionResult AssignParcels()
+        {
+            ViewData["Error"] = false;
+            ViewData["ShowParcel"] = false;
+            return View();
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult AssignParcels(IFormCollection form)
         {
             List<Parcel> lp = pdal.GetAllParcel();
-            return View(lp[0]);
+            Parcel p = null;
+            int pid = 0;
+            try
+            {
+                pid = Convert.ToInt32(form["idbox"]);
+            }
+            catch
+            {
+                ViewData["ShowParcel"] = false;
+                ViewData["Error"] = true;
+                return View();
+            }
+            foreach (Parcel parcel in lp)
+            {
+                if (parcel.ParcelID == pid)
+                {
+                    p = parcel;
+                }
+            }
+            if (p is not null)
+            {
+                ViewData["ShowParcel"] = true;
+                ViewData["Error"] = false;
+                return View(p);
+            }
+            ViewData["ShowParcel"] = false;
+            ViewData["Error"] = true;
+            return View();
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult UpdateParcel(IFormCollection form)
+        {
+            TempData["MessageSuccess"] = "You have successfully updated the database";
+            return RedirectToAction("AssignParcels");
         }
         public ActionResult CreateShippingRate()
         {
