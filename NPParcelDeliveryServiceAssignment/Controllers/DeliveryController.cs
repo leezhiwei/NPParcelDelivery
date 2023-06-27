@@ -82,9 +82,9 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         }
         public ActionResult ShowShippingRateInfo()
         {
-            List<ShippingRate> testlist = new List<ShippingRate>();
-            testlist.Add(new ShippingRate());
-            return View(testlist);
+            List<ShippingRate> ShippingRatelist = new List<ShippingRate>();
+            ShippingRatelist.Add(new ShippingRate());
+            return View(ShippingRatelist);
         }
         public ActionResult InfoUpdate()
         {
