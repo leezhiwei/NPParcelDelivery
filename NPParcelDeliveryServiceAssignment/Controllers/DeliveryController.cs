@@ -20,25 +20,18 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             return View();
         }   
 
-        // GET: DeliveryController/Create
-        public ActionResult Create()
+        // GET: DeliveryHistory/Insert
+        public ActionResult Insert()
         {
             return View();
         }
 
-        // POST: DeliveryController/Create
+        // POST: DeliveryHistory/Insert
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public ActionResult Insert(IFormCollection collection)
         {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            return RedirectToAction("Insert");
         }
 
         // GET: DeliveryController/Edit/5

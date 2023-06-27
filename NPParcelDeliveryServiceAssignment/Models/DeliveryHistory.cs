@@ -6,6 +6,7 @@
 
         public int ParcelID { get; set; }
 
+        public DateTime? ReceiveTime { get; set; } 
         public string Description { get; set; }
 
     }
