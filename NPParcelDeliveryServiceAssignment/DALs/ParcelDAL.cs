@@ -9,13 +9,13 @@ namespace NPParcelDeliveryServiceAssignment.DALs
         private SqlConnection conn;
         private int? CheckNull(SqlDataReader r, int num)
         {
-            if (r.IsDBNull(num))
+            if (r.IsDBNull(num)) // check if null
             {
-                return null;
+                return null; // return null
             }
-            else
+            else // if not null
             {
-                return r.GetInt32(num);
+                return r.GetInt32(num); // put in object
             }
         }
         //Constructor
