@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using NPParcelDeliveryServiceAssignment.Models;
 
 namespace NPParcelDeliveryServiceAssignment.Controllers
 {
@@ -79,7 +80,13 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 return View();
             }
         }
-        public ActionResult Update()
+        public ActionResult ShowShippingRateInfo()
+        {
+            List<ShippingRate> testlist = new List<ShippingRate>();
+            testlist.Add(new ShippingRate());
+            return View(testlist);
+        }
+        public ActionResult InfoUpdate()
         {
             return View();
         }
