@@ -2,6 +2,30 @@
 
 @{
     ViewData["Title"] = "Update";
+    if ((string)ViewData["TypeOfUser"] == "Front Office Staff")
+    {
+        Layout = "~/Views/Shared/_fostaffLayout.cshtml";
+    }
+    else if ((string)ViewData["TypeOfUser"] == "Station Manager")
+    {
+        Layout = "~/Views/Shared/_smanagerLayout.cshtml";
+    }
+    else if ((string)ViewData["TypeOfUser"] == "Admin Manager")
+    {
+        Layout = "~/Views/Shared/_amanagerLayout.cshtml";
+    }
+    else if ((string)ViewData["TypeOfUser"] == "Delivery Man")
+    {
+        Layout = "~/Views/Shared/_dmanLayout.cshtml";
+    }
+    else if ((string)ViewData["TypeOfUser"] == "Member")
+    {
+        Layout = "~/Views/Shared/_memberLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_memberLayout.cshtml";
+    }
 }
 
 <h1>Update</h1>
