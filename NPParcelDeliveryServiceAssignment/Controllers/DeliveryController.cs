@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NPParcelDeliveryServiceAssignment.Models;
+using NPParcelDeliveryServiceAssignment.DALs;
 
 namespace NPParcelDeliveryServiceAssignment.Controllers
 {
     public class DeliveryController : Controller
     {
+        private ParcelDAL pdal = new ParcelDAL();
         // GET: DeliveryController
         public ActionResult Index()
         {
@@ -18,25 +20,18 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             return View();
         }   
 
-        // GET: DeliveryController/Create
-        public ActionResult Create()
+        // GET: DeliveryHistory/Insert
+        public ActionResult Insert()
         {
             return View();
         }
 
-        // POST: DeliveryController/Create
+        // POST: DeliveryHistory/Insert
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public ActionResult Insert(IFormCollection collection)
         {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            return RedirectToAction("Insert");
         }
 
         // GET: DeliveryController/Edit/5
@@ -88,7 +83,8 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         }
         public ActionResult InfoUpdate()
         {
-            return View();
+            List<Parcel> lp = pdal.GetAllParcel();
+            return View(lp[0]);
         }
     }
 }
