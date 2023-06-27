@@ -46,12 +46,17 @@ namespace NPParcelDeliveryServiceAssignment.DALs
             }
             return memberList;
         }
+
+        public Member Addmember(string email, string password)
+        {
+            return null;
+        }
         public Member CheckMember(string email, string password)
         {
             List<Member> mlist = GetAllMember();
             foreach (Member m in mlist)
             {
-                if (m.EmailAddr == email)
+                if (m.EmailAddr == email)   
                 {
                     if (m.Password == password)
                     {
