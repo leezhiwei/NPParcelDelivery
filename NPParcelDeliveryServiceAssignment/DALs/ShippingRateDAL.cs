@@ -25,7 +25,7 @@ namespace NPParcelDeliveryServiceAssignment.DALs
             cmd.CommandText = @"SELECT * FROM ShippingRate ORDER BY ShippingRateID"; //Open a database connection
             conn.Open(); //Execute the SELECT SQL through a DataReader
             SqlDataReader reader = cmd.ExecuteReader();
-            //Read all records until the end, save data into a staff list
+            //Read all records until the end, save data into a ShippingRate list
             List<ShippingRate> shippingRateList = new List<ShippingRate>();
             while (reader.Read())
             {
@@ -40,8 +40,8 @@ namespace NPParcelDeliveryServiceAssignment.DALs
                     ToCountry = reader.GetString(4), //4: 4th column
                     ShipRate = reader.GetDecimal(5), //6: 5th column
                     Currency = reader.GetString(6), //9: 6th column 
-                    TransitTime = reader.GetInt32(7), //9: 6th column
-                    LastUpdatedBy = reader.GetInt32(8), //9: 6th column
+                    TransitTime = reader.GetInt32(7), //9: 7th column
+                    LastUpdatedBy = reader.GetInt32(8), //9: 8th column
                 });
             }
             return shippingRateList;

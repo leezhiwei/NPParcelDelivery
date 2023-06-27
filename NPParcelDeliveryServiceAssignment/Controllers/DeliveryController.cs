@@ -8,6 +8,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
     public class DeliveryController : Controller
     {
         private ParcelDAL pdal = new ParcelDAL();
+        private ShippingRateDAL srd = new ShippingRateDAL();
         // GET: DeliveryController
         public ActionResult Index()
         {
@@ -77,14 +78,17 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         }
         public ActionResult ShowShippingRateInfo()
         {
-            List<ShippingRate> ShippingRatelist = new List<ShippingRate>();
-            ShippingRatelist.Add(new ShippingRate());
+            List<ShippingRate> ShippingRatelist = srd.GetAllShippingRate();
             return View(ShippingRatelist);
         }
         public ActionResult InfoUpdate()
         {
             List<Parcel> lp = pdal.GetAllParcel();
             return View(lp[0]);
+        }
+        public ActionResult CreateShippingRate()
+        {
+            return View();
         }
     }
 }
