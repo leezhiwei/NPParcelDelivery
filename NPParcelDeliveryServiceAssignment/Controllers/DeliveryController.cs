@@ -1,10 +1,13 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using NPParcelDeliveryServiceAssignment.Models;
+using NPParcelDeliveryServiceAssignment.DALs;
 
 namespace NPParcelDeliveryServiceAssignment.Controllers
 {
     public class DeliveryController : Controller
     {
+        private ParcelDAL pdal = new ParcelDAL();
         // GET: DeliveryController
         public ActionResult Index()
         {
@@ -74,7 +77,8 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         }
         public ActionResult Update()
         {
-            return View();
+            List<Parcel> lp = pdal.GetAllParcel();
+            return View(lp[0]);
         }
     }
 }
