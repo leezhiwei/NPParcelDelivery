@@ -64,7 +64,30 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Insert(IFormCollection collection)
         {
+            Parcel p = new Parcel {
+                ItemDescription = collection["ItemDescription"],
+                SenderName = collection["SenderName"],
+                SenderTelNo = collection["SenderTelNo"],
+                ReceiverName = collection["ReceiverName"],
+                ReceiverTelNo = collection["ReceiverTelNo"],
+                DeliveryAddress = collection["DeliveryAddress"],
+                FromCity = collection["FromCity"],
+                FromCountry = collection["FromCountry"],
+                ToCity = collection["ToCity"],
+                ToCountry = collection["ToCountry"],
+                ParcelWeight = Convert.ToDouble(collection["ParcelWeight"]),
+                DeliveryCharge = Convert.ToDecimal(collection["DeliveryCharge"]),
+                Currency = collection["Currency"],
+                TargetDeliveryDate = Convert.ToDateTime(collection["TargetDeliveryDate"]),
+                DeliveryStatus = collection["DeliveryStatus"],
+                DeliveryManID = Convert.ToInt32(collection["DeliveryManID"]),
+            };
+
+            pdal.Add(p);
+
             return RedirectToAction("Insert");
+
+
         }
 
         // GET: DeliveryController/Edit/5
