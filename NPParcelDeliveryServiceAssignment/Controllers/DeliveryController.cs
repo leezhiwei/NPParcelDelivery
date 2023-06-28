@@ -6,12 +6,14 @@ using NPParcelDeliveryServiceAssignment.Models;
 using NPParcelDeliveryServiceAssignment.DALs;
 using Microsoft.CodeAnalysis.Elfie.Diagnostics;
 using NuGet.Protocol.Core.Types;
+using Newtonsoft.Json;
 
 namespace NPParcelDeliveryServiceAssignment.Controllers
 {
     public class DeliveryController : Controller
     {
         private ParcelDAL pdal = new ParcelDAL();
+        private DeliveryDAL dhdal = new DeliveryDAL();
         private ShippingRateDAL srd = new ShippingRateDAL();
         private StaffDAL sdal = new StaffDAL();
         // GET: DeliveryController
@@ -67,7 +69,11 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Insert(IFormCollection collection)
         {
-            Parcel p = new Parcel {
+            //HttpContext.Session.SetString("ParcelReceiveTime", DateTime.Now.ToString());
+            //string desc = $"Recieved parcel by {HttpContext.Session.GetString("LoginID")} on {HttpContext.Session.GetString("ParcelReceiveTime")}.";
+
+            Parcel p = new Parcel 
+            {
                 ItemDescription = collection["ItemDescription"],
                 SenderName = collection["SenderName"],
                 SenderTelNo = collection["SenderTelNo"],
@@ -85,8 +91,13 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 DeliveryStatus = collection["DeliveryStatus"],
                 DeliveryManID = Convert.ToInt32(collection["DeliveryManID"]),
             };
-
             pdal.Add(p);
+
+            /*DeliveryHistory dh = new DeliveryHistory
+            {
+                Description = desc,
+            };
+            dhdal.Add(dh);*/
 
             return RedirectToAction("Insert");
 
@@ -120,25 +131,29 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         }
 
         // GET: DeliveryController/Delete/5
-        public ActionResult Delete(int id)
+        public ActionResult DeleteShippingRate(int? id)
         {
+            List<ShippingRate>sr = srd.GetAllShippingRate();
+            foreach (ShippingRate s in sr)
+            {
+                if (s.ShippingRateID == id)
+                {
+                    TempData["staffobj"] = JsonConvert.SerializeObject(s);
+                    return View(s);
+                }
+            }
             return View();
         }
 
         // POST: DeliveryController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public ActionResult DeleteShippingRate(ShippingRate shippingRate)
         {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
+            ShippingRate s = JsonConvert.DeserializeObject<ShippingRate>(TempData["staffobj"].ToString()) ;
+			srd.Delete(s.ShippingRateID);
+            return RedirectToAction("ShowShippingRateInfo");
+		}
         public ActionResult ShowShippingRateInfo()
         {
             List<ShippingRate> ShippingRatelist = srd.GetAllShippingRate();

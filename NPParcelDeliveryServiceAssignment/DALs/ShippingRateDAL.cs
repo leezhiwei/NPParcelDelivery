@@ -115,6 +115,26 @@ namespace NPParcelDeliveryServiceAssignment.DALs
             return count;
         }
 
+		public int Delete(int shippingRateID)
+		{
+			//Instantiate a SqlCommand object, supply it with a DELETE SQL statement
+			//to delete a staff record specified by a Staff ID
+			SqlCommand cmd = conn.CreateCommand();
+			cmd.CommandText = @"DELETE FROM ShippingRate
+            WHERE ShippingRateID = @selectShippingRateID";
+			cmd.Parameters.AddWithValue("@selectShippingRateID", shippingRateID);
+			//Open a database connection
+			conn.Open();
+			int rowAffected = 0;
+			//Execute the DELETE SQL to remove the staff record
+			rowAffected += cmd.ExecuteNonQuery();
+			//Close database connection
+			conn.Close();
+			//Return number of row of staff record updated or deleted
+			return rowAffected;
+		}
+
+        /*
 		public bool IsInfoExist(string fromCity, string fromCountry, string toCity, string toCountry, int shippingRateID)
 		{
 			bool infoFound = false;
@@ -149,6 +169,6 @@ namespace NPParcelDeliveryServiceAssignment.DALs
 			reader.Close();
 			conn.Close();
 			return infoFound;
-		}
+		}*/
 	}
 }
