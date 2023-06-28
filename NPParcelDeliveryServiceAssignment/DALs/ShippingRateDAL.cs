@@ -50,6 +50,7 @@ namespace NPParcelDeliveryServiceAssignment.DALs
                     LastUpdatedBy = reader.GetInt32(8), //9: 8th column
                 });
             }
+            conn.Close();
             return shippingRateList;
         }
 
