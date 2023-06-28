@@ -188,7 +188,12 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult UpdateParcel(Parcel p)
         {
-
+            int? rcount = pdal.Update(p);
+            if (rcount is null)
+            {
+                TempData["NotFound"] = $"There is no StaffID matching {p.DeliveryManID}";
+                return RedirectToAction("AssignParcels");
+            }
             TempData["MessageSuccess"] = "You have successfully updated the database";
             return RedirectToAction("AssignParcels");
         }

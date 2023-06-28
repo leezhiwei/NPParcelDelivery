@@ -16,6 +16,7 @@
         <button type="submit">Show Parcel under ID</button>
     </form>
     <p style="color:green">@TempData["MessageSuccess"]</p>
+    <p style="color:red">@TempData["NotFound"]</p>
     @{
         if ((bool)ViewData["Error"])
         {

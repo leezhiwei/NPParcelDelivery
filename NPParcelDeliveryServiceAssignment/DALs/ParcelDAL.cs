@@ -7,6 +7,7 @@ namespace NPParcelDeliveryServiceAssignment.DALs
     {
         private IConfiguration Configuration { get; }
         private SqlConnection conn;
+        private StaffDAL sd = new StaffDAL();
         private int? CheckNull(SqlDataReader r, int num)
         {
             if (r.IsDBNull(num)) // check if null
@@ -106,18 +107,50 @@ namespace NPParcelDeliveryServiceAssignment.DALs
             //Return id when no error occurs.
             return parcel.ParcelID;
         }
-        /*public int Update(Parcel p)
+        public int? Update(Parcel p)
         {
+            if (p.DeliveryManID is not null)
+            {
+                int dmanid = (int)p.DeliveryManID;
+                if (!sd.IfStaffExist(dmanid))
+                {
+                    return null;
+                }
+            }
             //Create a SqlCommand object from connection object
             SqlCommand cmd = conn.CreateCommand();
             //Specify an UPDATE SQL statement
-            cmd.CommandText = @"UPDATE Parcel SET ItemDescription=@salary,
-            Status=@status, BranchNo = @branchNo
+            cmd.CommandText = @"UPDATE Parcel SET ItemDescription=@itemdesc,
+            SenderName=@sname, SenderTelNo=@stelno, ReceiverName=@rname, ReceiverTelNo=@rtelno,
+            DeliveryAddress=@deladdr,FromCity=@fcity,FromCountry=@fcountry,ToCity=@tcity,
+            ToCountry=@tcountry,ParcelWeight=@pweight,DeliveryCharge=@dcharge,Currency=@curr,TargetDeliveryDate=@tdd,DeliveryStatus=@ds,
+            DeliveryManID=@dmanid
             WHERE ParcelID = @parcelID";
             //Define the parameters used in SQL statement, value for each parameter
             //is retrieved from respective class's property.
-            cmd.Parameters.AddWithValue("@salary", staff.Salary);
-            cmd.Parameters.AddWithValue("@status", staff.IsFullTime);
+            cmd.Parameters.AddWithValue("@itemdesc", p.ItemDescription);
+            cmd.Parameters.AddWithValue("@sname", p.SenderName);
+            cmd.Parameters.AddWithValue("@stelno", p.SenderTelNo);
+            cmd.Parameters.AddWithValue("@rname", p.ReceiverName);
+            cmd.Parameters.AddWithValue("@rtelno", p.ReceiverTelNo);
+            cmd.Parameters.AddWithValue("@deladdr", p.DeliveryAddress);
+            cmd.Parameters.AddWithValue("@fcity", p.FromCity);
+            cmd.Parameters.AddWithValue("@fcountry", p.FromCountry);
+            cmd.Parameters.AddWithValue("@tcity", p.ToCity);
+            cmd.Parameters.AddWithValue("@tcountry", p.ToCountry);
+            cmd.Parameters.AddWithValue("@pweight", p.ParcelWeight);
+            cmd.Parameters.AddWithValue("@dcharge", p.DeliveryCharge);
+            cmd.Parameters.AddWithValue("@curr", p.Currency);
+            cmd.Parameters.AddWithValue("@tdd", p.TargetDeliveryDate);
+            cmd.Parameters.AddWithValue("@ds", p.DeliveryStatus);
+            if (p.DeliveryManID is null)
+            {
+                cmd.Parameters.AddWithValue("@dmanid", DBNull.Value);
+            }
+            else
+            {
+                cmd.Parameters.AddWithValue("@dmanid", p.DeliveryManID);
+            }
             cmd.Parameters.AddWithValue("@parcelID", p.ParcelID);
             //Open a database connection
             conn.Open();
@@ -126,6 +159,6 @@ namespace NPParcelDeliveryServiceAssignment.DALs
             //Close the database connection
             conn.Close();
             return count;
-        }*/
+        }
     }
 }
