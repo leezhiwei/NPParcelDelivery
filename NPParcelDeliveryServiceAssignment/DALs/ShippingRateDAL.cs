@@ -50,6 +50,7 @@ namespace NPParcelDeliveryServiceAssignment.DALs
                     LastUpdatedBy = reader.GetInt32(8), //9: 8th column
                 });
             }
+            conn.Close();
             return shippingRateList;
         }
 
@@ -113,5 +114,61 @@ namespace NPParcelDeliveryServiceAssignment.DALs
             conn.Close();
             return count;
         }
-    }
+
+		public int Delete(int shippingRateID)
+		{
+			//Instantiate a SqlCommand object, supply it with a DELETE SQL statement
+			//to delete a staff record specified by a Staff ID
+			SqlCommand cmd = conn.CreateCommand();
+			cmd.CommandText = @"DELETE FROM ShippingRate
+            WHERE ShippingRateID = @selectShippingRateID";
+			cmd.Parameters.AddWithValue("@selectShippingRateID", shippingRateID);
+			//Open a database connection
+			conn.Open();
+			int rowAffected = 0;
+			//Execute the DELETE SQL to remove the staff record
+			rowAffected += cmd.ExecuteNonQuery();
+			//Close database connection
+			conn.Close();
+			//Return number of row of staff record updated or deleted
+			return rowAffected;
+		}
+
+        /*
+		public bool IsInfoExist(string fromCity, string fromCountry, string toCity, string toCountry, int shippingRateID)
+		{
+			bool infoFound = false;
+			//Create a SqlCommand object and specify the SQL statement 
+			//to get a staff record with the email address to be validated
+			SqlCommand cmd = conn.CreateCommand();
+			cmd.CommandText = @"SELECT ShippingRateID FROM ShippingRate 
+                                WHERE FromCity = @selectedFromCity AND FromCountry = @selectedFromCountry
+                                AND ToCity = @selectedToCity AND ToCountry = @selectedToCountry";
+			cmd.Parameters.AddWithValue("@selectedFromCity", fromCity);
+			cmd.Parameters.AddWithValue("@selectedFromCountry", fromCountry);
+			cmd.Parameters.AddWithValue("@selectedToCity", toCity);
+			cmd.Parameters.AddWithValue("@selectedToCountry", toCountry);
+			//Open a database connection and execute the SQL statement
+			conn.Open();
+			SqlDataReader reader = cmd.ExecuteReader();
+			if (reader.HasRows)
+			{ //Records found
+				while (reader.Read())
+				{
+					if (reader.GetInt32(0) != shippingRateID)
+						//The email address is used by another staff
+						infoFound = true;
+					else
+						infoFound = false;
+				}
+			}
+			else
+			{ //No record
+				infoFound = false; // The email address given does not exist
+			}
+			reader.Close();
+			conn.Close();
+			return infoFound;
+		}*/
+	}
 }

@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using NPParcelDeliveryServiceAssignment.Models;
 using NPParcelDeliveryServiceAssignment.DALs;
 using Microsoft.CodeAnalysis.Elfie.Diagnostics;
+using NuGet.Protocol.Core.Types;
+using Newtonsoft.Json;
 
 namespace NPParcelDeliveryServiceAssignment.Controllers
 {
@@ -129,25 +131,29 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         }
 
         // GET: DeliveryController/Delete/5
-        public ActionResult Delete(int id)
+        public ActionResult DeleteShippingRate(int? id)
         {
+            List<ShippingRate>sr = srd.GetAllShippingRate();
+            foreach (ShippingRate s in sr)
+            {
+                if (s.ShippingRateID == id)
+                {
+                    TempData["staffobj"] = JsonConvert.SerializeObject(s);
+                    return View(s);
+                }
+            }
             return View();
         }
 
         // POST: DeliveryController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public ActionResult DeleteShippingRate(ShippingRate shippingRate)
         {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
+            ShippingRate s = JsonConvert.DeserializeObject<ShippingRate>(TempData["staffobj"].ToString()) ;
+			srd.Delete(s.ShippingRateID);
+            return RedirectToAction("ShowShippingRateInfo");
+		}
         public ActionResult ShowShippingRateInfo()
         {
             List<ShippingRate> ShippingRatelist = srd.GetAllShippingRate();
@@ -195,8 +201,9 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult UpdateParcel(IFormCollection form)
+        public ActionResult UpdateParcel(Parcel p)
         {
+
             TempData["MessageSuccess"] = "You have successfully updated the database";
             return RedirectToAction("AssignParcels");
         }
@@ -212,9 +219,19 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         {
             if (ModelState.IsValid)
             {
+                List<ShippingRate> shippingRateList = srd.GetAllShippingRate();
+                foreach (ShippingRate s in shippingRateList)
+                {
+                    if (s.ToCity == shippingRate.ToCity && s.ToCountry == shippingRate.ToCountry
+                        && s.FromCity == shippingRate.FromCity && s.FromCountry == shippingRate.FromCountry)
+                    {
+                        TempData["ErrorMessage"] = "Error Such Ship Rate Info is already Exisit!";
+                        return View();
+                    }
+
+                }
                 //Add staff record to database
                 shippingRate.ShippingRateID = srd.Add(shippingRate);//.Add(shippingRate);
-                                                                    //Redirect user to Staff/Index view
                 TempData["CreateSuccess"] = "You have successfully create a new shipping rate";
 				return View();
 
