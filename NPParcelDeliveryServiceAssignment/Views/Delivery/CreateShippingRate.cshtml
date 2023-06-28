@@ -3,8 +3,6 @@
 @{
     ViewData["Title"] = "CreateShippingRate";
     Layout = "~/Views/Shared/_amanagerLayout.cshtml";
-  
-
 }
 
 <h1>CreateShippingRate</h1>
@@ -12,14 +10,11 @@
 <h4>ShippingRate</h4>
 <hr />
 <div class="row">
+    <p>@TempData["CreateSuccess"]</p>
     <div class="col-md-4">
         <form asp-action="CreateShippingRate">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="ShippingRateID" class="control-label"></label>
-                <input asp-for="ShippingRateID" class="form-control" />
-                <span asp-validation-for="ShippingRateID" class="text-danger"></span>
-            </div>
+           
             <div class="form-group">
                 <label asp-for="FromCity" class="control-label"></label>
                 <input asp-for="FromCity" class="form-control" />

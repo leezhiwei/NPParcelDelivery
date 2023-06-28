@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using NPParcelDeliveryServiceAssignment.Models;
 using NPParcelDeliveryServiceAssignment.DALs;
+using Microsoft.CodeAnalysis.Elfie.Diagnostics;
 
 namespace NPParcelDeliveryServiceAssignment.Controllers
 {
@@ -64,11 +65,34 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Insert(IFormCollection collection)
         {
+            Parcel p = new Parcel {
+                ItemDescription = collection["ItemDescription"],
+                SenderName = collection["SenderName"],
+                SenderTelNo = collection["SenderTelNo"],
+                ReceiverName = collection["ReceiverName"],
+                ReceiverTelNo = collection["ReceiverTelNo"],
+                DeliveryAddress = collection["DeliveryAddress"],
+                FromCity = collection["FromCity"],
+                FromCountry = collection["FromCountry"],
+                ToCity = collection["ToCity"],
+                ToCountry = collection["ToCountry"],
+                ParcelWeight = Convert.ToDouble(collection["ParcelWeight"]),
+                DeliveryCharge = Convert.ToDecimal(collection["DeliveryCharge"]),
+                Currency = collection["Currency"],
+                TargetDeliveryDate = Convert.ToDateTime(collection["TargetDeliveryDate"]),
+                DeliveryStatus = collection["DeliveryStatus"],
+                DeliveryManID = Convert.ToInt32(collection["DeliveryManID"]),
+            };
+
+            pdal.Add(p);
+
             return RedirectToAction("Insert");
+
+
         }
 
         // GET: DeliveryController/Edit/5
-        public ActionResult Update()
+        public ActionResult ShippingRateEdit()
         {
             return View();
         }
@@ -76,9 +100,20 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         // POST: DeliveryController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Update(ShippingRate shippingRate)
+        public ActionResult ShippingRateEdit(IFormCollection form)
         {
-            srd.Update(shippingRate);
+            ShippingRate s = new ShippingRate
+            {
+                ShippingRateID = Convert.ToInt32(form["ShippingRateID"]),
+                FromCity = form["FromCity"],
+                FromCountry = form["FromCountry"],
+                ToCity = form["ToCity"],
+                ToCountry = form["ToCountry"],
+                ShipRate = Convert.ToDecimal(form["ShipRate"]),
+                Currency = form["Currency"],
+                TransitTime = Convert.ToInt32(form["TransitTime"]),
+                LastUpdatedBy = Convert.ToInt32(form["LastUpdatedBy"])
+		    };
             return RedirectToAction("Delivery", "ShowShippingRateInfo");
         }
 
@@ -162,14 +197,16 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         // POST: shipping rate/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(ShippingRate shippingRate)
+        public ActionResult CreateShippingRate(ShippingRate shippingRate)
         {
             if (ModelState.IsValid)
             {
                 //Add staff record to database
                 shippingRate.ShippingRateID = srd.Add(shippingRate);//.Add(shippingRate);
-                //Redirect user to Staff/Index view
-                return RedirectToAction("Delivery", "ShowShippingRateInfo");
+                                                                    //Redirect user to Staff/Index view
+                TempData["CreateSuccess"] = "You have successfully create a new shipping rate";
+				return View();
+
             }
             else
             {
