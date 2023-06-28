@@ -120,25 +120,29 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         }
 
         // GET: DeliveryController/Delete/5
-        public ActionResult Delete(int id)
+        public ActionResult DeleteShippingRate(int? id)
         {
+            List<ShippingRate>sr = srd.GetAllShippingRate();
+            foreach (ShippingRate s in sr)
+            {
+                if (s.ShippingRateID == id)
+                {
+                    TempData["staffobj"] = s;
+                    return View(s);
+                }
+            }
             return View();
         }
 
         // POST: DeliveryController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public ActionResult DeleteShippingRate(ShippingRate shippingRate)
         {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
+            ShippingRate s = (ShippingRate)TempData["staffobj"];
+			srd.Delete(s.ShippingRateID);
+            return RedirectToAction("ShowShippingRateInfo");
+		}
         public ActionResult ShowShippingRateInfo()
         {
             List<ShippingRate> ShippingRatelist = srd.GetAllShippingRate();
