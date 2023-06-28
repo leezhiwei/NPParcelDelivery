@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using NPParcelDeliveryServiceAssignment.Models;
 using NPParcelDeliveryServiceAssignment.DALs;
 using Microsoft.CodeAnalysis.Elfie.Diagnostics;
+using NuGet.Protocol.Core.Types;
 
 namespace NPParcelDeliveryServiceAssignment.Controllers
 {
@@ -178,9 +179,19 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         {
             if (ModelState.IsValid)
             {
+                List<ShippingRate> shippingRateList = srd.GetAllShippingRate();
+                foreach (ShippingRate s in shippingRateList)
+                {
+                    if (s.ToCity == shippingRate.ToCity && s.ToCountry == shippingRate.ToCountry
+                        && s.FromCity == shippingRate.FromCity && s.FromCountry == shippingRate.FromCountry)
+                    {
+                        TempData["ErrorMessage"] = "Error Such Ship Rate Info is already Exisit!";
+                        return View();
+                    }
+
+                }
                 //Add staff record to database
                 shippingRate.ShippingRateID = srd.Add(shippingRate);//.Add(shippingRate);
-                                                                    //Redirect user to Staff/Index view
                 TempData["CreateSuccess"] = "You have successfully create a new shipping rate";
 				return View();
 
