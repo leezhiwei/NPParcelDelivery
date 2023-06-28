@@ -12,6 +12,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
     {
         private ParcelDAL pdal = new ParcelDAL();
         private ShippingRateDAL srd = new ShippingRateDAL();
+        private StaffDAL sdal = new StaffDAL();
         // GET: DeliveryController
         public ActionResult Index()
         {
