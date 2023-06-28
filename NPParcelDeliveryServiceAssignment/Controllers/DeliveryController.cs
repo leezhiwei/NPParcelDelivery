@@ -11,6 +11,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
     public class DeliveryController : Controller
     {
         private ParcelDAL pdal = new ParcelDAL();
+        private DeliveryDAL dhdal = new DeliveryDAL();
         private ShippingRateDAL srd = new ShippingRateDAL();
         private StaffDAL sdal = new StaffDAL();
         // GET: DeliveryController
@@ -66,7 +67,11 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Insert(IFormCollection collection)
         {
-            Parcel p = new Parcel {
+            //HttpContext.Session.SetString("ParcelReceiveTime", DateTime.Now.ToString());
+            //string desc = $"Recieved parcel by {HttpContext.Session.GetString("LoginID")} on {HttpContext.Session.GetString("ParcelReceiveTime")}.";
+
+            Parcel p = new Parcel 
+            {
                 ItemDescription = collection["ItemDescription"],
                 SenderName = collection["SenderName"],
                 SenderTelNo = collection["SenderTelNo"],
@@ -84,8 +89,13 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 DeliveryStatus = collection["DeliveryStatus"],
                 DeliveryManID = Convert.ToInt32(collection["DeliveryManID"]),
             };
-
             pdal.Add(p);
+
+            /*DeliveryHistory dh = new DeliveryHistory
+            {
+                Description = desc,
+            };
+            dhdal.Add(dh);*/
 
             return RedirectToAction("Insert");
 

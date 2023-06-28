@@ -26,6 +26,10 @@
     {
         Layout = "~/Views/Shared/_memberLayout.cshtml";
     }
+
+    string userName = Context.Session.GetString("LoginID");
+    string description = $"Recieved parcel by {userName} on {Context.Session.GetString("ParcelReceiveTime")}.";
+    Console.WriteLine(description);
 }
 
 <h1>Parcel Delivery Record</h1>
