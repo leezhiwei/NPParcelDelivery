@@ -6,6 +6,7 @@ using NPParcelDeliveryServiceAssignment.Models;
 using NPParcelDeliveryServiceAssignment.DALs;
 using Microsoft.CodeAnalysis.Elfie.Diagnostics;
 using NuGet.Protocol.Core.Types;
+using Newtonsoft.Json;
 
 namespace NPParcelDeliveryServiceAssignment.Controllers
 {
@@ -127,7 +128,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             {
                 if (s.ShippingRateID == id)
                 {
-                    TempData["staffobj"] = s;
+                    TempData["staffobj"] = JsonConvert.SerializeObject(s);
                     return View(s);
                 }
             }
@@ -139,7 +140,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteShippingRate(ShippingRate shippingRate)
         {
-            ShippingRate s = (ShippingRate)TempData["staffobj"];
+            ShippingRate s = JsonConvert.DeserializeObject<ShippingRate>(TempData["staffobj"].ToString()) ;
 			srd.Delete(s.ShippingRateID);
             return RedirectToAction("ShowShippingRateInfo");
 		}
