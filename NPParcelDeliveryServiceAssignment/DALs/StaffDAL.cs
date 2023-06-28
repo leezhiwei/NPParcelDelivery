@@ -58,5 +58,17 @@ namespace NPParcelDeliveryServiceAssignment.DALs
             }
             return null;
         }
+        public bool IfStaffExist(int sid)
+        {
+            List<Staff> stafflist = GetAllStaff();
+            foreach (Staff s in stafflist)
+            {
+                if (s.StaffID == sid)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 }

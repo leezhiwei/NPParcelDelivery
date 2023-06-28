@@ -71,12 +71,12 @@ namespace NPParcelDeliveryServiceAssignment.DALs
             SqlCommand cmd = conn.CreateCommand();
             //Specify an INSERT SQL statement which will
             //return the auto-generated StaffID after insertion
-            cmd.CommandText = @"INSERT INTO Parcel (ItemDesc, SenderName, SenderTelNo,
-                                ReceiverName, ReceiverTelNo, DeliveryAddrs, FromCity, ToCity, ToCountry, 
+            cmd.CommandText = @"INSERT INTO Parcel (ItemDescription, SenderName, SenderTelNo,
+                                ReceiverName, ReceiverTelNo, DeliveryAddress, FromCity, FromCountry, ToCity, ToCountry, 
                                 ParcelWeight, DeliveryCharge, Currency, TargetDeliveryDate, DeliveryStatus, DeliveryManID)
                                 OUTPUT INSERTED.ParcelID
                                 VALUES(@itemDesc, @senderName, @senderTelNo, @receiverName, @receiverTelNo, @deliveryAddrs, 
-                                @fromCity, @toCity, @toCountry, @parcelWeight, @deliveryCharge, @currency, @targetDeliveryDate, 
+                                @fromCity, @fromCountry, @toCity, @toCountry, @parcelWeight, @deliveryCharge, @currency, @targetDeliveryDate, 
                                 @deliveryStatus, @deliveryManID)";
             //Define the parameters used in SQL statement, value for each parameter
             //is retrieved from respective class's property.
@@ -87,6 +87,7 @@ namespace NPParcelDeliveryServiceAssignment.DALs
             cmd.Parameters.AddWithValue("@receiverTelNo", parcel.ReceiverTelNo);
             cmd.Parameters.AddWithValue("@deliveryAddrs", parcel.DeliveryAddress);
             cmd.Parameters.AddWithValue("@fromCity", parcel.FromCity);
+            cmd.Parameters.AddWithValue("@fromCountry", parcel.FromCountry);
             cmd.Parameters.AddWithValue("@toCity", parcel.ToCity);
             cmd.Parameters.AddWithValue("@toCountry", parcel.ToCountry);
             cmd.Parameters.AddWithValue("@parcelWeight", parcel.ParcelWeight);
