@@ -185,8 +185,9 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult UpdateParcel(IFormCollection form)
+        public ActionResult UpdateParcel(Parcel p)
         {
+
             TempData["MessageSuccess"] = "You have successfully updated the database";
             return RedirectToAction("AssignParcels");
         }
