@@ -98,7 +98,8 @@ namespace NPParcelDeliveryServiceAssignment.DALs
             //Create a SqlCommand object from connection object
             SqlCommand cmd = conn.CreateCommand();
             //Specify an UPDATE SQL statement
-            cmd.CommandText = @"UPDATE ShippingRate SET ShippingRate=@sRate, 
+            cmd.CommandText = @"update ShippingRate set 
+                                ShippingRate=@sRate,
                                 TransitTime=@tTime
                                 WHERE ShippingRateID = @sRateID";
             //Define the parameters used in SQL statement, value for each parameter

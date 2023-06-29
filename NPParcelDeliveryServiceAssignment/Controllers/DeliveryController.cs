@@ -107,16 +107,28 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         // GET: DeliveryController/Edit/5
         public ActionResult ShippingRateEdit(int? id)
         {
+            List<ShippingRate>sr = srd.GetAllShippingRate();
+            foreach (ShippingRate s in sr)
+            {
+                if (s.ShippingRateID == id)
+                {
+                    TempData["editShipRate"] = JsonConvert.SerializeObject(s);
+                    return View(s);
+                }
+            }
             return View();
         }
 
         // POST: DeliveryController/Edit/5
         [HttpPost]
+
         [ValidateAntiForgeryToken]
-        public ActionResult ShippingRateEdit(ShippingRate shippingRate)
+
+
+        public ActionResult ShippingRateEdit()
         {
-            //Update shiprate record to database
-               shippingRate.ShippingRateID =  srd.Update(shippingRate);//.update(shippingRate);
+               ShippingRate s = JsonConvert.DeserializeObject<ShippingRate>(TempData["editShipRate"].ToString());
+               srd.Update(s);
                TempData["UpdateSuccess"] = "You have successfully update the shipping rate";
                return View();
 
@@ -130,7 +142,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             {
                 if (s.ShippingRateID == id)
                 {
-                    TempData["staffobj"] = JsonConvert.SerializeObject(s);
+                    TempData["shiprateobj"] = JsonConvert.SerializeObject(s);
                     return View(s);
                 }
             }
@@ -142,7 +154,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteShippingRate(ShippingRate shippingRate)
         {
-            ShippingRate s = JsonConvert.DeserializeObject<ShippingRate>(TempData["staffobj"].ToString()) ;
+            ShippingRate s = JsonConvert.DeserializeObject<ShippingRate>(TempData["shiprateobj"].ToString());
 			srd.Delete(s.ShippingRateID);
             return RedirectToAction("ShowShippingRateInfo");
 		}
