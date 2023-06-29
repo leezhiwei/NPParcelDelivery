@@ -136,7 +136,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             ShippingRate oldobj = JsonConvert.DeserializeObject<ShippingRate>(TempData["PrevObj"].ToString());
             void Merge(ShippingRate existingobject, ShippingRate somevalues)
             {
-                // From stackoverflow, https://stackoverflow.com/questions/8702603/merging-two-objects-in-c-sharp, AutoMerger
+                // From stackoverflow, https://stackoverflow.com/questions/8702603/merging-two-objects-in-c-sharp, Reflection method
                 Type t = typeof(ShippingRate);
                 // get type obj of ShippingRate
                 var properties = t.GetProperties().Where(prop => prop.CanRead && prop.CanWrite);
