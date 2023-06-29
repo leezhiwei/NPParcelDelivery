@@ -105,7 +105,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         }
 
         // GET: DeliveryController/Edit/5
-        public ActionResult ShippingRateEdit()
+        public ActionResult ShippingRateEdit(int? id)
         {
             return View();
         }
@@ -113,21 +113,13 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         // POST: DeliveryController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult ShippingRateEdit(IFormCollection form)
+        public ActionResult ShippingRateEdit(ShippingRate shippingRate)
         {
-            ShippingRate s = new ShippingRate
-            {
-                ShippingRateID = Convert.ToInt32(form["ShippingRateID"]),
-                FromCity = form["FromCity"],
-                FromCountry = form["FromCountry"],
-                ToCity = form["ToCity"],
-                ToCountry = form["ToCountry"],
-                ShipRate = Convert.ToDecimal(form["ShipRate"]),
-                Currency = form["Currency"],
-                TransitTime = Convert.ToInt32(form["TransitTime"]),
-                LastUpdatedBy = Convert.ToInt32(form["LastUpdatedBy"])
-		    };
-            return RedirectToAction("Delivery", "ShowShippingRateInfo");
+            //Update shiprate record to database
+               shippingRate.ShippingRateID =  srd.Update(shippingRate);//.update(shippingRate);
+               TempData["UpdateSuccess"] = "You have successfully update the shipping rate";
+               return View();
+
         }
 
         // GET: DeliveryController/Delete/5
