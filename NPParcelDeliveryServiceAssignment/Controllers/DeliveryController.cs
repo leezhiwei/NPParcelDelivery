@@ -22,10 +22,12 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             return View();
         }
 
-        // GET: DeliveryController/Details/5
-        public ActionResult Details(int id)
+        // GET: DeliveryController/ParcelHistory
+        public ActionResult DeliveryHistory()
         {
-            return View();
+            List<DeliveryHistory> dhList = dhdal.GetAllHistory();
+            return View(dhList);
+            //return View();
         }
 
         // GET: DeliveryHistory/Insert

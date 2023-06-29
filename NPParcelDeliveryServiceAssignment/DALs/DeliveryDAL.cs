@@ -31,9 +31,10 @@ namespace NPParcelDeliveryServiceAssignment.DALs
             conn = new SqlConnection(strConn);
         }
         public List<DeliveryHistory> GetAllHistory()
-        { //Create a SqlCommand object from connection object
+        { 
+            //Create a SqlCommand object from connection object
             SqlCommand cmd = conn.CreateCommand(); //Specify the SELECT SQL statement
-            cmd.CommandText = @"SELECT * FROM DeliveryHistory ORDER BY ParcelID"; //Open a database connection
+            cmd.CommandText = @"SELECT * FROM DeliveryHistory ORDER BY RecordID"; //Open a database connection
             conn.Open(); //Execute the SELECT SQL through a DataReader
             SqlDataReader reader = cmd.ExecuteReader();
             //Read all records until the end, save data into a staff list
@@ -47,6 +48,10 @@ namespace NPParcelDeliveryServiceAssignment.DALs
                     Description = reader.GetString(2), //2: 3rd column
                 });
             }
+            //Close DataReader
+            reader.Close(); 
+            //Close the database connection
+            conn.Close();
             return historyList;
         }
 
