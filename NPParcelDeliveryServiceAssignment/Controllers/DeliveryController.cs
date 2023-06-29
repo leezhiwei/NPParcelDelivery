@@ -7,6 +7,7 @@ using NPParcelDeliveryServiceAssignment.DALs;
 using Microsoft.CodeAnalysis.Elfie.Diagnostics;
 using NuGet.Protocol.Core.Types;
 using Newtonsoft.Json;
+using DeepEqual.Syntax;
 
 namespace NPParcelDeliveryServiceAssignment.Controllers
 {
@@ -71,8 +72,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Insert(IFormCollection collection)
         {
-            //HttpContext.Session.SetString("ParcelReceiveTime", DateTime.Now.ToString());
-            //string desc = $"Recieved parcel by {HttpContext.Session.GetString("LoginID")} on {HttpContext.Session.GetString("ParcelReceiveTime")}.";
+            string desc = $"Recieved parcel by {HttpContext.Session.GetString("UserID")} on {DateTime.Now.ToString("dd MMM yyyy hh:mm tt")}.";
 
             Parcel p = new Parcel
             {
@@ -94,12 +94,24 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 DeliveryManID = Convert.ToInt32(collection["DeliveryManID"]),
             };
             pdal.Add(p);
+            List<Parcel> PL = pdal.GetAllParcel();
 
-            /*DeliveryHistory dh = new DeliveryHistory
+            Parcel par = null;
+            foreach (Parcel pa in PL)
             {
+                if (p.IsDeepEqual(pa))
+                {
+                    par = pa;
+                    break;
+                }
+            }
+
+            DeliveryHistory dh = new DeliveryHistory
+            {
+                ParcelID = par.ParcelID, 
                 Description = desc,
             };
-            dhdal.Add(dh);*/
+            dhdal.Add(dh);
 
             return RedirectToAction("Insert");
 
