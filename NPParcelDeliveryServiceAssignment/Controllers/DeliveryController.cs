@@ -195,12 +195,18 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult UpdateParcel(Parcel p)
         {
+            p.DeliveryStatus = "1"; // set deliverystatus to in progress
             int? rcount = pdal.Update(p);
             if (rcount is null)
             {
                 TempData["NotFound"] = $"There is no StaffID matching {p.DeliveryManID}";
                 return RedirectToAction("AssignParcels");
             }
+            dhdal.Add(new DeliveryHistory
+            {
+                ParcelID = p.ParcelID,
+                Description = $"Received parcel by {HttpContext.Session.GetString("UserID")} on {DateTime.Now.ToString("dd MMM yyyy hh:mm tt")}"
+            });
             TempData["MessageSuccess"] = "You have successfully updated the database";
             return RedirectToAction("AssignParcels");
         }

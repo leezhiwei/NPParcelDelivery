@@ -56,12 +56,11 @@ namespace NPParcelDeliveryServiceAssignment.DALs
             SqlCommand cmd = conn.CreateCommand();
             //Specify an INSERT SQL statement which will
             //return the auto-generated StaffID after insertion
-            cmd.CommandText = @"INSERT INTO DeliveryHistory (RecordID, ParcelID, Description)
+            cmd.CommandText = @"INSERT INTO DeliveryHistory (ParcelID, Description)
                                 OUTPUT INSERTED.RecordID
-                                VALUES(@recordID, @parcelID, @desc)";
+                                VALUES(@parcelID, @desc)";
             //Define the parameters used in SQL statement, value for each parameter
             //is retrieved from respective class's property.
-            cmd.Parameters.AddWithValue("@recordID", history.RecordID);
             cmd.Parameters.AddWithValue("@parcelID", history.ParcelID);
             cmd.Parameters.AddWithValue("@desc", history.Description);
             //A connection to database must be opened before any operations made.
