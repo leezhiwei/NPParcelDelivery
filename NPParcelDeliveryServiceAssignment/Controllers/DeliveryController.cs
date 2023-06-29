@@ -72,7 +72,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             //HttpContext.Session.SetString("ParcelReceiveTime", DateTime.Now.ToString());
             //string desc = $"Recieved parcel by {HttpContext.Session.GetString("LoginID")} on {HttpContext.Session.GetString("ParcelReceiveTime")}.";
 
-            Parcel p = new Parcel 
+            Parcel p = new Parcel
             {
                 ItemDescription = collection["ItemDescription"],
                 SenderName = collection["SenderName"],
@@ -105,14 +105,23 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         }
 
         // GET: DeliveryController/Edit/5
-        public ActionResult ShippingRateEdit(int? id)
+        public ActionResult ShippingRateEdit(string id)
         {
-            List<ShippingRate>sr = srd.GetAllShippingRate();
+            int idd = 0;
+            try
+            {
+                idd = Convert.ToInt32(id);
+            }
+            catch
+            {
+                return RedirectToAction("ShowShippingRateInfo");
+            }
+            List<ShippingRate> sr = srd.GetAllShippingRate();
             foreach (ShippingRate s in sr)
             {
-                if (s.ShippingRateID == id)
+                if (s.ShippingRateID == idd)
                 {
-                    TempData["editShipRate"] = JsonConvert.SerializeObject(s);
+                    TempData["PrevObj"] = JsonConvert.SerializeObject(s);
                     return View(s);
                 }
             }
@@ -121,23 +130,58 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
 
         // POST: DeliveryController/Edit/5
         [HttpPost]
-
         [ValidateAntiForgeryToken]
-
-
-        public ActionResult ShippingRateEdit()
+        public ActionResult ShippingRateEdit(ShippingRate s)
         {
-               ShippingRate s = JsonConvert.DeserializeObject<ShippingRate>(TempData["editShipRate"].ToString());
-               srd.Update(s);
-               TempData["UpdateSuccess"] = "You have successfully update the shipping rate";
-               return View();
+            ShippingRate oldobj = JsonConvert.DeserializeObject<ShippingRate>(TempData["PrevObj"].ToString());
+            void Merge(ShippingRate existingobject, ShippingRate somevalues)
+            {
+                // From stackoverflow, https://stackoverflow.com/questions/8702603/merging-two-objects-in-c-sharp, AutoMerger
+                Type t = typeof(ShippingRate);
+                // get type obj of ShippingRate
+                var properties = t.GetProperties().Where(prop => prop.CanRead && prop.CanWrite);
+                // get property of obj
+                foreach (var prop in properties)
+                { // foreach property
+                    var value = prop.GetValue(somevalues);
+                    // get the value from the "blank" from form object, some value null or 0
+                    if (value is null)
+                    { // if the value is indeed null
+                        var valuefromexistingobj = prop.GetValue(existingobject);
+                        // get this data from the "existing" object
+                        prop.SetValue(somevalues, valuefromexistingobj);
+                        // set it into the new object
+                        continue; // move on to next property
+                    }
+                    try // try to convert to int, exception move to catch
+                    { // if above never trigger, check for ID 0 or number 0
+                        int? numberval = (int)value; // convert to int 
+                        if (numberval == 0)
+                        { // if the numbervalue is 0, eg id
+                            var valuefromexistingobj = prop.GetValue(existingobject);
+                            // get this data from "existing" object.
+                            prop.SetValue(somevalues, valuefromexistingobj);
+                            // set it into new object
+                            continue; // move on to next property
+                        }
+                    }
+                    catch // catch the exception
+                    {
+                        continue; // move to new object
+                    }
+                }
+            }
+            Merge(oldobj, s);
+            srd.Update(s);
+            TempData["UpdateSuccess"] = "You have successfully update the shipping rate";
+            return View();
 
         }
 
         // GET: DeliveryController/Delete/5
         public ActionResult DeleteShippingRate(int? id)
         {
-            List<ShippingRate>sr = srd.GetAllShippingRate();
+            List<ShippingRate> sr = srd.GetAllShippingRate();
             foreach (ShippingRate s in sr)
             {
                 if (s.ShippingRateID == id)
@@ -155,9 +199,9 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         public ActionResult DeleteShippingRate(ShippingRate shippingRate)
         {
             ShippingRate s = JsonConvert.DeserializeObject<ShippingRate>(TempData["shiprateobj"].ToString());
-			srd.Delete(s.ShippingRateID);
+            srd.Delete(s.ShippingRateID);
             return RedirectToAction("ShowShippingRateInfo");
-		}
+        }
         public ActionResult ShowShippingRateInfo()
         {
             List<ShippingRate> ShippingRatelist = srd.GetAllShippingRate();
@@ -248,7 +292,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 //Add staff record to database
                 shippingRate.ShippingRateID = srd.Add(shippingRate);//.Add(shippingRate);
                 TempData["CreateSuccess"] = "You have successfully create a new shipping rate";
-				return View();
+                return View();
 
             }
             else
