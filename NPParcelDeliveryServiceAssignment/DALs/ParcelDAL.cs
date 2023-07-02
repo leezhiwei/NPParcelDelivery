@@ -160,5 +160,33 @@ namespace NPParcelDeliveryServiceAssignment.DALs
             conn.Close();
             return count;
         }
+        public List<Parcel> CheckAssigned(int StaffID)
+        {
+            List<Parcel> allparcel = GetAllParcel();
+            List<Parcel> asslist = new List<Parcel>();
+            foreach (Parcel p in allparcel)
+            {
+                if (p.DeliveryManID == StaffID)
+                {
+                    if (p.DeliveryStatus == "1")
+                    {
+                        asslist.Add(p);
+                    }
+                }
+            }
+            return asslist;
+        }
+        public Parcel ReturnParcel(int pid)
+        {
+            List<Parcel> plist = GetAllParcel();
+            foreach (Parcel p in plist)
+            {
+                if (pid == p.ParcelID)
+                {
+                    return p;
+                }
+            }
+            return null;
+        }
     }
 }

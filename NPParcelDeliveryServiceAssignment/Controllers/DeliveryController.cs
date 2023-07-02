@@ -30,17 +30,6 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             return View(dhList);
             //return View();
         }
-
-        // GET: DeliveryHistory/Insert
-        public ActionResult Insert()
-        {
-            return View();
-        }
-        // GET: shipping rate/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
         private List<SelectListItem> GetCountries()
         {
             List<SelectListItem> countries = new List<SelectListItem>();
@@ -72,7 +61,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Insert(IFormCollection collection)
         {
-            string desc = $"Recieved parcel by {HttpContext.Session.GetString("UserID")} on {DateTime.Now.ToString("dd MMM yyyy hh:mm tt")}.";
+            string desc = $"Received parcel by {HttpContext.Session.GetString("UserID")} on {DateTime.Now.ToString("dd MMM yyyy hh:mm tt")}.";
 
             Parcel p = new Parcel
             {
@@ -341,6 +330,74 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 //Input validation fails, return to the Create view
                 //to display error message
                 return View(shippingRate);
+            }
+        }
+        public ActionResult List()
+        {
+            string LoginID = HttpContext.Session.GetString("UserID");
+            int StaffID = sdal.ReturnStaffID(LoginID);
+            if (StaffID == -1)
+            {
+                return RedirectToAction("Index","Home");
+            }
+            List<Parcel> AssignedList = pdal.CheckAssigned(StaffID);
+            return View(AssignedList);
+        }
+        public ActionResult CompleteDel(string id)
+        {
+            int pid = 0;
+            try
+            {
+                pid = Convert.ToInt32(id);
+            }
+            catch
+            {
+                return RedirectToAction("Index","Home");
+            }
+            Parcel pobj = pdal.ReturnParcel(pid);
+            if (pobj is null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            TempData["Parcel"] = JsonConvert.SerializeObject(pobj);
+            return View();
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult CompleteDel()
+        {
+            Parcel p = null;
+            try
+            {
+                p = JsonConvert.DeserializeObject<Parcel>((string)TempData["Parcel"]);
+            }
+            catch
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            if ((p.ToCity == p.FromCity) && (p.ToCountry == p.FromCountry))
+            {
+                p.DeliveryStatus = "3";
+                pdal.Update(p);
+                dhdal.Add(new DeliveryHistory
+                {
+                    ParcelID = p.ParcelID,
+                    Description = $"Parcel delivered successfully by {HttpContext.Session.GetString("UserID")} on {DateTime.Now.ToString("dd MMM yyyy hh:mm tt")}."
+                });
+                TempData["Success"] = "You have successfully delivered the parcel, database recorded.";
+                return RedirectToAction("List");
+            }
+            else
+            {
+                p.DeliveryStatus = "2";
+                pdal.Update(p);
+                dhdal.Add(new DeliveryHistory
+                {
+                    ParcelID = p.ParcelID,
+                    Description = $"Parcel delivered to airport by {HttpContext.Session.GetString("UserID")} on {DateTime.Now.ToString("dd MMM yyyy hh:mm tt")}."
+                });
+                TempData["Success"] = "You have successfully delivered the parcel to the airport, database recorded.";
+                return RedirectToAction("List");
             }
         }
     }
