@@ -321,6 +321,15 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                     }
 
                 }
+                string loginID = HttpContext.Session.GetString("UserID");
+                List<Staff>staffli = sdal.GetAllStaff();
+                foreach (Staff s in staffli)
+                {
+                    if (s.LoginID == loginID)
+                    {
+                        shippingRate.LastUpdatedBy = Convert.ToInt32(s);
+                    }
+                }
                 //Add staff record to database
                 shippingRate.ShippingRateID = srd.Add(shippingRate);//.Add(shippingRate);
                 TempData["CreateSuccess"] = "You have successfully create a new shipping rate";
