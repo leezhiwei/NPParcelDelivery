@@ -26,10 +26,6 @@
     {
         Layout = "~/Views/Shared/_memberLayout.cshtml";
     }
-
-    string userName = Context.Session.GetString("LoginID");
-    string description = $"Recieved parcel by {userName} on {Context.Session.GetString("ParcelReceiveTime")}.";
-    Console.WriteLine(description);
 }
 
 <h1>Parcel Delivery Record</h1>
@@ -103,11 +99,6 @@
                 <label asp-for="Currency" class="control-label"></label>
                 <input asp-for="Currency" class="form-control" />
                 <span asp-validation-for="Currency" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="TargetDeliveryDate" class="control-label"></label>
-                <input asp-for="TargetDeliveryDate" class="form-control" />
-                <span asp-validation-for="TargetDeliveryDate" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="DeliveryStatus" class="control-label"></label>

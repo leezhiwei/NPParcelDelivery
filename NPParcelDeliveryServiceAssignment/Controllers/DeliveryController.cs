@@ -71,9 +71,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Insert(IFormCollection collection)
-        {
-            string desc = $"Recieved parcel by {HttpContext.Session.GetString("UserID")} on {DateTime.Now.ToString("dd MMM yyyy hh:mm tt")}.";
-
+        {   
             Parcel p = new Parcel
             {
                 ItemDescription = collection["ItemDescription"],
@@ -89,30 +87,38 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 ParcelWeight = Convert.ToDouble(collection["ParcelWeight"]),
                 DeliveryCharge = Convert.ToDecimal(collection["DeliveryCharge"]),
                 Currency = collection["Currency"],
-                TargetDeliveryDate = Convert.ToDateTime(collection["TargetDeliveryDate"]),
+                TargetDeliveryDate = null,
                 DeliveryStatus = collection["DeliveryStatus"],
                 DeliveryManID = Convert.ToInt32(collection["DeliveryManID"]),
             };
-            pdal.Add(p);
-            List<Parcel> PL = pdal.GetAllParcel();
 
-            Parcel par = null;
-            foreach (Parcel pa in PL)
+            
+            //Basic Feature 2, calculating target delivery date
+            List<ShippingRate> SP = srd.GetAllShippingRate();
+            int tt = 0;
+            foreach (ShippingRate s in SP)
             {
-                if (p.IsDeepEqual(pa))
+                if ((p.ToCity == s.ToCity) && (p.ToCountry == s.ToCountry))
                 {
-                    par = pa;
+                    tt = s.TransitTime;
                     break;
                 }
             }
+            DateTime receiveParcel = DateTime.Now;
+            DateTime tdd = receiveParcel.AddDays(tt); //Target delivery date = receive parcel datetime + transit datetime
+            p.TargetDeliveryDate = tdd;
+
+
+            //Basic Feature 1, adding parcel delivery record
+            string desc = $"Recieved parcel by {HttpContext.Session.GetString("UserID")} on {DateTime.Now.ToString("dd MMM yyyy hh:mm tt")}.";
 
             DeliveryHistory dh = new DeliveryHistory
             {
-                ParcelID = par.ParcelID, 
+                ParcelID = pdal.Add(p), 
                 Description = desc,
             };
-            dhdal.Add(dh);
-
+            dhdal.Add(dh); //Adding parcel ID & description into delivery history
+            
             return RedirectToAction("Insert");
 
 
