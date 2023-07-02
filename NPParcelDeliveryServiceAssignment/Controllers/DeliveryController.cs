@@ -319,7 +319,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 {
                     if (s.LoginID == loginID)
                     {
-                        shippingRate.LastUpdatedBy = Convert.ToInt32(s);
+                        shippingRate.LastUpdatedBy = Convert.ToInt32(s.StaffID);
                     }
                 }
                 //Add staff record to database
