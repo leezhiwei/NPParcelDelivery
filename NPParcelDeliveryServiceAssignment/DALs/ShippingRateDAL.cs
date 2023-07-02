@@ -100,12 +100,14 @@ namespace NPParcelDeliveryServiceAssignment.DALs
             //Specify an UPDATE SQL statement
             cmd.CommandText = @"update ShippingRate 
                                 set ShippingRate=@sRate,
-                                TransitTime=@tTime
+                                TransitTime=@tTime,
+                                LastUpdatedBy=@luBy
                                 WHERE ShippingRateID = @sRateID";
             //Define the parameters used in SQL statement, value for each parameter
             //is retrieved from respective class's property.
             cmd.Parameters.AddWithValue("@sRate", shippingRate.ShipRate);
             cmd.Parameters.AddWithValue("@tTime", shippingRate.TransitTime);
+            cmd.Parameters.AddWithValue("@luBy", shippingRate.LastUpdatedBy);
             cmd.Parameters.AddWithValue("@sRateID", shippingRate.ShippingRateID);
             //Open a database connection
             conn.Open();
