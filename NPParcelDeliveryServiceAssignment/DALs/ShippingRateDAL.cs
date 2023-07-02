@@ -61,10 +61,10 @@ namespace NPParcelDeliveryServiceAssignment.DALs
             //Specify an INSERT SQL statement which will
             //return the auto-generated StaffID after insertion
             cmd.CommandText = @"INSERT INTO ShippingRate (  FromCity, FromCountry, ToCity, 
-                                ToCountry, ShippingRate, Currency, TransitTime, LastUpdatedBy) 
+                                ToCountry, ShippingRate, Currency, TransitTime) 
                                                     OUTPUT INSERTED.ShippingRateID 
                                                     VALUES( @fromCity, @fromCountry,@toCity, 
-                                                   @toCountry, @shippingRate, @currency, @transitTime,@lastUpdatedBy)";
+                                                   @toCountry, @shippingRate, @currency, @transitTime,)";
             //Define the parameters used in SQL statement, value for each parameter
             //is retrieved from respective class's property.
             cmd.Parameters.AddWithValue("@fromCity", shippingRate.FromCity);
@@ -74,7 +74,6 @@ namespace NPParcelDeliveryServiceAssignment.DALs
             cmd.Parameters.AddWithValue("@shippingRate", shippingRate.ShipRate);
             cmd.Parameters.AddWithValue("@currency", shippingRate.Currency);
             cmd.Parameters.AddWithValue("@transitTime", shippingRate.TransitTime);
-            cmd.Parameters.AddWithValue("@lastUpdatedBy", shippingRate.LastUpdatedBy);
             //A connection to database must be opened before any operations made.
             conn.Open();
 			try
