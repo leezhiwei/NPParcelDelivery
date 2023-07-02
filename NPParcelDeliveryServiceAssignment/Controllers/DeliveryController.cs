@@ -98,8 +98,10 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             int tt = 0;
             foreach (ShippingRate s in SP)
             {
-                if ((p.ToCity == s.ToCity) && (p.ToCountry == s.ToCountry))
+                if ((p.ToCity.ToLower() == s.ToCity.ToLower()) && (p.ToCountry.ToLower() == s.ToCountry.ToLower())) //Checks if the city & country matches the records in shipping rate 
                 {
+                    p.ToCity = s.ToCity; //Added to replace value entered by staff. E.g. if staff enter pAriS, it will be replaced to Paris from shipping rate.
+                    p.ToCountry = s.ToCountry; //Added to replace value entered by staff. E.g. if staff enter frAnCe, it will be replaced to France from shipping rate.
                     tt = s.TransitTime;
                     break;
                 }
