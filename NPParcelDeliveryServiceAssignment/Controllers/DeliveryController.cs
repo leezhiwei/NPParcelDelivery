@@ -186,6 +186,16 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 }
             }
             Merge(oldobj, s);
+            string loginID = (string)HttpContext.Session.GetString("UserID");
+            List<Staff> ls = sdal.GetAllStaff();
+            foreach (Staff st in ls)
+            {
+                if (st.LoginID == loginID)
+                {
+                    s.LastUpdatedBy = st.StaffID;
+                    break;
+                }
+            }
             srd.Update(s);
             TempData["UpdateSuccess"] = "You have successfully update the shipping rate";
             return View();
