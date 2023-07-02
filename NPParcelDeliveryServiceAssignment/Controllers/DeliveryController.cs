@@ -85,16 +85,35 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 ToCity = collection["ToCity"],
                 ToCountry = collection["ToCountry"],
                 ParcelWeight = Convert.ToDouble(collection["ParcelWeight"]),
-                DeliveryCharge = Convert.ToDecimal(collection["DeliveryCharge"]),
+                DeliveryCharge = 0,
                 Currency = collection["Currency"],
                 TargetDeliveryDate = null,
                 DeliveryStatus = collection["DeliveryStatus"],
                 DeliveryManID = Convert.ToInt32(collection["DeliveryManID"]),
             };
 
-            
-            //Basic Feature 2, calculating target delivery date
             List<ShippingRate> SP = srd.GetAllShippingRate();
+            //Advanced Feature 3
+            decimal dc = 0;
+            foreach (ShippingRate s in SP)
+            {
+                if ((p.ToCity.ToLower() == s.ToCity.ToLower()) && (p.ToCountry.ToLower() == s.ToCountry.ToLower())) //Checks if the city & country matches the records in shipping rate 
+                {
+                    dc = Convert.ToDecimal(p.ParcelWeight) * s.ShipRate;
+                    break;
+                }
+            }
+            if (dc >= 5)
+            {
+                p.DeliveryCharge = dc;
+            }
+            else
+            {
+                p.DeliveryCharge = 5;
+            }
+            
+
+            //Basic Feature 2, calculating target delivery date
             int tt = 0;
             foreach (ShippingRate s in SP)
             {
