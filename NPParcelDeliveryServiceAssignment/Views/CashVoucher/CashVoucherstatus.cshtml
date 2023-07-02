@@ -1,0 +1,24 @@
+﻿@model IEnumerable<NPParcelDeliveryServiceAssignment.Models.CashVoucher>
+
+@{
+    ViewData["Title"] = "CashVoucherstatus";
+    Layout = "~/Views/Shared/_fostaffLayout.cshtml";
+}
+
+<h1>CashVoucherstatus</h1>
+
+<div class="row">
+    <form asp-controller="CashVoucher" asp-action="CashVoucherstatuss" method="post">
+        <label for="nameBox">@Html.DisplayNameFor(CashVoucher =>CashVoucher.ReceiverName)</label><br />
+        <input type="text" id="nameBox" name="nameBox" /><br>
+        <label for="telBox">@Html.DisplayNameFor(CashVoucher =>CashVoucher.ReceiverTelNo)</label><br />
+        <input type="text" id="telBox" name="telBox" /><br>
+        <button type="submit">Search Cash Voucher</button>
+    </form>
+ <div/>
+
+    @section Scripts {
+        @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        }
+    }
