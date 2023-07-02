@@ -71,9 +71,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Insert(IFormCollection collection)
-        {
-            string desc = $"Recieved parcel by {HttpContext.Session.GetString("UserID")} on {DateTime.Now.ToString("dd MMM yyyy hh:mm tt")}.";
-
+        {   
             Parcel p = new Parcel
             {
                 ItemDescription = collection["ItemDescription"],
@@ -87,32 +85,61 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 ToCity = collection["ToCity"],
                 ToCountry = collection["ToCountry"],
                 ParcelWeight = Convert.ToDouble(collection["ParcelWeight"]),
-                DeliveryCharge = Convert.ToDecimal(collection["DeliveryCharge"]),
+                DeliveryCharge = 0,
                 Currency = collection["Currency"],
-                TargetDeliveryDate = Convert.ToDateTime(collection["TargetDeliveryDate"]),
+                TargetDeliveryDate = null,
                 DeliveryStatus = collection["DeliveryStatus"],
                 DeliveryManID = Convert.ToInt32(collection["DeliveryManID"]),
             };
-            pdal.Add(p);
-            List<Parcel> PL = pdal.GetAllParcel();
 
-            Parcel par = null;
-            foreach (Parcel pa in PL)
+            List<ShippingRate> SP = srd.GetAllShippingRate();
+            //Advanced Feature 3
+            decimal dc = 0;
+            foreach (ShippingRate s in SP)
             {
-                if (p.IsDeepEqual(pa))
+                if ((p.ToCity.ToLower() == s.ToCity.ToLower()) && (p.ToCountry.ToLower() == s.ToCountry.ToLower())) //Checks if the city & country matches the records in shipping rate 
                 {
-                    par = pa;
+                    dc = Convert.ToDecimal(p.ParcelWeight) * s.ShipRate;
                     break;
                 }
             }
+            if (dc >= 5)
+            {
+                p.DeliveryCharge = dc;
+            }
+            else
+            {
+                p.DeliveryCharge = 5;
+            }
+            
+
+            //Basic Feature 2, calculating target delivery date
+            int tt = 0;
+            foreach (ShippingRate s in SP)
+            {
+                if ((p.ToCity.ToLower() == s.ToCity.ToLower()) && (p.ToCountry.ToLower() == s.ToCountry.ToLower())) //Checks if the city & country matches the records in shipping rate 
+                {
+                    p.ToCity = s.ToCity; //Added to replace value entered by staff. E.g. if staff enter pAriS, it will be replaced to Paris from shipping rate.
+                    p.ToCountry = s.ToCountry; //Added to replace value entered by staff. E.g. if staff enter frAnCe, it will be replaced to France from shipping rate.
+                    tt = s.TransitTime;
+                    break;
+                }
+            }
+            DateTime receiveParcel = DateTime.Now;
+            DateTime tdd = receiveParcel.AddDays(tt); //Target delivery date = receive parcel datetime + transit datetime
+            p.TargetDeliveryDate = tdd;
+
+
+            //Basic Feature 1, adding parcel delivery record
+            string desc = $"Recieved parcel by {HttpContext.Session.GetString("UserID")} on {DateTime.Now.ToString("dd MMM yyyy hh:mm tt")}.";
 
             DeliveryHistory dh = new DeliveryHistory
             {
-                ParcelID = par.ParcelID, 
+                ParcelID = pdal.Add(p), 
                 Description = desc,
             };
-            dhdal.Add(dh);
-
+            dhdal.Add(dh); //Adding parcel ID & description into delivery history
+            
             return RedirectToAction("Insert");
 
 
