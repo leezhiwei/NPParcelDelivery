@@ -147,7 +147,15 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult ShippingRateEdit(ShippingRate s)
         {
-            ShippingRate oldobj = JsonConvert.DeserializeObject<ShippingRate>(TempData["PrevObj"].ToString());
+            ShippingRate oldobj = null;
+            try
+            {
+                oldobj = JsonConvert.DeserializeObject<ShippingRate>((string)TempData["PrevObj"]);
+            }
+            catch
+            {
+                return View();
+            }
             void Merge(ShippingRate existingobject, ShippingRate somevalues)
             {
                 // From stackoverflow, https://stackoverflow.com/questions/8702603/merging-two-objects-in-c-sharp, Reflection method
