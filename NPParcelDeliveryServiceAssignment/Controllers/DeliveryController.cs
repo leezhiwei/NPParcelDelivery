@@ -50,6 +50,10 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
 
             return countries;
         }
+        public ActionResult Insert()
+        {
+            return View();
+        }
         // POST: DeliveryHistory/Insert
         [HttpPost]
         [ValidateAntiForgeryToken]
