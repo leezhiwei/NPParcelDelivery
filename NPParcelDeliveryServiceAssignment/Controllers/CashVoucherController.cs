@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using NPParcelDeliveryServiceAssignment.DALs;
 using NPParcelDeliveryServiceAssignment.Models;
 
@@ -16,6 +17,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
 
         public ActionResult CashVoucherstatus()
         {
+            ViewData["showcv"] = false;
             return View();
         }
 
@@ -23,6 +25,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult CashVoucherstatus(IFormCollection form)
         {
+            ViewData["showcv"] = false;
             List<CashVoucher> cv = clist.GetAllCashVoucher();
             string rname = (form["nameBox"]);
             string tnum = (form["telBox"]);
@@ -31,23 +34,36 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             {
                 if (cashvoucher.ReceiverName == rname && cashvoucher.ReceiverTelNo == tnum)
                 {
+                    ViewData["showcv"] = true;
                     gcashvoucher = cashvoucher;
-                    /*gcashvoucher.CashVoucherID = cashvoucher.CashVoucherID;
-                    gcashvoucher.DateTimeIssued = cashvoucher.DateTimeIssued;
-                    gcashvoucher.Currency = cashvoucher.Currency;
-                    gcashvoucher.IssuingCode = cashvoucher.IssuingCode;
-                    gcashvoucher.Status = cashvoucher.Status;
-                    gcashvoucher.StaffID = cashvoucher.StaffID;
-                    gcashvoucher.ReceiverName = cashvoucher.ReceiverName;
-                    gcashvoucher.ReceiverTelNo = cashvoucher.ReceiverTelNo;
-                    gcashvoucher.Amount = cashvoucher.Amount;*/
+                    if (cashvoucher.Status == "0")
+                    {
+                        gcashvoucher.Status = "Pending Collection";
+                    }
+                    if (cashvoucher.Status == "1")
+                    {
+                        gcashvoucher.Status = "Collected";
+                    }
                 }
             }
+
             return View(gcashvoucher);
         }
-
-        // GET: CashVoucherController1/Details/5
-        public ActionResult Details(int id)
+        public ActionResult CashVoucherUpdate()
+        {
+            return View();
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult CashVoucherUpdate(CashVoucher cashVoucher)
+        {
+            cashVoucher.Status = "1";
+            clist.Update(cashVoucher);
+            TempData["collectcv"] = "You have successfully collect your cash voucher";
+            return RedirectToAction("CashVoucherstatus") ;
+        }
+            // GET: CashVoucherController1/Details/5
+            public ActionResult Details(int id)
         {
             return View();
         }

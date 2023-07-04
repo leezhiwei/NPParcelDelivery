@@ -49,5 +49,25 @@ namespace NPParcelDeliveryServiceAssignment.DALs
             conn.Close();
             return cashvoucherList;
         }
+        public int Update(CashVoucher cashVoucher)
+        {
+            //Create a SqlCommand object from connection object
+            SqlCommand cmd = conn.CreateCommand();
+            //Specify an UPDATE SQL statement
+            cmd.CommandText = @"update CashVoucher 
+                                set Status=@nstatus
+                                WHERE CashVoucherID = @cvID";
+            //Define the parameters used in SQL statement, value for each parameter
+            //is retrieved from respective class's property.
+            cmd.Parameters.AddWithValue("@nstatus", cashVoucher.Status);
+            cmd.Parameters.AddWithValue("@cvID", cashVoucher.CashVoucherID);
+            //Open a database connection
+            conn.Open();
+            //ExecuteNonQuery is used for UPDATE and DELETE
+            int count = cmd.ExecuteNonQuery();
+            //Close the database connection
+            conn.Close();
+            return count;
+        }
     }
 }
