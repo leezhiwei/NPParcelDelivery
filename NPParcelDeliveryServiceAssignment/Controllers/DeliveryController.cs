@@ -1,13 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using NPParcelDeliveryServiceAssignment.Models;
 using NPParcelDeliveryServiceAssignment.DALs;
-using Microsoft.CodeAnalysis.Elfie.Diagnostics;
-using NuGet.Protocol.Core.Types;
 using Newtonsoft.Json;
-using DeepEqual.Syntax;
 
 namespace NPParcelDeliveryServiceAssignment.Controllers
 {
@@ -26,6 +21,10 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         // GET: DeliveryController/ParcelHistory
         public ActionResult DeliveryHistory()
         {
+            if (HttpContext.Session.GetString("UserID") is null)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             List<DeliveryHistory> dhList = dhdal.GetAllHistory();
             return View(dhList);
             //return View();
@@ -137,6 +136,10 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         // GET: DeliveryController/Edit/5
         public ActionResult ShippingRateEdit(string id)
         {
+            if (HttpContext.Session.GetString("UserID") is null)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             int idd = 0;
             try
             {
@@ -229,6 +232,10 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         // GET: DeliveryController/Delete/5
         public ActionResult DeleteShippingRate(int? id)
         {
+            if (HttpContext.Session.GetString("UserID") is null)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             List<ShippingRate> sr = srd.GetAllShippingRate();
             foreach (ShippingRate s in sr)
             {
@@ -252,11 +259,19 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         }
         public ActionResult ShowShippingRateInfo()
         {
+            if (HttpContext.Session.GetString("UserID") is null)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             List<ShippingRate> ShippingRatelist = srd.GetAllShippingRate();
             return View(ShippingRatelist);
         }
         public ActionResult AssignParcels()
         {
+            if (HttpContext.Session.GetString("UserID") is null)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             ViewData["Error"] = false;
             ViewData["ShowParcel"] = false;
             return View();
@@ -316,6 +331,10 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         }
         public ActionResult CreateShippingRate()
         {
+            if (HttpContext.Session.GetString("UserID") is null)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             return View();
         }
 
@@ -361,6 +380,10 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         }
         public ActionResult List()
         {
+            if (HttpContext.Session.GetString("UserID") is null)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             string LoginID = HttpContext.Session.GetString("UserID");
             int StaffID = sdal.ReturnStaffID(LoginID);
             if (StaffID == -1)
@@ -372,6 +395,10 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         }
         public ActionResult CompleteDel(string id)
         {
+            if (HttpContext.Session.GetString("UserID") is null)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             int pid = 0;
             try
             {
