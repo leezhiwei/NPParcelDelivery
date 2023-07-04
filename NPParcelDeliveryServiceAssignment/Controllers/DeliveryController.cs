@@ -99,15 +99,16 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             {
                 if ((p.ToCity.ToLower() == s.ToCity.ToLower()) && (p.ToCountry.ToLower() == s.ToCountry.ToLower())) //Checks if the city & country matches the records in shipping rate 
                 {
-                    dc = Convert.ToDecimal(p.ParcelWeight) * s.ShipRate;
+                    dc = Convert.ToDecimal(p.ParcelWeight) * s.ShipRate; //Delivery Charge = parcel weight * ship rate
                     break;
                 }
             }
-            if (dc >= 5)
+            dc = Math.Round(dc, MidpointRounding.AwayFromZero); //Rounding the delivery charge to the nearest dollar
+            if (dc >= 5) //Checks if delivery charge is more than 5
             {
                 p.DeliveryCharge = dc;
             }
-            else
+            else //If delivery charge is less than 5, the minimum delivery charge is 5 dollars  
             {
                 p.DeliveryCharge = 5;
             }
