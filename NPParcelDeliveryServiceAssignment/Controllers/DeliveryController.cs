@@ -12,11 +12,6 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         private DeliveryDAL dhdal = new DeliveryDAL();
         private ShippingRateDAL srd = new ShippingRateDAL();
         private StaffDAL sdal = new StaffDAL();
-        // GET: DeliveryController
-        public ActionResult Index()
-        {
-            return View();
-        }
 
         // GET: DeliveryController/ParcelHistory
         public ActionResult DeliveryHistory()
