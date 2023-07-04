@@ -9,6 +9,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
     public class CashVoucherController : Controller
     {
         private CashVoucherDAL clist = new CashVoucherDAL();
+        private MemberDAL mlist = new MemberDAL();
         // GET: CashVoucherController1
         public ActionResult Index()
         {
@@ -34,6 +35,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             {
                 if (cashvoucher.ReceiverName == rname && cashvoucher.ReceiverTelNo == tnum)
                 {
+                    TempData["NOResult"] = "";
                     ViewData["showcv"] = true;
                     gcashvoucher = cashvoucher;
                     if (cashvoucher.Status == "0")
@@ -45,10 +47,19 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                         gcashvoucher.Status = "Collected";
                     }
                 }
+                else
+                { TempData["NOResult"] = "NO Result Found"; }
             }
 
             return View(gcashvoucher);
         }
+
+        public ActionResult IssueCashVoucherList()
+        {
+			List<Member> mblist = mlist.GetAllMember();
+			return View(mblist);
+        }
+
         public ActionResult CashVoucherUpdate()
         {
             return View();
