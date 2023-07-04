@@ -1,13 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using NPParcelDeliveryServiceAssignment.Models;
 using NPParcelDeliveryServiceAssignment.DALs;
-using Microsoft.CodeAnalysis.Elfie.Diagnostics;
-using NuGet.Protocol.Core.Types;
 using Newtonsoft.Json;
-using DeepEqual.Syntax;
 
 namespace NPParcelDeliveryServiceAssignment.Controllers
 {
@@ -17,29 +12,17 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         private DeliveryDAL dhdal = new DeliveryDAL();
         private ShippingRateDAL srd = new ShippingRateDAL();
         private StaffDAL sdal = new StaffDAL();
-        // GET: DeliveryController
-        public ActionResult Index()
-        {
-            return View();
-        }
 
         // GET: DeliveryController/ParcelHistory
         public ActionResult DeliveryHistory()
         {
+            if (HttpContext.Session.GetString("UserID") is null)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             List<DeliveryHistory> dhList = dhdal.GetAllHistory();
             return View(dhList);
             //return View();
-        }
-
-        // GET: DeliveryHistory/Insert
-        public ActionResult Insert()
-        {
-            return View();
-        }
-        // GET: shipping rate/Create
-        public ActionResult Create()
-        {
-            return View();
         }
         private List<SelectListItem> GetCountries()
         {
@@ -149,6 +132,10 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         // GET: DeliveryController/Edit/5
         public ActionResult ShippingRateEdit(string id)
         {
+            if (HttpContext.Session.GetString("UserID") is null)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             int idd = 0;
             try
             {
@@ -241,6 +228,10 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         // GET: DeliveryController/Delete/5
         public ActionResult DeleteShippingRate(int? id)
         {
+            if (HttpContext.Session.GetString("UserID") is null)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             List<ShippingRate> sr = srd.GetAllShippingRate();
             foreach (ShippingRate s in sr)
             {
@@ -264,11 +255,19 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         }
         public ActionResult ShowShippingRateInfo()
         {
+            if (HttpContext.Session.GetString("UserID") is null)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             List<ShippingRate> ShippingRatelist = srd.GetAllShippingRate();
             return View(ShippingRatelist);
         }
         public ActionResult AssignParcels()
         {
+            if (HttpContext.Session.GetString("UserID") is null)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             ViewData["Error"] = false;
             ViewData["ShowParcel"] = false;
             return View();
@@ -328,6 +327,10 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         }
         public ActionResult CreateShippingRate()
         {
+            if (HttpContext.Session.GetString("UserID") is null)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             return View();
         }
 
@@ -369,6 +372,82 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 //Input validation fails, return to the Create view
                 //to display error message
                 return View(shippingRate);
+            }
+        }
+        public ActionResult List()
+        {
+            if (HttpContext.Session.GetString("UserID") is null)
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            string LoginID = HttpContext.Session.GetString("UserID");
+            int StaffID = sdal.ReturnStaffID(LoginID);
+            if (StaffID == -1)
+            {
+                return RedirectToAction("Index","Home");
+            }
+            List<Parcel> AssignedList = pdal.CheckAssigned(StaffID);
+            return View(AssignedList);
+        }
+        public ActionResult CompleteDel(string id)
+        {
+            if (HttpContext.Session.GetString("UserID") is null)
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            int pid = 0;
+            try
+            {
+                pid = Convert.ToInt32(id);
+            }
+            catch
+            {
+                return RedirectToAction("Index","Home");
+            }
+            Parcel pobj = pdal.ReturnParcel(pid);
+            if (pobj is null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            TempData["Parcel"] = JsonConvert.SerializeObject(pobj);
+            return View();
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult CompleteDel()
+        {
+            Parcel p = null;
+            try
+            {
+                p = JsonConvert.DeserializeObject<Parcel>((string)TempData["Parcel"]);
+            }
+            catch
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            if ((p.ToCity == p.FromCity) && (p.ToCountry == p.FromCountry))
+            {
+                p.DeliveryStatus = "3";
+                pdal.Update(p);
+                dhdal.Add(new DeliveryHistory
+                {
+                    ParcelID = p.ParcelID,
+                    Description = $"Parcel delivered successfully by {HttpContext.Session.GetString("UserID")} on {DateTime.Now.ToString("dd MMM yyyy hh:mm tt")}."
+                });
+                TempData["Success"] = "You have successfully delivered the parcel, database recorded.";
+                return RedirectToAction("List");
+            }
+            else
+            {
+                p.DeliveryStatus = "2";
+                pdal.Update(p);
+                dhdal.Add(new DeliveryHistory
+                {
+                    ParcelID = p.ParcelID,
+                    Description = $"Parcel delivered to airport by {HttpContext.Session.GetString("UserID")} on {DateTime.Now.ToString("dd MMM yyyy hh:mm tt")}."
+                });
+                TempData["Success"] = "You have successfully delivered the parcel to the airport, database recorded.";
+                return RedirectToAction("List");
             }
         }
     }
