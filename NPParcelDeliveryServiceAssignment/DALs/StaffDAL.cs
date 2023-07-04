@@ -70,5 +70,17 @@ namespace NPParcelDeliveryServiceAssignment.DALs
             }
             return false;
         }
+        public int ReturnStaffID(string LoginID)
+        {
+            List<Staff> slist = GetAllStaff();
+            foreach (Staff s in slist)
+            {
+                if (s.LoginID == LoginID)
+                {
+                    return s.StaffID;
+                }
+            }
+            return -1;
+        }
     }
 }

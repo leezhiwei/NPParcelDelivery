@@ -61,7 +61,7 @@ namespace NPParcelDeliveryServiceAssignment.DALs
             //Specify an INSERT SQL statement which will
             //return the auto-generated StaffID after insertion
             cmd.CommandText = @"INSERT INTO ShippingRate (  FromCity, FromCountry, ToCity, 
-                                ToCountry, ShippingRate, Currency, TransitTime, LastUpdatedBy) 
+                                ToCountry, ShippingRate, Currency, TransitTime,LastUpdatedBy) 
                                                     OUTPUT INSERTED.ShippingRateID 
                                                     VALUES( @fromCity, @fromCountry,@toCity, 
                                                    @toCountry, @shippingRate, @currency, @transitTime,@lastUpdatedBy)";
@@ -98,14 +98,17 @@ namespace NPParcelDeliveryServiceAssignment.DALs
             //Create a SqlCommand object from connection object
             SqlCommand cmd = conn.CreateCommand();
             //Specify an UPDATE SQL statement
-            cmd.CommandText = @"UPDATE ShippingRate SET ShippingRate=@shippingRate, 
-                                TransitTime=@transitTime
-                                WHERE ShippingRateID = @shippingRateID";
+            cmd.CommandText = @"update ShippingRate 
+                                set ShippingRate=@sRate,
+                                TransitTime=@tTime,
+                                LastUpdatedBy=@luBy
+                                WHERE ShippingRateID = @sRateID";
             //Define the parameters used in SQL statement, value for each parameter
             //is retrieved from respective class's property.
-            cmd.Parameters.AddWithValue("@shippingRate", shippingRate.ShipRate);
-            cmd.Parameters.AddWithValue("@transitTime", shippingRate.TransitTime);
-            cmd.Parameters.AddWithValue("@shippingRateID", shippingRate.ShippingRateID);
+            cmd.Parameters.AddWithValue("@sRate", shippingRate.ShipRate);
+            cmd.Parameters.AddWithValue("@tTime", shippingRate.TransitTime);
+            cmd.Parameters.AddWithValue("@luBy", shippingRate.LastUpdatedBy);
+            cmd.Parameters.AddWithValue("@sRateID", shippingRate.ShippingRateID);
             //Open a database connection
             conn.Open();
             //ExecuteNonQuery is used for UPDATE and DELETE

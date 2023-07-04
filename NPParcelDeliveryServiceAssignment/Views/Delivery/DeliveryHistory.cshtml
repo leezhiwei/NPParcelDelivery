@@ -1,0 +1,38 @@
+﻿@model IEnumerable<NPParcelDeliveryServiceAssignment.Models.DeliveryHistory>
+
+@{
+    Layout = "~/Views/Shared/_fostaffLayout.cshtml";
+}
+
+
+<h1>DeliveryHistory</h1>
+
+@if (Model.ToList().Count > 0)
+{
+    <div class="table-responsive">
+        <table id="viewHistory" class="table table-striped table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>RecordID</th>
+                    <th>ParcelID</th>
+                    <th>Description</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.RecordID.ToString()</td>
+                        <td>@item.ParcelID.ToString()</td>
+                        <td>@item.Description.ToString()</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <span style="color:red">No record found!</span>
+}

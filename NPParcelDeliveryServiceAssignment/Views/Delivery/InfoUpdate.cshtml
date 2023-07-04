@@ -34,11 +34,8 @@
 						<td>@item.TransitTime</td>
 						<td>@item.LastUpdatedBy</td>
 						<td>
-							<a asp-action="ShippingRateEdit" 
+							<a asp-action="ShippingRateEdit" asp-controller="Delivery"
 					   asp-route-id="@item.ShippingRateID">Edit</a>
-
-							<a asp-action="Details" asp-controller="Delivery"
-					   asp-route-id="@item.ShippingRateID">Details</a>
 
 							<a asp-action="DeleteShippingRate" asp-controller="Delivery"
 					   asp-route-id="@item.ShippingRateID">Delete</a>

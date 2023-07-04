@@ -1,0 +1,98 @@
+﻿@model IEnumerable<NPParcelDeliveryServiceAssignment.Models.Parcel>
+
+@{
+    ViewData["Title"] = "List";
+    Layout = "~/Views/Shared/_dmanLayout.cshtml";
+    string DelStatus = "";
+}
+
+<h1>List</h1>
+
+<p style="color:green">@TempData["Success"]</p>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ParcelID)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ReceiverName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ReceiverTelNo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DeliveryAddress)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ToCity)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ToCountry)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TargetDeliveryDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DeliveryStatus)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ParcelID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ReceiverName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ReceiverTelNo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DeliveryAddress)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ToCity)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ToCountry)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TargetDeliveryDate)
+            </td>
+            <td>
+                    @if (item.DeliveryStatus == "0")
+                    {
+                        <text>Pending delivery</text>
+                    }
+                    else if (item.DeliveryStatus == "1")
+                    {
+                        <text>Delivery to destination in progess</text>
+                    }
+                    else if (item.DeliveryStatus == "2")
+                    {
+                        <text>Delivery to airport in progess</text>
+                    }
+                    else if (item.DeliveryStatus == "3")
+                    {
+                        <text>Delivery completed</text>
+                    }
+                    else if (item.DeliveryStatus == "4")
+                    {
+                        <text>Delivery failed</text>
+                    }
+                    else
+                    {
+                        <text></text>
+                    }
+                </td>
+            <td>
+                <a asp-action="CompleteDel" asp-route-id=@item.ParcelID>Completed Delivery</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
