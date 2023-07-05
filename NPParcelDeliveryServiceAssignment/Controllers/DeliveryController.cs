@@ -315,6 +315,30 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         public ActionResult UpdateParcel(Parcel p)
         {
             p.DeliveryStatus = "1"; // set deliverystatus to in progress
+            List<Parcel> plist = pdal.GetAllParcel();
+            int staffid = 0;
+            try
+            {
+                staffid = (int)p.DeliveryManID;
+            }
+            catch
+            {
+                TempData["Error2"] = "No Deliveryman set.";
+                return View();
+            }
+            int count = 0;
+            foreach (Parcel pa in plist)
+            {
+                if (pa.DeliveryManID == staffid)
+                {
+                    count++;
+                }
+            }
+            if (count == 5)
+            {
+                TempData["Error2"] = "More than 5 parcel set. Please fufil more deliveries.";
+                return View();
+            }
             int? rcount = pdal.Update(p);
             if (rcount is null)
             {
