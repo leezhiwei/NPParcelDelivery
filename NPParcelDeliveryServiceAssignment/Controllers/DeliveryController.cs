@@ -54,7 +54,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         {
             return View();
         }
-        // POST: DeliveryHistory/Insert
+        // POST: Insert
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Insert(IFormCollection collection)
@@ -127,7 +127,8 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 Description = desc,
             };
             dhdal.Add(dh); //Adding parcel ID & description into delivery history
-            
+
+            TempData["InsertMessage"] = "Parcel Added to Database";
             return RedirectToAction("Insert");
 
 
@@ -453,6 +454,17 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 TempData["Success"] = "You have successfully delivered the parcel to the airport, database recorded.";
                 return RedirectToAction("List");
             }
+        }
+
+        public ActionResult ParcelDeliveryOrder()
+        {
+            if (HttpContext.Session.GetString("UserID") is null)
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            //return View();
+            List<Parcel> pList = pdal.GetAllParcel();
+            return View(pList);
         }
     }
 }
