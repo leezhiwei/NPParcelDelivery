@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using NPParcelDeliveryServiceAssignment.DALs;
 using NPParcelDeliveryServiceAssignment.Models;
 
@@ -8,6 +9,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
     public class CashVoucherController : Controller
     {
         private CashVoucherDAL clist = new CashVoucherDAL();
+        private MemberDAL mlist = new MemberDAL();
         // GET: CashVoucherController1
         public ActionResult Index()
         {
@@ -16,6 +18,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
 
         public ActionResult CashVoucherstatus()
         {
+            ViewData["showcv"] = false;
             return View();
         }
 
@@ -23,6 +26,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult CashVoucherstatus(IFormCollection form)
         {
+            ViewData["showcv"] = false;
             List<CashVoucher> cv = clist.GetAllCashVoucher();
             string rname = (form["nameBox"]);
             string tnum = (form["telBox"]);
@@ -31,23 +35,46 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             {
                 if (cashvoucher.ReceiverName == rname && cashvoucher.ReceiverTelNo == tnum)
                 {
+                    TempData["NOResult"] = "";
+                    ViewData["showcv"] = true;
                     gcashvoucher = cashvoucher;
-                    /*gcashvoucher.CashVoucherID = cashvoucher.CashVoucherID;
-                    gcashvoucher.DateTimeIssued = cashvoucher.DateTimeIssued;
-                    gcashvoucher.Currency = cashvoucher.Currency;
-                    gcashvoucher.IssuingCode = cashvoucher.IssuingCode;
-                    gcashvoucher.Status = cashvoucher.Status;
-                    gcashvoucher.StaffID = cashvoucher.StaffID;
-                    gcashvoucher.ReceiverName = cashvoucher.ReceiverName;
-                    gcashvoucher.ReceiverTelNo = cashvoucher.ReceiverTelNo;
-                    gcashvoucher.Amount = cashvoucher.Amount;*/
+                    if (cashvoucher.Status == "0")
+                    {
+                        gcashvoucher.Status = "Pending Collection";
+                    }
+                    if (cashvoucher.Status == "1")
+                    {
+                        gcashvoucher.Status = "Collected";
+                    }
                 }
+                else
+                { TempData["NOResult"] = "NO Result Found"; }
             }
+
             return View(gcashvoucher);
         }
 
-        // GET: CashVoucherController1/Details/5
-        public ActionResult Details(int id)
+        public ActionResult IssueCashVoucherList()
+        {
+			List<Member> mblist = mlist.GetAllMember();
+			return View(mblist);
+        }
+
+        public ActionResult CashVoucherUpdate()
+        {
+            return View();
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult CashVoucherUpdate(CashVoucher cashVoucher)
+        {
+            cashVoucher.Status = "1";
+            clist.Update(cashVoucher);
+            TempData["collectcv"] = "You have successfully collect your cash voucher";
+            return RedirectToAction("CashVoucherstatus") ;
+        }
+            // GET: CashVoucherController1/Details/5
+            public ActionResult Details(int id)
         {
             return View();
         }
@@ -72,9 +99,56 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 return View();
             }
         }
+		public ActionResult IssueSpecialVoucher(int id)
+		{
+            ViewData["CanIssue"] = false;
+            List<Member>mblist = mlist.GetAllMember();
+            Member mm = null;
+            foreach (Member m in mblist)
+            {
+                if (m.MemberID == id)
+                {
+                    mm = m; break;
+                }
+            }
+            if (mm is null)
+            {
+                ViewData["error"] = $"Error";
+                return View();
+            }
+            DateTime now = DateTime.Now;
+            int thismonth = Convert.ToInt32(now.Month.ToString());
+            string mbirthDay = mm.BirthDate.ToString();
+            string[] birthMonthh = mbirthDay.Split("/");
+            int birthMonth = Convert.ToInt32(birthMonthh[0]);
+            if (thismonth == birthMonth)
+            {
+                ViewData["CanIssue"] = true;
+                TempData["cMonth"] = $"Current Month: {thismonth}";
+                TempData["mBirthMonth"] = $"Member Birth Day: {birthMonthh}";
+                TempData["canIssue"] = "Allow to Issue: Yes!";
+                TempData["IssueAmount"] = "Issue Amount: $10";
+            }
+            else
+            {
+                TempData["cMonth"] = $"Current Month: {thismonth}";
+                TempData["mBirthMonth"] = $"Member Birth Day: {birthMonthh}";
+                TempData["canIssue"] = "Allow to Issue: No!";
+            }
+            return View();
+		}
 
-        // GET: CashVoucherController1/Edit/5
-        public ActionResult Edit(int id)
+		// POST: CashVoucherController1/Create
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public ActionResult IssueSpecialVoucher(Member member)
+		{
+
+			return View();
+		}
+
+		// GET: CashVoucherController1/Edit/5
+		public ActionResult Edit(int id)
         {
             return View();
         }

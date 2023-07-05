@@ -51,6 +51,10 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             ViewData["ErrorMsg"] = "Invalid Username or Password";
             return View();
         }
+
+        public ActionResult Register() {
+            return View();
+        }
         /*[HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Register(Member member)

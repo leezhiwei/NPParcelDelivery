@@ -1,0 +1,54 @@
+﻿@model IEnumerable<NPParcelDeliveryServiceAssignment.Models.Member>
+
+
+<h1>IssueCashVoucher</h1>
+
+@if (Model.ToList().Count > 0)
+{
+	<div class="table-responsive">
+		<table id="viewMember" class="table table-striped table-bordered">
+			<thead class="table-dark">
+				<tr>
+					<th>MemberID</th>
+					<th>Salutation</th>
+					<th>Name</th>
+					<th>TelNo</th>
+					<th>EmailAddr</th>
+					<th>BirthDate</th>
+					<th>City</th>
+					<th>Country</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var item in Model)
+				{
+					<tr>
+						<td>@item.MemberID</td>
+						<td>@item.Salutation</td>
+						<td>@item.Name</td>
+						<td>@item.TelNo</td>
+						<td>@item.EmailAddr</td>
+						<td>@item.BirthDate</td>
+						<td>@item.City</td>
+						<td>@item.Country</td>
+						<td>
+							<a asp-action="IssueSpecialVoucher" asp-controller="CashVoucher"
+					   asp-route-id="@item.MemberID">Issue Cash Voucher</a>
+
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+}
+else
+{
+	<span style="color:red">No record found!</span>
+}
+@section Scripts {
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
+}
+
