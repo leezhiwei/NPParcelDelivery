@@ -22,7 +22,6 @@
 
   <ItemGroup>
     <Folder Include="Views\CashVoucher\" />
-    <Folder Include="Views\Register\" />
   </ItemGroup>
 
 </Project>
