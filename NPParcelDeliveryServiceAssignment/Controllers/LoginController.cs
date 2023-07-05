@@ -15,7 +15,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         {
             if (HttpContext.Session.GetString("UserID") is not null)
             {
-                return RedirectToAction("Index","Home");
+                return RedirectToAction("Index", "Home");
             }
             return View();
         }
@@ -25,7 +25,8 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             bool isMember = false;
             string userID = form["UserID"].ToString();
             string password = form["UserPass"].ToString();
-            if (userID.Contains("@")){
+            if (userID.Contains("@"))
+            {
                 isMember = true;
             }
             if (!isMember)
@@ -35,7 +36,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 {
                     HttpContext.Session.SetString("UserID", userID);
                     HttpContext.Session.SetString("TypeOfUser", s.Appointment);
-                    return RedirectToAction("Index","Home");
+                    return RedirectToAction("Index", "Home");
                 }
                 ViewData["ErrorMsg"] = "Invalid Username or Password";
                 return View();
@@ -50,6 +51,15 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             ViewData["ErrorMsg"] = "Invalid Username or Password";
             return View();
         }
-        
+
+        public ActionResult Register() {
+            return View();
+        }
+        /*[HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Register(Member member)
+        {
+
+        }*/
     }
 }

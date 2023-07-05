@@ -1,12 +1,11 @@
 ﻿@model NPParcelDeliveryServiceAssignment.Models.Parcel
 
 @{
-    ViewData["Title"] = "InsertParcel";
+    ViewData["Title"] = "Insert Parcel";
     Layout = "~/Views/Shared/_fostaffLayout.cshtml";
 }
 
 <h1>Parcel Delivery Record</h1>
-
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -88,6 +87,7 @@
                 <input type="reset" value="Cancel" class="btn btn-primary" />
             </div>
             <br />
+            <p style="color:green">@TempData["InsertMessage"]</p>
         </form>
     </div>
 </div>

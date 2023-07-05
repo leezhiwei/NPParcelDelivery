@@ -99,9 +99,56 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 return View();
             }
         }
+		public ActionResult IssueSpecialVoucher(int id)
+		{
+            ViewData["CanIssue"] = false;
+            List<Member>mblist = mlist.GetAllMember();
+            Member mm = null;
+            foreach (Member m in mblist)
+            {
+                if (m.MemberID == id)
+                {
+                    mm = m; break;
+                }
+            }
+            if (mm is null)
+            {
+                ViewData["error"] = $"Error";
+                return View();
+            }
+            DateTime now = DateTime.Now;
+            int thismonth = Convert.ToInt32(now.Month.ToString());
+            string mbirthDay = mm.BirthDate.ToString();
+            string[] birthMonthh = mbirthDay.Split("/");
+            int birthMonth = Convert.ToInt32(birthMonthh[0]);
+            if (thismonth == birthMonth)
+            {
+                ViewData["CanIssue"] = true;
+                TempData["cMonth"] = $"Current Month: {thismonth}";
+                TempData["mBirthMonth"] = $"Member Birth Day: {birthMonthh}";
+                TempData["canIssue"] = "Allow to Issue: Yes!";
+                TempData["IssueAmount"] = "Issue Amount: $10";
+            }
+            else
+            {
+                TempData["cMonth"] = $"Current Month: {thismonth}";
+                TempData["mBirthMonth"] = $"Member Birth Day: {birthMonthh}";
+                TempData["canIssue"] = "Allow to Issue: No!";
+            }
+            return View();
+		}
 
-        // GET: CashVoucherController1/Edit/5
-        public ActionResult Edit(int id)
+		// POST: CashVoucherController1/Create
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public ActionResult IssueSpecialVoucher(Member member)
+		{
+
+			return View();
+		}
+
+		// GET: CashVoucherController1/Edit/5
+		public ActionResult Edit(int id)
         {
             return View();
         }
