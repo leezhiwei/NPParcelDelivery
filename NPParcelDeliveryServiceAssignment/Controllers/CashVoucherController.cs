@@ -10,6 +10,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
     {
         private CashVoucherDAL clist = new CashVoucherDAL();
         private MemberDAL mlist = new MemberDAL();
+        private StaffDAL sdal = new StaffDAL();
         // GET: CashVoucherController1
         public ActionResult Index()
         {
@@ -102,7 +103,9 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
 		public ActionResult IssueSpecialVoucher(int id)
 		{
             ViewData["CanIssue"] = false;
-            List<Member>mblist = mlist.GetAllMember();
+            ViewData["CannotIssue"] = false;
+			//----------------
+			List<Member>mblist = mlist.GetAllMember();
             Member mm = null;
             foreach (Member m in mblist)
             {
@@ -116,34 +119,73 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 ViewData["error"] = $"Error";
                 return View();
             }
+
+            TempData["Member"] = JsonConvert.SerializeObject(mm);
+
             DateTime now = DateTime.Now;
             int thismonth = Convert.ToInt32(now.Month.ToString());
             string mbirthDay = mm.BirthDate.ToString();
             string[] birthMonthh = mbirthDay.Split("/");
-            int birthMonth = Convert.ToInt32(birthMonthh[0]);
+            int birthMonth = Convert.ToInt32(birthMonthh[1]);
             if (thismonth == birthMonth)
             {
                 ViewData["CanIssue"] = true;
+                ViewData["CannotIssue"] = false;
                 TempData["cMonth"] = $"Current Month: {thismonth}";
-                TempData["mBirthMonth"] = $"Member Birth Day: {birthMonthh}";
+                TempData["mBirthMonth"] = $"Member Birth Day: {mbirthDay}";
                 TempData["canIssue"] = "Allow to Issue: Yes!";
                 TempData["IssueAmount"] = "Issue Amount: $10";
             }
             else
             {
+                ViewData["CanIssue"] = false;
+                ViewData["CannotIssue"] = true;
                 TempData["cMonth"] = $"Current Month: {thismonth}";
-                TempData["mBirthMonth"] = $"Member Birth Day: {birthMonthh}";
+                TempData["mBirthMonth"] = $"Member Birth Day: {mbirthDay}";
                 TempData["canIssue"] = "Allow to Issue: No!";
             }
-            return View();
+			//----------------
+			return View();
+            
 		}
 
 		// POST: CashVoucherController1/Create
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public ActionResult IssueSpecialVoucher(Member member)
+		public ActionResult IssueSpecialVoucher(CashVoucher cashVoucher)
 		{
+            ViewData["CanIssue"] = true;
+            ViewData["CannotIssue"] = false;
+            Member m = null;
+            //----------------
+            try
+            {
+                m = JsonConvert.DeserializeObject<Member>((string)TempData["Member"]);
+            }
+            catch
+            {
+                return View();
+            }
+            string stID = (string)HttpContext.Session.GetString("UserID");
+            List<Staff> ls = sdal.GetAllStaff();
+            
+            foreach (Staff st in ls)
+            {
+                if (st.LoginID == stID)
+                {
+                    cashVoucher.StaffID = st.StaffID;
+                    break;
+                }
+            }
 
+            cashVoucher.Amount = 10;
+            cashVoucher.Currency = "SGD";
+            cashVoucher.IssuingCode = "1";
+            cashVoucher.ReceiverName = m.Name;
+            cashVoucher.ReceiverTelNo = m.TelNo;
+            cashVoucher.DateTimeIssued = DateTime.Now;
+            cashVoucher.Status = "0";
+            cashVoucher.CashVoucherID = clist.Add(cashVoucher);
 			return View();
 		}
 

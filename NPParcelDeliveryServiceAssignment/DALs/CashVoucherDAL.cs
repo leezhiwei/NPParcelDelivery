@@ -69,5 +69,45 @@ namespace NPParcelDeliveryServiceAssignment.DALs
             conn.Close();
             return count;
         }
-    }
+
+		public int Add(CashVoucher cashVoucher)
+		{
+			//Create a SqlCommand object from connection object
+			SqlCommand cmd = conn.CreateCommand();
+			//Specify an INSERT SQL statement which will
+			//return the auto-generated StaffID after insertion
+			cmd.CommandText = @"INSERT INTO CashVoucher ( CashVoucherID, StaffID, Amount, 
+                                Currency, IssuingCode,ReceiverName, ReceiverTelNo,DateTimeIssued,Status) 
+                                                    OUTPUT INSERTED.CashVoucherID 
+                                                    VALUES( @cvid, @sid,@amount, 
+                                                   @currency, @ic, @rn, @rtn,@dti, @status)";
+			//Define the parameters used in SQL statement, value for each parameter
+			//is retrieved from respective class's property.
+			cmd.Parameters.AddWithValue("@cvid", cashVoucher.CashVoucherID);
+			cmd.Parameters.AddWithValue("@sid", cashVoucher.StaffID);
+			cmd.Parameters.AddWithValue("@amount", cashVoucher.Amount);
+			cmd.Parameters.AddWithValue("@currency", cashVoucher.Currency);
+			cmd.Parameters.AddWithValue("@ic", cashVoucher.IssuingCode);
+			cmd.Parameters.AddWithValue("@rn", cashVoucher.ReceiverName);
+			cmd.Parameters.AddWithValue("@rtn", cashVoucher.ReceiverTelNo);
+			cmd.Parameters.AddWithValue("@dti", cashVoucher.DateTimeIssued);
+			cmd.Parameters.AddWithValue("@status", cashVoucher.Status);
+			//A connection to database must be opened before any operations made.
+			conn.Open();
+			try
+			{
+				//shipping rate  after executing the INSERT SQL statement
+				cashVoucher.CashVoucherID = (int)cmd.ExecuteScalar();
+			}
+
+			catch
+			{
+				return 0;
+			}
+			//A connection should be closed after operations.
+			conn.Close();
+
+			return cashVoucher.CashVoucherID;
+		}
+	}
 }
