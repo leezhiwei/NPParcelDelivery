@@ -22,7 +22,6 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             }
             List<DeliveryHistory> dhList = dhdal.GetAllHistory();
             return View(dhList);
-            //return View();
         }
         private List<SelectListItem> GetCountries()
         {
@@ -58,7 +57,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Insert(IFormCollection collection)
-        {   
+        {
             Parcel p = new Parcel
             {
                 ItemDescription = collection["ItemDescription"],
@@ -80,7 +79,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             };
 
             List<ShippingRate> SP = srd.GetAllShippingRate();
-            //Advanced Feature 3
+            //Advanced Feature 3 - Parcel Receiving
             decimal dc = 0;
             foreach (ShippingRate s in SP)
             {
@@ -101,7 +100,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             }
             
 
-            //Basic Feature 2, calculating target delivery date
+            //Basic Feature 2 - Parcel Receiving, calculating target delivery date
             int tt = 0;
             foreach (ShippingRate s in SP)
             {
@@ -118,7 +117,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             p.TargetDeliveryDate = tdd;
 
 
-            //Basic Feature 1, adding parcel delivery record
+            //Basic Feature 1 - Parcel Receiving, adding parcel delivery record
             string desc = $"Recieved parcel by {HttpContext.Session.GetString("UserID")} on {DateTime.Now.ToString("dd MMM yyyy hh:mm tt")}.";
 
             DeliveryHistory dh = new DeliveryHistory
@@ -493,5 +492,31 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             List<Parcel> pList = pdal.GetAllParcel();
             return View(pList);
         }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult ParcelDeliveryOrder(IFormCollection form)
+        {
+            List<Parcel> pl = pdal.GetAllParcel();
+            Parcel pTemp = null;
+            int pId = 0;
+            pId = Convert.ToInt32(form["pIdSearch"]);
+            foreach (Parcel parcel in pl)
+            {
+                if (parcel.ParcelID == pId)
+                {
+                    pTemp = parcel;
+                }
+            }
+            if (pTemp is not null)
+            {
+                ViewData["ShowParcel"] = true;
+                ViewData["Error"] = false;
+                return View(pTemp);
+            }
+            ViewData["ShowParcel"] = false;
+            ViewData["Error"] = true;
+            return View();
+        }
+
     }
 }
