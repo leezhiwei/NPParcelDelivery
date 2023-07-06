@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using DeepEqual.Syntax;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.TagHelpers;
 using NPParcelDeliveryServiceAssignment.DALs;
@@ -55,11 +56,22 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         public ActionResult Register() {
             return View();
         }
-        /*[HttpPost]
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Register(Member member)
         {
-
-        }*/
+            List<Member> mlist = md.GetAllMember();
+            foreach (Member m in mlist)
+            {
+                if (m.IsDeepEqual(member))
+                {
+                    ViewData["ErrorMsg"] = "Error: Record exists in Database.";
+                    return View();
+                }
+            }
+			md.AddMember(member);
+            return RedirectToAction("Index");
+            
+		}
     }
 }
