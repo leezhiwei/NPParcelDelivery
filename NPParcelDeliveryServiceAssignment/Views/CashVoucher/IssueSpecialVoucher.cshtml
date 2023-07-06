@@ -18,8 +18,6 @@
         <form asp-action="IssueSpecialVoucher">
             <p>@TempData["cMonth"]</p>
             <p>@TempData["mBirthMonth"]</p>
-            <p>@TempData["canIssue"]</p>
-
             <p>@TempData["IssueAmount"]</p>
             <p>@ViewData["error"]</p>
 
@@ -29,6 +27,8 @@
         </form>
             }
         }
+        @TempData["readyIssued"]
+        @TempData["SuccessIssued"]
         @{
         if((bool)ViewData["CannotIssue"])
         {

@@ -126,14 +126,13 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             int thismonth = Convert.ToInt32(now.Month.ToString());
             string mbirthDay = mm.BirthDate.ToString();
             string[] birthMonthh = mbirthDay.Split("/");
-            int birthMonth = Convert.ToInt32(birthMonthh[1]);
+            int birthMonth = Convert.ToInt32(birthMonthh[0]);
             if (thismonth == birthMonth)
             {
                 ViewData["CanIssue"] = true;
                 ViewData["CannotIssue"] = false;
                 TempData["cMonth"] = $"Current Month: {thismonth}";
-                TempData["mBirthMonth"] = $"Member Birth Day: {mbirthDay}";
-                TempData["canIssue"] = "Allow to Issue: Yes!";
+                TempData["mBirthMonth"] = $"Member Birth Day: {birthMonth}";
                 TempData["IssueAmount"] = "Issue Amount: $10";
             }
             else
@@ -141,8 +140,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 ViewData["CanIssue"] = false;
                 ViewData["CannotIssue"] = true;
                 TempData["cMonth"] = $"Current Month: {thismonth}";
-                TempData["mBirthMonth"] = $"Member Birth Day: {mbirthDay}";
-                TempData["canIssue"] = "Allow to Issue: No!";
+                TempData["mBirthMonth"] = $"Member Birth Day: {birthMonth}";
             }
 			//----------------
 			return View();
@@ -156,6 +154,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
 		{
             ViewData["CanIssue"] = true;
             ViewData["CannotIssue"] = false;
+            int moncheck = DateTime.Now.Month;
             Member m = null;
             //----------------
             try
@@ -167,8 +166,8 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 return View();
             }
             string stID = (string)HttpContext.Session.GetString("UserID");
+            List<CashVoucher> nclist = clist.GetAllCashVoucher();
             List<Staff> ls = sdal.GetAllStaff();
-            
             foreach (Staff st in ls)
             {
                 if (st.LoginID == stID)
@@ -185,7 +184,19 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             cashVoucher.ReceiverTelNo = m.TelNo;
             cashVoucher.DateTimeIssued = DateTime.Now;
             cashVoucher.Status = "0";
-            cashVoucher.CashVoucherID = clist.Add(cashVoucher);
+            foreach (CashVoucher c in nclist)
+            {
+                if (m.Name == c.ReceiverName && m.TelNo == c.ReceiverTelNo && c.IssuingCode == "1" && c.DateTimeIssued.Month == moncheck)
+                {
+                    TempData["readyIssued"] = "Issuse Cash Voucher Failed! You have already Issue cash voucher this year!";
+
+                }
+                else
+                {
+                    cashVoucher.CashVoucherID = clist.Add(cashVoucher);
+                    TempData["SuccessIssued"] = "Successfully Issued cash voucher!"; break;
+                }
+            }
 			return View();
 		}
 
