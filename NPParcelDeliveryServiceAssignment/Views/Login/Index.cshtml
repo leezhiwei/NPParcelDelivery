@@ -69,15 +69,14 @@
             <button type="button" class="btn btn-link btn-floating mx-1">
                 <i class="fab fa-github"></i>
             </button>-->
-        
-     
-    
+
+
+        <div class="text-center" id="ErrorMsg">@ViewData["ErrorMsg"]</div>
         <!-- Register buttons -->
-        <p> Not a member? Register Here:</p>
-        <div class="text-center" id="ErrorMsg">
-            @ViewData["ErrorMsg"]
-            <a asp-action="Register">Register Member</a>
-            </div>
+        <p class="text-center"> Not a member? Register Here:</p>
+        <a asp-action="Register">Register Member</a>
+        
+        
   
     </form>
         

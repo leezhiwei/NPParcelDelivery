@@ -324,7 +324,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             }
             catch
             {
-                TempData["Error2"] = "No Deliveryman set.";
+                TempData["Error2"] = "Invalid input.";
                 return RedirectToAction("AssignParcels");
             }
             int count = 0;
@@ -341,6 +341,12 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             if (count == 5)
             {
                 TempData["Error2"] = "More than 5 parcel set. Please fufil more deliveries.";
+                return RedirectToAction("AssignParcels");
+            }
+            Staff s = sdal.GetOneStaff(staffid);
+            if (s.Appointment != "Delivery Man")
+            {
+                TempData["Error2"] = "The selected Staff is not a delivery man";
                 return RedirectToAction("AssignParcels");
             }
             int? rcount = pdal.Update(p);
