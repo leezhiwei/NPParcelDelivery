@@ -161,6 +161,10 @@ namespace NPParcelDeliveryServiceAssignment.DALs
             }
             cmd.Parameters.AddWithValue("@parcelID", p.ParcelID);
             //Open a database connection
+            if (conn.State == System.Data.ConnectionState.Open)
+            {
+                conn.Close();
+            }
             conn.Open();
             //ExecuteNonQuery is used for UPDATE and DELETE
             int count = cmd.ExecuteNonQuery();

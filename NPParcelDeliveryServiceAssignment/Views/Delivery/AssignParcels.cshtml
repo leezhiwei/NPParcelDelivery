@@ -30,9 +30,7 @@
             <form asp-action="UpdateParcel">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="form-group">
-                    <label asp-for="ParcelID" class="control-label"></label>
-                    <input asp-for="ParcelID" class="form-control" />
-                    <span asp-validation-for="ParcelID" class="text-danger"></span>
+                    <input type="hidden" asp-for="ParcelID" class="form-control" />
                 </div>
                 <div class="form-group">
                     <label asp-for="ItemDescription" class="control-label"></label>
@@ -40,24 +38,16 @@
                     <span asp-validation-for="ItemDescription" class="text-danger"></span>
                 </div>
                 <div class="form-group">
-                    <label asp-for="SenderName" class="control-label"></label>
-                    <input asp-for="SenderName" class="form-control" />
-                    <span asp-validation-for="SenderName" class="text-danger"></span>
+                    <input type="hidden" asp-for="SenderName" class="form-control" />
                 </div>
                 <div class="form-group">
-                    <label asp-for="SenderTelNo" class="control-label"></label>
-                    <input asp-for="SenderTelNo" class="form-control" />
-                    <span asp-validation-for="SenderTelNo" class="text-danger"></span>
+                    <input type="hidden" asp-for="SenderTelNo" class="form-control" />
                 </div>
                 <div class="form-group">
-                    <label asp-for="ReceiverName" class="control-label"></label>
-                    <input asp-for="ReceiverName" class="form-control" />
-                    <span asp-validation-for="ReceiverName" class="text-danger"></span>
+                    <input type="hidden" asp-for="ReceiverName" class="form-control" />
                 </div>
                 <div class="form-group">
-                    <label asp-for="ReceiverTelNo" class="control-label"></label>
-                    <input asp-for="ReceiverTelNo" class="form-control" />
-                    <span asp-validation-for="ReceiverTelNo" class="text-danger"></span>
+                    <input type="hidden" asp-for="ReceiverTelNo" class="form-control" />
                 </div>
                 <div class="form-group">
                     <label asp-for="DeliveryAddress" class="control-label"></label>
@@ -65,14 +55,10 @@
                     <span asp-validation-for="DeliveryAddress" class="text-danger"></span>
                 </div>
                 <div class="form-group">
-                    <label asp-for="FromCity" class="control-label"></label>
-                    <input asp-for="FromCity" class="form-control" />
-                    <span asp-validation-for="FromCity" class="text-danger"></span>
+                    <input type="hidden" asp-for="FromCity" class="form-control" />
                 </div>
                 <div class="form-group">
-                    <label asp-for="FromCountry" class="control-label"></label>
-                    <input asp-for="FromCountry" class="form-control" />
-                    <span asp-validation-for="FromCountry" class="text-danger"></span>
+                    <input type="hidden" asp-for="FromCountry" class="form-control" />
                 </div>
                 <div class="form-group">
                     <label asp-for="ToCity" class="control-label"></label>
@@ -90,19 +76,13 @@
                     <span asp-validation-for="ParcelWeight" class="text-danger"></span>
                 </div>
                 <div class="form-group">
-                    <label asp-for="DeliveryCharge" class="control-label"></label>
-                    <input asp-for="DeliveryCharge" class="form-control" />
-                    <span asp-validation-for="DeliveryCharge" class="text-danger"></span>
+                    <input type="hidden" asp-for="DeliveryCharge" class="form-control" />
                 </div>
                 <div class="form-group">
-                    <label asp-for="Currency" class="control-label"></label>
-                    <input asp-for="Currency" class="form-control" />
-                    <span asp-validation-for="Currency" class="text-danger"></span>
+                    <input type="hidden" asp-for="Currency" class="form-control" />
                 </div>
                 <div class="form-group">
-                    <label asp-for="TargetDeliveryDate" class="control-label"></label>
-                    <input asp-for="TargetDeliveryDate" class="form-control" />
-                    <span asp-validation-for="TargetDeliveryDate" class="text-danger"></span>
+                    <input type="hidden" asp-for="TargetDeliveryDate" class="form-control" />
                 </div>
                 <div class="form-group">
                     <label asp-for="DeliveryManID" class="control-label"></label>
