@@ -77,7 +77,7 @@ namespace NPParcelDeliveryServiceAssignment.Models
 
         [Required(ErrorMessage = "Delivery Status is required. <br> Values: <br> 0 - pending delivery <br> 1 - delivery to destination in progress <br> 2 - delivery to airport in progress <br> 3 - delivery completed <br> 4 - delivery failed")]
         [Display(Name = "Delivery Status")]
-        [RegularExpression("^[1-4]{1}$", ErrorMessage = "Delivery Status accept values between 1 and 4.")]
+        [RegularExpression("^[0-4]{1}$", ErrorMessage = "Delivery Status accept values between 0 and 4.")] //Validates if value entered is within 0 - 4
         [StringLength(1, ErrorMessage = "Invalid Status. <br> Values: <br> 0 - pending delivery <br> 1 - delivery to destination in progress; <br> 2 - delivery to airport in progress; <br> 3 - delivery completed; <br> 4 - delivery failed")]
         public string DeliveryStatus { get; set; }
 
