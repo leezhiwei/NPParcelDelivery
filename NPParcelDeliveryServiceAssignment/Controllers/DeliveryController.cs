@@ -56,28 +56,8 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         // POST: Insert
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Insert(IFormCollection collection)
+        public ActionResult Insert(Parcel p)
         {
-            Parcel p = new Parcel
-            {
-                ItemDescription = collection["ItemDescription"],
-                SenderName = collection["SenderName"],
-                SenderTelNo = collection["SenderTelNo"],
-                ReceiverName = collection["ReceiverName"],
-                ReceiverTelNo = collection["ReceiverTelNo"],
-                DeliveryAddress = collection["DeliveryAddress"],
-                FromCity = collection["FromCity"],
-                FromCountry = collection["FromCountry"],
-                ToCity = collection["ToCity"],
-                ToCountry = collection["ToCountry"],
-                ParcelWeight = Convert.ToDouble(collection["ParcelWeight"]),
-                DeliveryCharge = 0,
-                Currency = collection["Currency"],
-                TargetDeliveryDate = null,
-                DeliveryStatus = collection["DeliveryStatus"],
-                DeliveryManID = Convert.ToInt32(collection["DeliveryManID"]),
-            };
-
             List<ShippingRate> SP = srd.GetAllShippingRate();
             //Advanced Feature 3 - Parcel Receiving
             decimal dc = 0;
