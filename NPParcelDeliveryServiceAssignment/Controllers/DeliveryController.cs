@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using NPParcelDeliveryServiceAssignment.Models;
 using NPParcelDeliveryServiceAssignment.DALs;
 using Newtonsoft.Json;
+using DeepEqual.Syntax;
 
 namespace NPParcelDeliveryServiceAssignment.Controllers
 {
@@ -12,6 +13,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         private DeliveryDAL dhdal = new DeliveryDAL();
         private ShippingRateDAL srd = new ShippingRateDAL();
         private StaffDAL sdal = new StaffDAL();
+        private DeliveryFailureDAL dfdal = new DeliveryFailureDAL();
 
         // GET: DeliveryController/ParcelHistory
         public ActionResult DeliveryHistory()
@@ -503,6 +505,58 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             ViewData["Error"] = true;
             return View();
         }
-
+        public ActionResult Report()
+        {
+            return View();
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Report(DeliveryFailure df)
+        {
+            df.DateCreated = DateTime.Now;
+            string loginid = HttpContext.Session.GetString("UserID");
+            int staffid = sdal.ReturnStaffID(loginid);
+            df.DeliveryManID = staffid;
+            List<DeliveryFailure> dflist = dfdal.GetAllFailureReport();
+            foreach (DeliveryFailure d in dflist)
+            {
+                if (d.IsDeepEqual(df))
+                {
+                    ViewData["Error"] = "Cannot insert a similar deliveryfailure report.";
+                    return View();
+                }
+            }
+            List<Parcel> p = pdal.GetAllParcel();
+            foreach (Parcel parcel in p)
+            {
+                if (parcel.ParcelID == df.ParcelID)
+                {
+                    int dmanid = 0;
+                    try
+                    {
+                        dmanid = (int)parcel.DeliveryManID;
+                    }
+                    catch
+                    {
+                        continue;
+                    }
+                    if (dmanid != df.DeliveryManID)
+                    {
+                        ViewData["Error"] = "This parcel is not assigned to you.";
+                        return View();
+                    }
+                    if (parcel.DeliveryStatus != "4")
+                    {
+                        ViewData["Error"] = "This parcel has not failed delivery, please check again.";
+                        return View();
+                    }
+                    dfdal.Add(df);
+                    ViewData["Success"] = "You have successfully updated the database.";
+                    return View();
+                }
+            }
+            ViewData["Error"] = "An unknown error occured, please contact the developers";
+            return View();
+        }
     }
 }
