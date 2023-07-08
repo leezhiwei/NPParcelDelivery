@@ -68,18 +68,21 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             List<ShippingRate> SP = srd.GetAllShippingRate();
             //Advanced Feature 3 - Parcel Receiving
             decimal dc = 0;
+            decimal rdc = 0;
+            decimal sr = 0;
             foreach (ShippingRate s in SP)
             {
                 if ((p.ToCity.ToLower() == s.ToCity.ToLower()) && (p.ToCountry.ToLower() == s.ToCountry.ToLower())) //Checks if the city & country matches the records in shipping rate 
                 {
+                    sr = s.ShipRate; //Store shiprate into sr, to be printed out later as tempData
                     dc = Convert.ToDecimal(p.ParcelWeight) * s.ShipRate; //Delivery Charge = parcel weight * ship rate
                     break;
                 }
             }
-            dc = Math.Round(dc, MidpointRounding.AwayFromZero); //Rounding the delivery charge to the nearest dollar
-            if (dc >= 5) //Checks if delivery charge is more than 5
+            rdc = Math.Round(dc, MidpointRounding.AwayFromZero); //Rounding the delivery charge to the nearest dollar
+            if (rdc >= 5) //Checks if delivery charge is more than 5
             {
-                p.DeliveryCharge = dc;
+                p.DeliveryCharge = rdc;
             }
             else //If delivery charge is less than 5, the minimum delivery charge is 5 dollars  
             {
@@ -114,7 +117,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             };
             dhdal.Add(dh); //Adding parcel ID & description into delivery history
 
-            TempData["InsertMessage"] = "Parcel Added to Database";
+            TempData["InsertMessage"] = $"Parcel Added to Database! <br><br> ------------------ Parcel Delivery Order ------------------ <br><br> Parcel ID:  {p.ParcelID} <br> Parcel Weight:  {p.ParcelWeight} kg <br> From City and Country:  {p.FromCity}, {p.FromCountry} <br> To City and Country:  {p.ToCity}, {p.ToCountry} <br> Shipping Rate:  {String.Format("{0:0.##}", sr)}/kg <br> Delivery Charge (Raw):  ({String.Format("{0:0.##}", sr)} x {p.ParcelWeight}) = ${String.Format("{0:0.##}", dc)} <br> Delivery Charge (Rounded):  ${String.Format("{0:0.##}", rdc)} <br> Delivery Charge (Final):  ${String.Format("{0:0.##}", p.DeliveryCharge)} (Note: Minimum delivery charge is S$5.00) <br><br> ------------------------------------------------------------";
             return RedirectToAction("Insert");
 
 
