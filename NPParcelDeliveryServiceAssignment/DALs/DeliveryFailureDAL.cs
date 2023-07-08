@@ -44,7 +44,7 @@ namespace NPParcelDeliveryServiceAssignment.DALs
         public List<DeliveryFailure> GetAllFailureReport()
         { //Create a SqlCommand object from connection object
             SqlCommand cmd = conn.CreateCommand(); //Specify the SELECT SQL statement
-            cmd.CommandText = @"SELECT * FROM DeliveryFailureReport ORDER BY ReportID"; //Open a database connection
+            cmd.CommandText = @"SELECT * FROM DeliveryFailure ORDER BY ReportID"; //Open a database connection
             conn.Open(); //Execute the SELECT SQL through a DataReader
             SqlDataReader reader = cmd.ExecuteReader();
             //Read all records until the end, save data into a staff list
@@ -95,6 +95,10 @@ namespace NPParcelDeliveryServiceAssignment.DALs
             }
             cmd.Parameters.AddWithValue("@dc", df.DateCreated);
             //A connection to database must be opened before any operations made.
+            if (conn.State == System.Data.ConnectionState.Open)
+            {
+                conn.Close();
+            }
             conn.Open();
             //ExecuteScalar is used to retrieve the auto-generated
             //StaffID after executing the INSERT SQL statement
