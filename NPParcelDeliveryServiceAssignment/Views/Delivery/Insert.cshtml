@@ -87,7 +87,7 @@
                 <input type="reset" value="Cancel" class="btn btn-primary" />
             </div>
             <br />
-            <p style="color:green">@TempData["InsertMessage"]</p>
+            <p style="color:green">@Html.Raw((string)TempData["InsertMessage"])</p>
         </form>
     </div>
 </div>
