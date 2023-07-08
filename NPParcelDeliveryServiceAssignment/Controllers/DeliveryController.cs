@@ -53,13 +53,20 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         }
         public ActionResult Insert()
         {
-            return View();
+            Parcel p = new Parcel
+            {
+                Currency = "SGD",
+                ParcelWeight = 0.0,
+                DeliveryStatus = "0"
+            };
+            return View(p);
         }
         // POST: Insert
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Insert(Parcel p)
         {
+
             List<ShippingRate> SP = srd.GetAllShippingRate();
             //Advanced Feature 3 - Parcel Receiving
             decimal dc = 0;

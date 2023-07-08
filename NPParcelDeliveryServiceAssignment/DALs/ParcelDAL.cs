@@ -43,14 +43,14 @@ namespace NPParcelDeliveryServiceAssignment.DALs
             {
                 parcellist.Add(new Parcel
                 {
-                    ParcelID = reader.GetInt32(0), //0: 1st column
-                    ItemDescription = !reader.IsDBNull(1) ? //1: 2nd column
+                    ParcelID = reader.GetInt32(0),
+                    ItemDescription = !reader.IsDBNull(1) ? 
                     reader.GetString(1) : (string)null, 
-                    SenderName = reader.GetString(2), //2: 3rd column
-                    SenderTelNo = reader.GetString(3), //3: 4th column
-                    ReceiverName = reader.GetString(4), //4: 4th column
-                    ReceiverTelNo = reader.GetString(5), //6: 5th column
-                    DeliveryAddress = reader.GetString(6), //9: 6th column
+                    SenderName = reader.GetString(2), 
+                    SenderTelNo = reader.GetString(3), 
+                    ReceiverName = reader.GetString(4), 
+                    ReceiverTelNo = reader.GetString(5), 
+                    DeliveryAddress = reader.GetString(6), 
                     FromCity = reader.GetString(7),
                     FromCountry = reader.GetString(8),
                     ToCity = reader.GetString(9),

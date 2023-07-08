@@ -17,7 +17,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             return View();
         }
 
-        public ActionResult CashVoucherstatus()
+        public ActionResult CashvoucherList()
         {
             ViewData["showcv"] = false;
             return View();
@@ -25,20 +25,21 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult CashVoucherstatus(IFormCollection form)
+        public ActionResult CashvoucherList(IFormCollection form)
         {
             ViewData["showcv"] = false;
             List<CashVoucher> cv = clist.GetAllCashVoucher();
             string rname = (form["nameBox"]);
             string tnum = (form["telBox"]);
-            CashVoucher gcashvoucher = null;
+            List<CashVoucher> voucherlist = new List<CashVoucher>();
             foreach (CashVoucher cashvoucher in cv)
             {
+                CashVoucher gcashvoucher = null;
                 if (cashvoucher.ReceiverName == rname && cashvoucher.ReceiverTelNo == tnum)
                 {
                     TempData["NOResult"] = "";
                     ViewData["showcv"] = true;
-                    gcashvoucher = cashvoucher;
+                    gcashvoucher =cashvoucher;
                     if (cashvoucher.Status == "0")
                     {
                         gcashvoucher.Status = "Pending Collection";
@@ -47,12 +48,13 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                     {
                         gcashvoucher.Status = "Collected";
                     }
+                    voucherlist.Add(gcashvoucher);
                 }
                 else
                 { TempData["NOResult"] = "NO Result Found"; }
             }
 
-            return View(gcashvoucher);
+            return View(voucherlist);
         }
 
         public ActionResult IssueCashVoucherList()
@@ -61,18 +63,29 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
 			return View(mblist);
         }
 
-        public ActionResult CashVoucherUpdate()
+        public ActionResult CashVoucherUpdate(int id)
         {
+            int idd = 0;
+            idd = Convert.ToInt32(id);
+            List<CashVoucher> cc = clist.GetAllCashVoucher();
+            foreach (CashVoucher c in cc)
+            {
+                if (c.CashVoucherID == idd)
+                {
+                    return View(c);
+                }
+            }
             return View();
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult CashVoucherUpdate(CashVoucher cashVoucher)
+        public ActionResult CashVoucherUpdate(CashVoucher c)
         {
-            cashVoucher.Status = "1";
-            clist.Update(cashVoucher);
-            TempData["collectcv"] = "You have successfully collect your cash voucher";
-            return RedirectToAction("CashVoucherstatus") ;
+            c.Status = "1";
+            clist.Update(c);
+            TempData["SuccessIssued"] = "You have successfully collect your cash voucher";
+            //return RedirectToAction("CashvoucherList") ;
+            return View();
         }
             // GET: CashVoucherController1/Details/5
             public ActionResult Details(int id)
@@ -124,9 +137,9 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
 
             DateTime now = DateTime.Now;
             int thismonth = Convert.ToInt32(now.Month.ToString());
-            string mbirthDay = mm.BirthDate.ToString();
-            string[] birthMonthh = mbirthDay.Split("/");
-            int birthMonth = Convert.ToInt32(birthMonthh[0]);
+            DateTime mbirthDay = (DateTime)mm.BirthDate;
+            //string[] birthMonthh = mbirthDay.Split("/");
+            int birthMonth =mbirthDay.Month;
             if (thismonth == birthMonth)
             {
                 ViewData["CanIssue"] = true;
@@ -154,7 +167,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
 		{
             ViewData["CanIssue"] = true;
             ViewData["CannotIssue"] = false;
-            int moncheck = DateTime.Now.Month;
+            int yearcheck = DateTime.Now.Year;
             Member m = null;
             //----------------
             try
@@ -184,20 +197,27 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             cashVoucher.ReceiverTelNo = m.TelNo;
             cashVoucher.DateTimeIssued = DateTime.Now;
             cashVoucher.Status = "0";
+            bool allowAdd = false;
             foreach (CashVoucher c in nclist)
             {
-                if (m.Name == c.ReceiverName && m.TelNo == c.ReceiverTelNo && c.IssuingCode == "1" && c.DateTimeIssued.Month == moncheck)
+                if (m.Name == c.ReceiverName && m.TelNo == c.ReceiverTelNo && c.IssuingCode == "1" && c.DateTimeIssued.Year == yearcheck)
                 {
                     TempData["readyIssued"] = "Issuse Cash Voucher Failed! You have already Issue cash voucher this year!";
+                    allowAdd = false;
+                    break;
 
                 }
                 else
                 {
-                    cashVoucher.CashVoucherID = clist.Add(cashVoucher);
-                    TempData["SuccessIssued"] = "Successfully Issued cash voucher!"; break;
+                    allowAdd = true;
                 }
             }
-			return View();
+            if (allowAdd == true)
+            {
+                cashVoucher.CashVoucherID = clist.Add(cashVoucher);
+                TempData["Issued"] = "You have successfully issue cash voucher";
+            }
+            return View();
 		}
 
 		// GET: CashVoucherController1/Edit/5
