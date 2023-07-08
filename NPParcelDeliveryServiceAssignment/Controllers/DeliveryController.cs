@@ -14,7 +14,15 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         private ShippingRateDAL srd = new ShippingRateDAL();
         private StaffDAL sdal = new StaffDAL();
         private DeliveryFailureDAL dfdal = new DeliveryFailureDAL();
-
+        private List<string> ft = new List<string> { "Receiver not found", "Wrong delivery addresss", "Parcel damaged", "Other" };
+        private List<SelectListItem> list = new List<SelectListItem>();
+        private void PopulateList()
+        {
+            foreach (string types in ft)
+            {
+                list.Add(new SelectListItem { Text = types, Value = (ft.IndexOf(types) + 1).ToString() });
+            }
+        }
         // GET: DeliveryController/ParcelHistory
         public ActionResult DeliveryHistory()
         {
@@ -87,7 +95,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             {
                 p.DeliveryCharge = 5;
             }
-            
+
 
             //Basic Feature 2 - Parcel Receiving, calculating target delivery date
             int tt = 0;
@@ -111,7 +119,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
 
             DeliveryHistory dh = new DeliveryHistory
             {
-                ParcelID = pdal.Add(p), 
+                ParcelID = pdal.Add(p),
                 Description = desc,
             };
             dhdal.Add(dh); //Adding parcel ID & description into delivery history
@@ -379,7 +387,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
 
                 }
                 string loginID = HttpContext.Session.GetString("UserID");
-                List<Staff>staffli = sdal.GetAllStaff();
+                List<Staff> staffli = sdal.GetAllStaff();
                 foreach (Staff s in staffli)
                 {
                     if (s.LoginID == loginID)
@@ -410,7 +418,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             int StaffID = sdal.ReturnStaffID(LoginID);
             if (StaffID == -1)
             {
-                return RedirectToAction("Index","Home");
+                return RedirectToAction("Index", "Home");
             }
             List<Parcel> AssignedList = pdal.CheckAssigned(StaffID);
             return View(AssignedList);
@@ -428,7 +436,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             }
             catch
             {
-                return RedirectToAction("Index","Home");
+                return RedirectToAction("Index", "Home");
             }
             Parcel pobj = pdal.ReturnParcel(pid);
             if (pobj is null)
@@ -514,12 +522,16 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         }
         public ActionResult Report()
         {
+            PopulateList();
+            ViewData["SListI"] = list;
             return View();
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Report(DeliveryFailure df)
         {
+            PopulateList();
+            ViewData["SListI"] = list;
             df.DateCreated = DateTime.Now;
             string loginid = HttpContext.Session.GetString("UserID");
             int staffid = sdal.ReturnStaffID(loginid);

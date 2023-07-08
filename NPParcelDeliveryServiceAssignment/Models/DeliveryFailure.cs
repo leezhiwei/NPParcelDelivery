@@ -1,4 +1,6 @@
-﻿namespace NPParcelDeliveryServiceAssignment.Models
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+
+namespace NPParcelDeliveryServiceAssignment.Models
 {
     public class DeliveryFailure
     {
