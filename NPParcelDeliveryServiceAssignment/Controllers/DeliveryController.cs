@@ -637,5 +637,56 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             TempData["Success"] = "You have successfully updated the database.";
             return RedirectToAction("List");
         }
+
+        public ActionResult DeliverySearch()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeliverySearch(IFormCollection form)
+        {
+            List<Parcel> pl = pdal.GetAllParcel();
+            List<Parcel> parcelTemp = new List<Parcel>();
+            Parcel pTemp = null;
+            string ParcelId;
+            string rname;
+            string sname;
+            int pid = 0;
+
+            
+            ParcelId = form["ParcelID"];
+            rname = form["rnameSearch"];
+            sname = form["snameSearch"];
+            try
+            {
+                pid = Convert.ToInt32(ParcelId);
+            }
+            catch
+            {
+                pid = 0;
+            }
+            foreach (Parcel parcel in pl)
+            {
+                if (parcel.ParcelID == pid || parcel.ReceiverName == rname || parcel.SenderName == sname)
+                {
+                    parcelTemp.Add(parcel); //If parcel matches the record in the list, add parcel to tempparcel for viewing
+                    pTemp = parcel;
+                    break;
+                }
+            }
+
+            if (parcelTemp.Count > 0) //If tempparcel is NOT empty and contains information
+            {
+                TempData["ParcelFound"] = $"Parcel with the ID: {ParcelId}, found.";
+                return View(pTemp);
+            }
+            else //prints the error msg that parcel is not found, since the tempparcel is empty
+            {
+                TempData["ParcelError"] = $"Parcel with the ID: {ParcelId}, does not exist in the delivery orders.";
+                return View(pTemp);
+            }
+        }
     }
 }
