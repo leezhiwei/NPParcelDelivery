@@ -63,7 +63,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             List<Member> mlist = md.GetAllMember();
             foreach (Member m in mlist)
             {
-                if (m.IsDeepEqual(member))
+                if (m.EmailAddr == member.EmailAddr)
                 {
                     ViewData["ErrorMsg"] = "Error: Record exists in Database.";
                     return View();
@@ -73,5 +73,5 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             return RedirectToAction("Index");
             
 		}
-    }
+	}
 }
