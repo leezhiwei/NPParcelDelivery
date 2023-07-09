@@ -5,14 +5,16 @@
     Layout = "~/Views/Shared/_fostaffLayout.cshtml";
 }
 
-<h1>ParcelDeliveryOrder</h1>
+<h1>Parcel Delivery Orders</h1>
 <hr />
 <form asp-controller="Delivery" asp-action="ParcelDeliveryOrder" method="post">
     <label for="idbox">@Html.DisplayNameFor(Parcel => Parcel.ParcelID)</label><br />
-    <input type="text" id="pIdSearch" name="idbox" />
+    <input type="text" id="pIdSearch" name="pIdSearch" />
     <button type="submit">Search for Parcel ID</button>
 </form>
-
+<br />
+<p style="color:green">@TempData["ParcelFound"]</p>
+<p style="color:red">@TempData["ParcelError"]</p>
 <br />
 <br />
 <div class="table-responsive">

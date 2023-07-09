@@ -503,25 +503,36 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         public ActionResult ParcelDeliveryOrder(IFormCollection form)
         {
             List<Parcel> pl = pdal.GetAllParcel();
+            List<Parcel> ppTemp = new List<Parcel>();
             Parcel pTemp = null;
             int pId = 0;
-            pId = Convert.ToInt32(form["pIdSearch"]);
+            try
+            {
+                pId = Convert.ToInt32(form["pIdSearch"]);
+            }
+            catch (Exception ex) //Catch if the textbox is empty and display error msg
+            {
+                TempData["ParcelError"] = $"The search textbox is empty, unable to search for any existing parcels.";
+                return View(pl);
+            }
             foreach (Parcel parcel in pl)
             {
                 if (parcel.ParcelID == pId)
                 {
-                    pTemp = parcel;
+                    ppTemp.Add(parcel); //If parcel matches the record in the list, add parcel to tempparcel for viewing
                 }
             }
-            if (pTemp is not null)
+            
+            if (ppTemp.Count > 0) //If tempparcel is NOT empty and contains information
             {
-                ViewData["ShowParcel"] = true;
-                ViewData["Error"] = false;
-                return View(pTemp);
+                TempData["ParcelFound"] = $"Parcel with the ID: {pId}, found.";
+                return View(ppTemp);
             }
-            ViewData["ShowParcel"] = false;
-            ViewData["Error"] = true;
-            return View();
+            else //prints the error msg that parcel is not found, since the tempparcel is empty
+            {
+                TempData["ParcelError"] = $"Parcel with the ID: {pId}, does not exist in the delivery orders.";
+                return View(pl);
+            }
         }
         public ActionResult Report()
         {
