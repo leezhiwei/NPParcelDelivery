@@ -108,5 +108,27 @@ namespace NPParcelDeliveryServiceAssignment.DALs
             //Return id when no error occurs.
             return df.ReportID;
         }
+
+        public int Update(DeliveryFailure df)
+        {
+            //Create a SqlCommand object from connection object
+            SqlCommand cmd = conn.CreateCommand();
+            //Specify an UPDATE SQL statement
+            cmd.CommandText = @"update DeliveryFailure
+                                set 
+                                Description=@des
+                                WHERE ReportID = @pID";
+            //Define the parameters used in SQL statement, value for each parameter
+            //is retrieved from respective class's property.
+            cmd.Parameters.AddWithValue("@des", df.Description);
+            cmd.Parameters.AddWithValue("@pID", df.ParcelID);
+            //Open a database connection
+            conn.Open();
+            //ExecuteNonQuery is used for UPDATE and DELETE
+            int count = cmd.ExecuteNonQuery();
+            //Close the database connection
+            conn.Close();
+            return count;
+        }
     }
 }

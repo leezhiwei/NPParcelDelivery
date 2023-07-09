@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using NPParcelDeliveryServiceAssignment.DALs;
 using NPParcelDeliveryServiceAssignment.Models;
+using System.Composition;
 
 namespace NPParcelDeliveryServiceAssignment.Controllers
 {
@@ -11,10 +12,18 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         private CashVoucherDAL clist = new CashVoucherDAL();
         private MemberDAL mlist = new MemberDAL();
         private StaffDAL sdal = new StaffDAL();
+        private DeliveryFailureDAL dflist = new DeliveryFailureDAL();
+        private ParcelDAL plist = new ParcelDAL();
         // GET: CashVoucherController1
         public ActionResult Index()
         {
             return View();
+        }
+
+        public ActionResult FailurereportList()
+        {
+            List<DeliveryFailure> dlist = dflist.GetAllFailureReport();
+            return View(dlist);
         }
 
         public ActionResult CashvoucherList()
@@ -22,6 +31,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             ViewData["showcv"] = false;
             return View();
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -220,8 +230,161 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             return View();
 		}
 
-		// GET: CashVoucherController1/Edit/5
-		public ActionResult Edit(int id)
+
+        public ActionResult IssueCompensationVoucher(int id)
+        {
+            CashVoucher cashVoucher = new CashVoucher();
+            //----------------
+            List<DeliveryFailure> dlist = dflist.GetAllFailureReport();
+            DeliveryFailure df = null;
+            foreach (DeliveryFailure dff in dlist)
+            {
+                if (dff.ReportID == id)
+                {
+                    df = dff; break;
+                }
+            }
+
+            TempData["Delivery"] = JsonConvert.SerializeObject(df);
+
+
+            //-----------------*******************----------------------------------
+            int yearcheck = DateTime.Now.Year;
+            DeliveryFailure d = null;
+            //----------------
+            try
+            {
+                d = JsonConvert.DeserializeObject<DeliveryFailure>((string)TempData["Delivery"]);
+            }
+            catch
+            {
+                return View();
+            }
+            string stID = (string)HttpContext.Session.GetString("UserID");
+            List<CashVoucher> nclist = clist.GetAllCashVoucher();
+            List<Staff> ls = sdal.GetAllStaff();
+            foreach (Staff st in ls)
+            {
+                if (st.LoginID == stID)
+                {
+                    cashVoucher.StaffID = st.StaffID;
+                    break;
+                }
+            }
+            List<Parcel> palist = plist.GetAllParcel();
+            foreach ( Parcel p in palist)
+            {
+                if (p.ParcelID == d.ParcelID)
+                {
+                    cashVoucher.ReceiverName = p.ReceiverName;
+                    cashVoucher.ReceiverTelNo = p.ReceiverTelNo;
+                    break;
+                }
+            }
+
+            cashVoucher.Amount = 20;
+            cashVoucher.Currency = "SGD";
+            cashVoucher.IssuingCode = "2";
+
+            cashVoucher.DateTimeIssued = DateTime.Now;
+            cashVoucher.Status = "0";
+            bool allowAdd = false;
+            foreach (CashVoucher c in nclist)
+            {
+                if (cashVoucher.ReceiverName == c.ReceiverName && cashVoucher.ReceiverTelNo == c.ReceiverTelNo && c.IssuingCode == "2" && c.DateTimeIssued.Year == yearcheck)
+                {
+                    TempData["readyIssued"] = "You have already issue a cash voucher for this report, you cannot issue again!";
+                    allowAdd = false; 
+                    break;
+                }
+                else
+                {
+                    allowAdd = true;
+                }
+            }
+            if (allowAdd == true)
+            {
+                cashVoucher.CashVoucherID = clist.Add(cashVoucher);
+                TempData["Issued"] = "You have yet to issue a cash voucher, you are allow to issue a cash voucher!";
+            }
+            //dfsfhjbdefsivesgudeiogeshboiuejbioeusbhnseighealighiregerogeroriu
+            return View(cashVoucher);
+
+        }
+
+        // POST: CashVoucherController1/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult IssueCompensationVoucher(CashVoucher cashVoucher)
+        {
+            int yearcheck = DateTime.Now.Year;
+            List<CashVoucher> nclist = clist.GetAllCashVoucher();
+            
+            DeliveryFailure d = null;
+            //----------------
+            try
+            {
+                d = JsonConvert.DeserializeObject<DeliveryFailure>((string)TempData["Delivery"]);
+            }
+            catch
+            {
+                return View();
+            }
+            
+            /*
+            string stID = (string)HttpContext.Session.GetString("UserID");
+
+            List<Staff> ls = sdal.GetAllStaff();
+            foreach (Staff st in ls)
+            {
+                if (st.LoginID == stID)
+                {
+                    cashVoucher.StaffID = st.StaffID;
+                    break;
+                }
+            }
+            List<Parcel> palist = plist.GetAllParcel();
+            foreach ( Parcel p in palist)
+            {
+                if (p.ParcelID == d.ParcelID)
+                {
+                    cashVoucher.ReceiverName = p.ReceiverName;
+                    cashVoucher.ReceiverTelNo = p.ReceiverTelNo;
+                    break;
+                }
+            }
+
+            cashVoucher.Amount = 20;
+            cashVoucher.Currency = "SGD";
+            cashVoucher.IssuingCode = "2";
+
+            cashVoucher.DateTimeIssued = DateTime.Now;
+            cashVoucher.Status = "0";
+            bool allowAdd = false;
+            foreach (CashVoucher c in nclist)
+            {
+                if (cashVoucher.ReceiverName == c.ReceiverName && cashVoucher.ReceiverTelNo == c.ReceiverTelNo && c.IssuingCode == "2" && c.DateTimeIssued.Year == yearcheck)
+                {
+                    TempData["readyIssued"] = "Issuse Cash Voucher Failed! You have already Issue cash voucher this year!";
+                    allowAdd = false;
+                    break;
+                }
+                else
+                {
+                    allowAdd = true;
+                }
+            }
+            if (allowAdd == true)
+            {
+                cashVoucher.CashVoucherID = clist.Add(cashVoucher);
+                TempData["Issued"] = "You have successfully issue cash voucher";
+            }*/
+            return View();
+        }
+
+
+        // GET: CashVoucherController1/Edit/5
+        public ActionResult Edit(int id)
         {
             return View();
         }
