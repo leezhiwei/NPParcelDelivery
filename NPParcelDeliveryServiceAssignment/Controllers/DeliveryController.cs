@@ -580,5 +580,51 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             ViewData["Error"] = "An unknown error occured, please contact the developers";
             return View();
         }
+        public ActionResult FailedDel(string id)
+        {
+            if (HttpContext.Session.GetString("UserID") is null)
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            int pid = 0;
+            try
+            {
+                pid = Convert.ToInt32(id);
+            }
+            catch
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            Parcel pobj = pdal.ReturnParcel(pid);
+            if (pobj is null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            TempData["Parcel"] = JsonConvert.SerializeObject(pobj);
+            return View();
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult FailedDel()
+        {
+            Parcel p = null;
+            try
+            {
+                p = JsonConvert.DeserializeObject<Parcel>((string)TempData["Parcel"]);
+            }
+            catch
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            p.DeliveryStatus = "4";
+            pdal.Update(p);
+            dhdal.Add(new DeliveryHistory
+            {
+                ParcelID = p.ParcelID,
+                Description = $"Parcel has been failed to be delivered by {HttpContext.Session.GetString("UserID")} on {DateTime.Now.ToString("dd MMM yyyy hh:mm tt")}."
+            });
+            TempData["Success"] = "You have successfully updated the database.";
+            return RedirectToAction("List");
+        }
     }
 }
