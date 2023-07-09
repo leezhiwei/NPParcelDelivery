@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using NPParcelDeliveryServiceAssignment.Models;
 using NPParcelDeliveryServiceAssignment.DALs;
 using Newtonsoft.Json;
+using DeepEqual.Syntax;
 
 namespace NPParcelDeliveryServiceAssignment.Controllers
 {
@@ -12,7 +13,16 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         private DeliveryDAL dhdal = new DeliveryDAL();
         private ShippingRateDAL srd = new ShippingRateDAL();
         private StaffDAL sdal = new StaffDAL();
-
+        private DeliveryFailureDAL dfdal = new DeliveryFailureDAL();
+        private List<string> ft = new List<string> { "Receiver not found", "Wrong delivery addresss", "Parcel damaged", "Other" };
+        private List<SelectListItem> list = new List<SelectListItem>();
+        private void PopulateList()
+        {
+            foreach (string types in ft)
+            {
+                list.Add(new SelectListItem { Text = types, Value = (ft.IndexOf(types) + 1).ToString() });
+            }
+        }
         // GET: DeliveryController/ParcelHistory
         public ActionResult DeliveryHistory()
         {
@@ -51,54 +61,44 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         }
         public ActionResult Insert()
         {
-            return View();
+            Parcel p = new Parcel
+            {
+                Currency = "SGD",
+                ParcelWeight = 0.0,
+                DeliveryStatus = "0"
+            };
+            return View(p);
         }
         // POST: Insert
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Insert(IFormCollection collection)
+        public ActionResult Insert(Parcel p)
         {
-            Parcel p = new Parcel
-            {
-                ItemDescription = collection["ItemDescription"],
-                SenderName = collection["SenderName"],
-                SenderTelNo = collection["SenderTelNo"],
-                ReceiverName = collection["ReceiverName"],
-                ReceiverTelNo = collection["ReceiverTelNo"],
-                DeliveryAddress = collection["DeliveryAddress"],
-                FromCity = collection["FromCity"],
-                FromCountry = collection["FromCountry"],
-                ToCity = collection["ToCity"],
-                ToCountry = collection["ToCountry"],
-                ParcelWeight = Convert.ToDouble(collection["ParcelWeight"]),
-                DeliveryCharge = 0,
-                Currency = collection["Currency"],
-                TargetDeliveryDate = null,
-                DeliveryStatus = collection["DeliveryStatus"],
-                DeliveryManID = Convert.ToInt32(collection["DeliveryManID"]),
-            };
 
             List<ShippingRate> SP = srd.GetAllShippingRate();
             //Advanced Feature 3 - Parcel Receiving
             decimal dc = 0;
+            decimal rdc = 0;
+            decimal sr = 0;
             foreach (ShippingRate s in SP)
             {
                 if ((p.ToCity.ToLower() == s.ToCity.ToLower()) && (p.ToCountry.ToLower() == s.ToCountry.ToLower())) //Checks if the city & country matches the records in shipping rate 
                 {
+                    sr = s.ShipRate; //Store shiprate into sr, to be printed out later as tempData
                     dc = Convert.ToDecimal(p.ParcelWeight) * s.ShipRate; //Delivery Charge = parcel weight * ship rate
                     break;
                 }
             }
-            dc = Math.Round(dc, MidpointRounding.AwayFromZero); //Rounding the delivery charge to the nearest dollar
-            if (dc >= 5) //Checks if delivery charge is more than 5
+            rdc = Math.Round(dc, MidpointRounding.AwayFromZero); //Rounding the delivery charge to the nearest dollar
+            if (rdc >= 5) //Checks if delivery charge is more than 5
             {
-                p.DeliveryCharge = dc;
+                p.DeliveryCharge = rdc;
             }
             else //If delivery charge is less than 5, the minimum delivery charge is 5 dollars  
             {
                 p.DeliveryCharge = 5;
             }
-            
+
 
             //Basic Feature 2 - Parcel Receiving, calculating target delivery date
             int tt = 0;
@@ -122,12 +122,12 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
 
             DeliveryHistory dh = new DeliveryHistory
             {
-                ParcelID = pdal.Add(p), 
+                ParcelID = pdal.Add(p),
                 Description = desc,
             };
             dhdal.Add(dh); //Adding parcel ID & description into delivery history
 
-            TempData["InsertMessage"] = "Parcel Added to Database";
+            TempData["InsertMessage"] = $"Parcel Added to Database! <br><br> ------------------ Parcel Delivery Order ------------------ <br><br> Parcel ID:  {p.ParcelID} <br> Parcel Weight:  {p.ParcelWeight} kg <br> From City and Country:  {p.FromCity}, {p.FromCountry} <br> To City and Country:  {p.ToCity}, {p.ToCountry} <br> Shipping Rate:  {String.Format("{0:0.##}", sr)}/kg <br> Delivery Charge (Raw):  ({String.Format("{0:0.##}", sr)} x {p.ParcelWeight}) = ${String.Format("{0:0.##}", dc)} <br> Delivery Charge (Rounded):  ${String.Format("{0:0.##}", rdc)} <br> Delivery Charge (Final):  ${String.Format("{0:0.##}", p.DeliveryCharge)} (Note: Minimum delivery charge is S$5.00) <br><br> ------------------------------------------------------------";
             return RedirectToAction("Insert");
 
 
@@ -390,7 +390,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
 
                 }
                 string loginID = HttpContext.Session.GetString("UserID");
-                List<Staff>staffli = sdal.GetAllStaff();
+                List<Staff> staffli = sdal.GetAllStaff();
                 foreach (Staff s in staffli)
                 {
                     if (s.LoginID == loginID)
@@ -421,7 +421,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             int StaffID = sdal.ReturnStaffID(LoginID);
             if (StaffID == -1)
             {
-                return RedirectToAction("Index","Home");
+                return RedirectToAction("Index", "Home");
             }
             List<Parcel> AssignedList = pdal.CheckAssigned(StaffID);
             return View(AssignedList);
@@ -439,7 +439,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             }
             catch
             {
-                return RedirectToAction("Index","Home");
+                return RedirectToAction("Index", "Home");
             }
             Parcel pobj = pdal.ReturnParcel(pid);
             if (pobj is null)
@@ -503,26 +503,139 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         public ActionResult ParcelDeliveryOrder(IFormCollection form)
         {
             List<Parcel> pl = pdal.GetAllParcel();
+            List<Parcel> ppTemp = new List<Parcel>();
             Parcel pTemp = null;
             int pId = 0;
-            pId = Convert.ToInt32(form["pIdSearch"]);
+            try
+            {
+                pId = Convert.ToInt32(form["pIdSearch"]);
+            }
+            catch (Exception ex) //Catch if the textbox is empty and display error msg
+            {
+                TempData["ParcelError"] = $"The search textbox is empty, unable to search for any existing parcels.";
+                return View(pl);
+            }
             foreach (Parcel parcel in pl)
             {
                 if (parcel.ParcelID == pId)
                 {
-                    pTemp = parcel;
+                    ppTemp.Add(parcel); //If parcel matches the record in the list, add parcel to tempparcel for viewing
                 }
             }
-            if (pTemp is not null)
+            
+            if (ppTemp.Count > 0) //If tempparcel is NOT empty and contains information
             {
-                ViewData["ShowParcel"] = true;
-                ViewData["Error"] = false;
-                return View(pTemp);
+                TempData["ParcelFound"] = $"Parcel with the ID: {pId}, found.";
+                return View(ppTemp);
             }
-            ViewData["ShowParcel"] = false;
-            ViewData["Error"] = true;
+            else //prints the error msg that parcel is not found, since the tempparcel is empty
+            {
+                TempData["ParcelError"] = $"Parcel with the ID: {pId}, does not exist in the delivery orders.";
+                return View(pl);
+            }
+        }
+        public ActionResult Report()
+        {
+            PopulateList();
+            ViewData["SListI"] = list;
             return View();
         }
-
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Report(DeliveryFailure df)
+        {
+            PopulateList();
+            ViewData["SListI"] = list;
+            df.DateCreated = DateTime.Now;
+            string loginid = HttpContext.Session.GetString("UserID");
+            int staffid = sdal.ReturnStaffID(loginid);
+            df.DeliveryManID = staffid;
+            List<DeliveryFailure> dflist = dfdal.GetAllFailureReport();
+            foreach (DeliveryFailure d in dflist)
+            {
+                if (d.IsDeepEqual(df))
+                {
+                    ViewData["Error"] = "Cannot insert a similar deliveryfailure report.";
+                    return View();
+                }
+            }
+            List<Parcel> p = pdal.GetAllParcel();
+            foreach (Parcel parcel in p)
+            {
+                if (parcel.ParcelID == df.ParcelID)
+                {
+                    int dmanid = 0;
+                    try
+                    {
+                        dmanid = (int)parcel.DeliveryManID;
+                    }
+                    catch
+                    {
+                        continue;
+                    }
+                    if (dmanid != df.DeliveryManID)
+                    {
+                        ViewData["Error"] = "This parcel is not assigned to you.";
+                        return View();
+                    }
+                    if (parcel.DeliveryStatus != "4")
+                    {
+                        ViewData["Error"] = "This parcel has not failed delivery, please check again.";
+                        return View();
+                    }
+                    dfdal.Add(df);
+                    ViewData["Success"] = "You have successfully updated the database.";
+                    return View();
+                }
+            }
+            ViewData["Error"] = "An unknown error occured, please contact the developers";
+            return View();
+        }
+        public ActionResult FailedDel(string id)
+        {
+            if (HttpContext.Session.GetString("UserID") is null)
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            int pid = 0;
+            try
+            {
+                pid = Convert.ToInt32(id);
+            }
+            catch
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            Parcel pobj = pdal.ReturnParcel(pid);
+            if (pobj is null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            TempData["Parcel"] = JsonConvert.SerializeObject(pobj);
+            return View();
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult FailedDel()
+        {
+            Parcel p = null;
+            try
+            {
+                p = JsonConvert.DeserializeObject<Parcel>((string)TempData["Parcel"]);
+            }
+            catch
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            p.DeliveryStatus = "4";
+            pdal.Update(p);
+            dhdal.Add(new DeliveryHistory
+            {
+                ParcelID = p.ParcelID,
+                Description = $"Parcel has been failed to be delivered by {HttpContext.Session.GetString("UserID")} on {DateTime.Now.ToString("dd MMM yyyy hh:mm tt")}."
+            });
+            TempData["Success"] = "You have successfully updated the database.";
+            return RedirectToAction("List");
+        }
     }
 }

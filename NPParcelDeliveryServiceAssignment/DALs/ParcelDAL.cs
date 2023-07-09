@@ -43,14 +43,14 @@ namespace NPParcelDeliveryServiceAssignment.DALs
             {
                 parcellist.Add(new Parcel
                 {
-                    ParcelID = reader.GetInt32(0), //0: 1st column
-                    ItemDescription = reader.GetString(1), //1: 2nd column 
-                    //Get the first character of a string
-                    SenderName = reader.GetString(2), //2: 3rd column
-                    SenderTelNo = reader.GetString(3), //3: 4th column
-                    ReceiverName = reader.GetString(4), //4: 4th column
-                    ReceiverTelNo = reader.GetString(5), //6: 5th column
-                    DeliveryAddress = reader.GetString(6), //9: 6th column
+                    ParcelID = reader.GetInt32(0),
+                    ItemDescription = !reader.IsDBNull(1) ? 
+                    reader.GetString(1) : (string)null, 
+                    SenderName = reader.GetString(2), 
+                    SenderTelNo = reader.GetString(3), 
+                    ReceiverName = reader.GetString(4), 
+                    ReceiverTelNo = reader.GetString(5), 
+                    DeliveryAddress = reader.GetString(6), 
                     FromCity = reader.GetString(7),
                     FromCountry = reader.GetString(8),
                     ToCity = reader.GetString(9),
@@ -81,7 +81,11 @@ namespace NPParcelDeliveryServiceAssignment.DALs
                                 @deliveryStatus, @deliveryManID)";
             //Define the parameters used in SQL statement, value for each parameter
             //is retrieved from respective class's property.
-            cmd.Parameters.AddWithValue("@itemDesc", parcel.ItemDescription);
+            SqlParameter itmd = cmd.Parameters.AddWithValue("@itemDesc", parcel.ItemDescription);
+            if(parcel.ItemDescription is null)// Checks if item desc is null, if so it adds a null value to the db directly
+            {
+                itmd.Value = DBNull.Value;
+            }
             cmd.Parameters.AddWithValue("@senderName", parcel.SenderName);
             cmd.Parameters.AddWithValue("@senderTelNo", parcel.SenderTelNo);
             cmd.Parameters.AddWithValue("@receiverName", parcel.ReceiverName);
@@ -96,7 +100,11 @@ namespace NPParcelDeliveryServiceAssignment.DALs
             cmd.Parameters.AddWithValue("@currency", parcel.Currency);
             cmd.Parameters.AddWithValue("@targetDeliveryDate", parcel.TargetDeliveryDate);
             cmd.Parameters.AddWithValue("@deliveryStatus", parcel.DeliveryStatus);
-            cmd.Parameters.AddWithValue("@deliveryManID", parcel.DeliveryManID);
+            SqlParameter dmid = cmd.Parameters.AddWithValue("@deliveryManID", parcel.DeliveryManID);
+            if (parcel.DeliveryManID is null)// Checks if item desc is null, if so it adds a null value to the db directly
+            {
+                dmid.Value = DBNull.Value;
+            }
             //A connection to database must be opened before any operations made.
             conn.Open();
             //ExecuteScalar is used to retrieve the auto-generated
