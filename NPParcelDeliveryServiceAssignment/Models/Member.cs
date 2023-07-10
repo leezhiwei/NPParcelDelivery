@@ -7,33 +7,38 @@ namespace NPParcelDeliveryServiceAssignment.Models
     {
         [Display(Name = "Member ID")]
         public int MemberID { get; set; }
-        [Display(Name = "Name")]
+
         [Required]
+        [Display(Name = "Name")]
         public string Name { get; set; }
 
+        [Required]
         [Display(Name = "Salutation")]
-		[Required]
 		public string Salutation { get; set; }
 
+        [Required]
         [Display(Name = "Phone Number")]
-		[Required]
 		public string TelNo { get; set; }
+
+        [Required]
         [Display(Name = "Email Address")]
         [RegisterValidation]
         [RegexStringValidator("^\\\\S+@\\\\S+\\\\.\\\\S+$")]
-		[Required]
 		public string EmailAddr { get; set; }
+
+        [Required]
         [Display(Name = "Password")]
-		[Required]
 		[DataType(DataType.Password)]
         public string Password { get; set; }
+        
         [Display(Name = "BirthDate")]
-		[Required]
 		public DateTime? BirthDate { get; set; }
+
         [Display(Name = "City")]
         public string City { get; set; }
+
+        [Required]
         [Display(Name = "Country")]
-		[Required]
 		public string Country { get; set; }
 
     }

@@ -44,6 +44,7 @@ namespace NPParcelDeliveryServiceAssignment.DALs
                     Country = reader.GetString(8),
                 });
             }
+            conn.Close();
             return memberList;
         }
 
@@ -63,9 +64,17 @@ namespace NPParcelDeliveryServiceAssignment.DALs
 			cmd.Parameters.AddWithValue("@tel", member.TelNo);
 			cmd.Parameters.AddWithValue("@ema", member.EmailAddr);
 			cmd.Parameters.AddWithValue("@pa", member.Password);
-			cmd.Parameters.AddWithValue("@bd", member.BirthDate);
-			cmd.Parameters.AddWithValue("@ci", member.City);
-			cmd.Parameters.AddWithValue("@co", member.Country);
+			SqlParameter bd = cmd.Parameters.AddWithValue("@bd", member.BirthDate);
+            if(member.BirthDate is null)
+            {
+                bd.Value = DBNull.Value;
+            }
+			SqlParameter ct = cmd.Parameters.AddWithValue("@ci", member.City);
+            if (member.City is null)
+            {
+                ct.Value = DBNull.Value;
+            }
+            cmd.Parameters.AddWithValue("@co", member.Country);
 			//A connection to database must be opened before any operations made.
             if (conn.State == System.Data.ConnectionState.Open)
             {
