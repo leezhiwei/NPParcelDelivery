@@ -62,14 +62,14 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Register(Member member)
         {
-            var props = typeof(Member).GetProperties();
+            var props = typeof(Member).GetProperties(); // getallprop from typeofmember
             foreach (var prop in props)
-            {
-                object value = prop.GetValue(member, null);
+            { //foreach prop
+                object value = prop.GetValue(member, null); // get the value
                 if (value is null)
-                {
-                    ViewData["ErrorMsg"] = "Please fill in all required fields";
-                    return View();
+                { // if null
+                    ViewData["ErrorMsg"] = "Please fill in all required fields"; // error
+                    return View(); // return view
                 }
             }
             List<Member> mlist = md.GetAllMember();
