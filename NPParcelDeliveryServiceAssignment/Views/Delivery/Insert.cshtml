@@ -63,7 +63,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="ParcelWeight" class="control-label"></label>
-                <input asp-for="ParcelWeight" class="form-control" />
+                <input asp-for="ParcelWeight" class="form-control" value="0.0"/>
                 <span asp-validation-for="ParcelWeight" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -87,7 +87,7 @@
                 <input type="reset" value="Cancel" class="btn btn-primary" />
             </div>
             <br />
-            <p style="color:green">@TempData["InsertMessage"]</p>
+            <p style="color:green">@Html.Raw((string)TempData["InsertMessage"])</p>
         </form>
     </div>
 </div>

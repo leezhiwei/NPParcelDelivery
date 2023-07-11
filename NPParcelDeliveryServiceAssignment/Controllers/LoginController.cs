@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.TagHelpers;
 using NPParcelDeliveryServiceAssignment.DALs;
 using NPParcelDeliveryServiceAssignment.Models;
+using System.Runtime.InteropServices.ObjectiveC;
 
 namespace NPParcelDeliveryServiceAssignment.Controllers
 {
@@ -53,17 +54,28 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             return View();
         }
 
-        public ActionResult Register() {
+        public ActionResult Register() 
+        {
             return View();
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Register(Member member)
         {
+            var props = typeof(Member).GetProperties(); // getallprop from typeofmember
+            foreach (var prop in props)
+            { //foreach prop
+                object value = prop.GetValue(member, null); // get the value
+                if (value is null)
+                { // if null
+                    ViewData["ErrorMsg"] = "Please fill in all required fields"; // error
+                    return View(); // return view
+                }
+            }
             List<Member> mlist = md.GetAllMember();
             foreach (Member m in mlist)
             {
-                if (m.IsDeepEqual(member))
+                if (m.EmailAddr == member.EmailAddr)
                 {
                     ViewData["ErrorMsg"] = "Error: Record exists in Database.";
                     return View();
@@ -71,7 +83,6 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             }
 			md.AddMember(member);
             return RedirectToAction("Index");
-            
 		}
-    }
+	}
 }
