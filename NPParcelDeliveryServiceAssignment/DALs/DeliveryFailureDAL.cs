@@ -123,12 +123,44 @@ namespace NPParcelDeliveryServiceAssignment.DALs
             cmd.Parameters.AddWithValue("@des", df.Description);
             cmd.Parameters.AddWithValue("@pID", df.ParcelID);
             //Open a database connection
+            if (conn.State == System.Data.ConnectionState.Open)
+            {
+                conn.Close();
+            }
             conn.Open();
             //ExecuteNonQuery is used for UPDATE and DELETE
             int count = cmd.ExecuteNonQuery();
             //Close the database connection
             conn.Close();
             return count;
+        }
+        public DeliveryFailure GetOne(int pid)
+        {
+            SqlCommand cmd = conn.CreateCommand(); //Specify the SELECT SQL statement
+            cmd.CommandText = @"SELECT * FROM DeliveryFailure WHERE ParcelID = @pid"; //Open a database connection
+            cmd.Parameters.AddWithValue("@pid", pid);
+            if (conn.State == System.Data.ConnectionState.Open)
+            {
+                conn.Close();
+            }
+            conn.Open(); //Execute the SELECT SQL through a DataReader
+            SqlDataReader reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                DeliveryFailure df = new DeliveryFailure
+                {
+                    ReportID = reader.GetInt32(0), //0: 1st column
+                    ParcelID = reader.GetInt32(1), //1: 2nd column
+                    DeliveryManID = reader.GetInt32(2), //2: 3rd column
+                    FailureType = reader.GetString(3), //3: 4th column
+                    Description = reader.GetString(4), //4: 4th column
+                    StationMgrID = CheckNull(reader, 5), //6: 5th column
+                    FollowUpAction = CheckNullString(reader, 6), //9: 6th column
+                    DateCreated = reader.GetDateTime(7),
+                };
+                return df;
+            }
+            return null;
         }
     }
 }
