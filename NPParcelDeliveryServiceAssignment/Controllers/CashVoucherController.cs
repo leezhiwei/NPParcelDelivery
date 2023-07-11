@@ -126,7 +126,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             int thismonth = Convert.ToInt32(now.Month.ToString());
             string mbirthDay = mm.BirthDate.ToString();
             string[] birthMonthh = mbirthDay.Split("/");
-            int birthMonth = Convert.ToInt32(birthMonthh[0]);
+            int birthMonth = Convert.ToInt32(birthMonthh[1]);
             if (thismonth == birthMonth)
             {
                 ViewData["CanIssue"] = true;
