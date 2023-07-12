@@ -271,11 +271,13 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                     break;
                 }
             }
+            Parcel par = null;
             List<Parcel> palist = plist.GetAllParcel();
             foreach ( Parcel p in palist)
             {
                 if (p.ParcelID == d.ParcelID)
                 {
+                    par = p;
                     cashVoucher.ReceiverName = p.ReceiverName;
                     cashVoucher.ReceiverTelNo = p.ReceiverTelNo;
                     break;
@@ -294,7 +296,11 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 if (cashVoucher.ReceiverName == c.ReceiverName && cashVoucher.ReceiverTelNo == c.ReceiverTelNo && c.IssuingCode == "2" && c.DateTimeIssued.Year == yearcheck)
                 {
                     TempData["readyIssued"] = "You have already issue a cash voucher for this report, you cannot issue again!";
-                    allowAdd = false; 
+                    allowAdd = false;
+                    DeliveryFailure dfff = dflist.GetOne(par.ParcelID);
+                    dfff.StationMgrID = cashVoucher.StaffID;
+                    dfff.FollowUpAction = $"Follow up with sender for delivery failure completed by {stID} on {DateTime.Now}";
+                    dflist.Update(dfff);
                     break;
                 }
                 else
@@ -303,7 +309,11 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 }
             }
             if (allowAdd == true)
-            {
+            {//$"Follow up with sender for delivery failure  completed by StationMgrSG on {DateTime.Now}"
+                DeliveryFailure dfff = dflist.GetOne(par.ParcelID);
+                dfff.StationMgrID = cashVoucher.StaffID;
+                dfff.FollowUpAction = $"Follow up with sender for delivery failure completed by {stID} on {DateTime.Now}";
+                dflist.Update(dfff);
                 cashVoucher.CashVoucherID = clist.Add(cashVoucher);
                 TempData["Issued"] = "You have yet to issue a cash voucher, you are allow to issue a cash voucher!";
             }
