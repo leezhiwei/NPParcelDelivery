@@ -281,7 +281,6 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                     break;
                 }
             }
-
             cashVoucher.Amount = 20;
             cashVoucher.Currency = "SGD";
             cashVoucher.IssuingCode = "2";
@@ -305,6 +304,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             if (allowAdd == true)
             {
                 cashVoucher.CashVoucherID = clist.Add(cashVoucher);
+                df.Description = $"Follow up with sender for delivery failure completed by {3}";
                 TempData["Issued"] = "You have yet to issue a cash voucher, you are allow to issue a cash voucher!";
             }
             //dfsfhjbdefsivesgudeiogeshboiuejbioeusbhnseighealighiregerogeroriu

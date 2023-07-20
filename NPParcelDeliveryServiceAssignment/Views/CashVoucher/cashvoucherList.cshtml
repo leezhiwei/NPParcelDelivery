@@ -13,7 +13,7 @@
             <form asp-controller="CashVoucher" asp-action="CashvoucherList" method="post">
                 <label for="nameBox">@Html.DisplayNameFor(CashVoucher =>CashVoucher.ReceiverName)</label><br />
                 <input type="text" id="nameBox" name="nameBox" /><br>
-                <label for="telBox">@Html.DisplayNameFor(CashVoucher =>CashVoucher.ReceiverTelNo)</label><br />
+                <label for="telBox">@Html.DisplayNameFor(CashVoucher =>CashVoucher.ReceiverTelNo )</label><br />
                 <input type="text" id="telBox" name="telBox" /><br>
                 <button type="submit">Search Cash Voucher</button>
                 <p>@TempData["NOResult"]</p>
