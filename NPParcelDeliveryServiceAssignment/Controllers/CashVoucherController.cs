@@ -314,7 +314,6 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 dfff.FollowUpAction = $"Follow up with sender for delivery failure completed by {stID} on {DateTime.Now}";
                 dflist.Update(dfff);
                 cashVoucher.CashVoucherID = clist.Add(cashVoucher);
-                df.Description = $"Follow up with sender for delivery failure completed by {3}";
                 TempData["Issued"] = "You have yet to issue a cash voucher, you are allow to issue a cash voucher!";
             }
             //dfsfhjbdefsivesgudeiogeshboiuejbioeusbhnseighealighiregerogeroriu

@@ -115,13 +115,13 @@ namespace NPParcelDeliveryServiceAssignment.DALs
             SqlCommand cmd = conn.CreateCommand();
             //Specify an UPDATE SQL statement
             cmd.CommandText = @"update DeliveryFailure
-                                set 
-                                Description=@des
-                                WHERE ReportID = @pID";
+                                set
+                                FollowUpAction = @FUpaction
+                                WHERE ReportID = @ReportId";
             //Define the parameters used in SQL statement, value for each parameter
             //is retrieved from respective class's property.
-            cmd.Parameters.AddWithValue("@des", df.Description);
-            cmd.Parameters.AddWithValue("@pID", df.ParcelID);
+            cmd.Parameters.AddWithValue("@FUpaction", df.FollowUpAction);
+            cmd.Parameters.AddWithValue("@ReportId", df.ParcelID);
             //Open a database connection
             if (conn.State == System.Data.ConnectionState.Open)
             {
