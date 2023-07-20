@@ -9,6 +9,8 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
 {
     public class DeliveryController : Controller
     {
+        private CashVoucherDAL cvdal = new CashVoucherDAL();
+        private PaymentDAL paydal = new PaymentDAL();
         private ParcelDAL pdal = new ParcelDAL();
         private DeliveryHistoryDAL dhdal = new DeliveryHistoryDAL();
         private ShippingRateDAL srd = new ShippingRateDAL();
@@ -77,7 +79,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         }
         public ActionResult Insert()
         {
-            Parcel p = new Parcel
+            Parcel p = new Parcel //Setting default values
             {
                 Currency = "SGD",
                 ParcelWeight = 0.0,
@@ -137,7 +139,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             //Basic Feature 1 - Parcel Receiving, adding parcel delivery record
             string desc = $"Recieved parcel by {HttpContext.Session.GetString("UserID")} on {DateTime.Now.ToString("dd MMM yyyy hh:mm tt")}.";
 
-          DeliveryHistory dh = new DeliveryHistory
+            DeliveryHistory dh = new DeliveryHistory
             {
                 ParcelID = pdal.Add(p),
                 Description = desc,
@@ -783,63 +785,101 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         }
 
 
+        
+        
         public ActionResult PaymentTransaction()
         {
             ViewData["TranType"] = PopulateCVlist();
-            return View();
+            List<SelectListItem> templist = PopulateCVlist();
+            PaymentTransaction pt = new PaymentTransaction //Setting default values
+            {
+                Currency = "SGD",
+                TranType = Convert.ToString(templist[0])
+            };
+            return View(pt);
         }
+
+        
 
         // POST: Payment Transaction
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult PaymentTransaction(PaymentTransaction pt)
         {
+            List<SelectListItem> templist = PopulateCVlist();
             List<Parcel> pcls = pdal.GetAllParcel();
+            List<CashVoucher> cv = cvdal.GetAllCashVoucher();
+            //List<PaymentTransaction> ptsn = paydal.GetAllPayment();
             //Advanced Feature 4 - Parcel Receiving, Create Payment Transaction
 
-            decimal dc = 0;
-            decimal rdc = 0;
-            decimal sr = 0;
-
             bool cPID = false;
+            string sName = "";
+            decimal tAmt = 0;
 
             foreach (Parcel p in pcls) //Checks if parcel ID entered by user, exists in the database
             {
                 if (pt.ParcelID == p.ParcelID)
                 {
+                    sName = p.SenderName;
                     cPID = true; //Check parcel found turns true
+                    /*
+                    foreach (PaymentTransaction ptn in ptsn)
+                    {
+                        if (pt.ParcelID == ptn.ParcelID)
+                        {
+                            tAmt += ptn.AmtTran; //Total amount = previous transaction amount added together. E.g. a user can used both cash($10) & voucher($10) to pay for delivery charge of $20.
+                        }
+                        if ((pt.AmtTran + tAmt) > p.DeliveryCharge)
+                        {
+                            TempData["ErrorMsg"] = $"Transaction Amount exceeded delivery charge. You are not ALLOWED to pay extra! Please try again.";
+                            return RedirectToAction("PaymentTransaction");
+                        }
+                    }*/
+                    if (pt.AmtTran > p.DeliveryCharge)
+                    {
+                        TempData["ErrorMsg"] = $"Transaction amount exceeded delivery charge. You are not ALLOWED to pay extra! Please try again.";
+                        return RedirectToAction("PaymentTransaction");
+                    }
                     break;
                 }
             }
 
+
+            if (pt.TranType == "VOUC") //If transaction type is voucher
+            {
+                foreach(CashVoucher cvs in cv)
+                {
+                    if(sName == cvs.ReceiverName) //Checks if sender name matches receiver name from cashvoucher
+                    {
+                        if (pt.AmtTran > cvs.Amount) //Checks if amount exceeds available voucher
+                        {
+                            TempData["ErrorMsg"] = $"Transaction amount exceeded available cash voucher! Please try again.";
+                            return RedirectToAction("PaymentTransaction");
+                        }
+                    }
+                }
+            }
+
+
             if (cPID == false) //If parcel is not found in database, return back to page with temp data message
             {
                 TempData["ErrorMsg"] = $"Parcel ID: {pt.ParcelID} does not EXIST.";
-                return RedirectToAction("Payment Transaction");
+                return RedirectToAction("PaymentTransaction");
             }
 
             pt.TranDate = DateTime.Now; //Sets the transaction date to current time
 
-            //Basic Feature 1 - Parcel Receiving, adding parcel delivery record
-            string desc = $"Recieved parcel by {HttpContext.Session.GetString("UserID")} on {DateTime.Now.ToString("dd MMM yyyy hh:mm tt")}.";
-
-            /*
-            
             PaymentTransaction pts = new PaymentTransaction
             {
-
-            }
-
-            DeliveryHistory dh = new DeliveryHistory
-            {
-                ParcelID = pdal.Add(p),
-                Description = desc,
+                ParcelID = pt.ParcelID,
+                AmtTran = pt.AmtTran,
+                Currency= pt.Currency,
+                TranType = pt.TranType,
+                TranDate = pt.TranDate,
             };
-            dhdal.Add(dh); //Adding parcel ID & description into delivery history
+            paydal.Add(pts); //Adding payment details into payment transaction       
 
-            */
-
-            //TempData["InsertMessage"] = $"Parcel Added to Database! <br><br> ------------------ Parcel Delivery Order ------------------ <br><br> Parcel ID:  {p.ParcelID} <br> Parcel Weight:  {p.ParcelWeight} kg <br> From City and Country:  {p.FromCity}, {p.FromCountry} <br> To City and Country:  {p.ToCity}, {p.ToCountry} <br> Shipping Rate:  {String.Format("{0:0.##}", sr)}/kg <br> Delivery Charge (Raw):  ({String.Format("{0:0.##}", sr)} x {p.ParcelWeight}) = ${String.Format("{0:0.##}", dc)} <br> Delivery Charge (Rounded):  ${String.Format("{0:0.##}", rdc)} <br> Delivery Charge (Final):  ${String.Format("{0:0.##}", p.DeliveryCharge)} (Note: Minimum delivery charge is S$5.00) <br><br> ------------------------------------------------------------";
+            TempData["SuccessMsg"] = $"Payment Transaction with Parcel ID: {pt.ParcelID} is successfully added";
             return RedirectToAction("PaymentTransaction");
 
 

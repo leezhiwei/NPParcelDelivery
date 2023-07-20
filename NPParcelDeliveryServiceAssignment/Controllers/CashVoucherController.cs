@@ -157,12 +157,16 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
 			//----------------
 			List<Member>mblist = mlist.GetAllMember();
             Member mm = null;
-            foreach (Member m in mblist)
+            /*foreach (Member m in mblist)
             {
                 if (m.MemberID == id)
                 {
                     mm = m; break;
                 }
+            }*/
+            if (mlist.GetMIDByID(id).MemberID == id)
+            {
+                mm = mlist.GetMIDByID(id);
             }
             if (mm is null)
             {
@@ -181,16 +185,16 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             {
                 ViewData["CanIssue"] = true;
                 ViewData["CannotIssue"] = false;
-                TempData["cMonth"] = $"Current Month: {thismonth}";
-                TempData["mBirthMonth"] = $"Member Birth Day: {birthMonth}";
+                /*TempData["cMonth"] = $"Current Month: {thismonth}";
+                TempData["mBirthMonth"] = $"Member Birth Day: {birthMonth}";*/
                 TempData["IssueAmount"] = "Issue Amount: $10";
             }
             else
             {
                 ViewData["CanIssue"] = false;
                 ViewData["CannotIssue"] = true;
-                TempData["cMonth"] = $"Current Month: {thismonth}";
-                TempData["mBirthMonth"] = $"Member Birth Day: {birthMonth}";
+                /*TempData["cMonth"] = $"Current Month: {thismonth}";
+                TempData["mBirthMonth"] = $"Member Birth Day: {birthMonth}";*/
             }
 			//----------------
 			return View();
@@ -226,7 +230,6 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                     break;
                 }
             }
-
             cashVoucher.Amount = 10;
             cashVoucher.Currency = "SGD";
             cashVoucher.IssuingCode = "1";
@@ -234,7 +237,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             cashVoucher.ReceiverTelNo = m.TelNo;
             cashVoucher.DateTimeIssued = DateTime.Now;
             cashVoucher.Status = "0";
-            bool allowAdd = false;
+            bool allowAdd =false;
             foreach (CashVoucher c in nclist)
             {
                 if (m.Name == c.ReceiverName && m.TelNo == c.ReceiverTelNo && c.IssuingCode == "1" && c.DateTimeIssued.Year == yearcheck)
@@ -254,6 +257,15 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 cashVoucher.CashVoucherID = clist.Add(cashVoucher);
                 TempData["Issued"] = "You have successfully issue cash voucher";
             }
+            /*if (clist.GetCVIDByNameAndTelNum(cashVoucher.ReceiverName, cashVoucher.ReceiverTelNo).DateTimeIssued.Year == DateTime.Now.Year && clist.GetCVIDByNameAndTelNum(cashVoucher.ReceiverName, cashVoucher.ReceiverTelNo).Status=="1")
+            {
+                TempData["readyIssued"] = "Issuse Cash Voucher Failed! You have already Issue cash voucher this year!";
+            }
+            else if(clist.GetCVIDByNameAndTelNum(cashVoucher.ReceiverName, cashVoucher.ReceiverTelNo).DateTimeIssued.Year != DateTime.Now.Year && clist.GetCVIDByNameAndTelNum(cashVoucher.ReceiverName, cashVoucher.ReceiverTelNo).Status == "1")
+            {
+                cashVoucher.CashVoucherID = clist.Add(cashVoucher);
+                TempData["Issued"] = "You have successfully issue cash voucher";
+            }*/
             return View();
 		}
 
@@ -272,10 +284,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                     df = dff; break;
                 }
             }
-
             TempData["Delivery"] = JsonConvert.SerializeObject(df);
-
-
             //-----------------*******************----------------------------------
             int yearcheck = DateTime.Now.Year;
             DeliveryFailure d = null;
