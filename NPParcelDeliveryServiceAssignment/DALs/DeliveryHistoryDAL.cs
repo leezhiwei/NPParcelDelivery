@@ -3,7 +3,7 @@ using System.Data.SqlClient;
 
 namespace NPParcelDeliveryServiceAssignment.DALs
 {
-    public class DeliveryDAL
+    public class DeliveryHistoryDAL
     {
         private IConfiguration Configuration { get; }
         private SqlConnection conn;
@@ -19,7 +19,7 @@ namespace NPParcelDeliveryServiceAssignment.DALs
             }
         }
         //Constructor
-        public DeliveryDAL()
+        public DeliveryHistoryDAL()
         { //Read ConnectionString from appsettings.json file
             var builder = new ConfigurationBuilder()
                   .SetBasePath(Directory.GetCurrentDirectory())

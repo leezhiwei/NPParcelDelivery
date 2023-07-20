@@ -10,7 +10,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
     public class DeliveryController : Controller
     {
         private ParcelDAL pdal = new ParcelDAL();
-        private DeliveryDAL dhdal = new DeliveryDAL();
+        private DeliveryHistoryDAL dhdal = new DeliveryHistoryDAL();
         private ShippingRateDAL srd = new ShippingRateDAL();
         private StaffDAL sdal = new StaffDAL();
         private DeliveryFailureDAL dfdal = new DeliveryFailureDAL();
