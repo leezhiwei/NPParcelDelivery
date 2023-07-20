@@ -94,5 +94,34 @@ namespace NPParcelDeliveryServiceAssignment.DALs
             }
             return null;
         }
+
+        public Staff GetSIDByID(int id)
+        {
+            SqlCommand cmd = conn.CreateCommand(); //Specify the SELECT SQL statement
+            cmd.CommandText = @"SELECT * FROM Staff WHERE StaffID = @sid "; //Open a database connection
+            cmd.Parameters.AddWithValue("@sid", id);
+            if (conn.State == System.Data.ConnectionState.Open)
+            {
+                conn.Close();
+            }
+            conn.Open(); //Execute the SELECT SQL through a DataReader
+            SqlDataReader reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                Staff sta = new Staff
+                {
+                    StaffID = reader.GetInt32(0), //0: 1st column
+                    StaffName = reader.GetString(1), //1: 2nd column 
+                    //Get the first character of a string
+                    LoginID = reader.GetString(2), //2: 3rd column
+                    Password = reader.GetString(3), //3: 4th column
+                    Appointment = reader.GetString(4), //4: 4th column
+                    OfficeTelNo = reader.GetString(5), //6: 5th column
+                    Location = reader.GetString(6), //9: 6th column 
+                };
+                return sta;
+            }
+            return null;
+        }
     }
 }
