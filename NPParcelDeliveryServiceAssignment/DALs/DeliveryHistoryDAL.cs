@@ -78,5 +78,29 @@ namespace NPParcelDeliveryServiceAssignment.DALs
             //Return id when no error occurs.
             return history.RecordID;
         }
+
+        public DeliveryHistory GetOne(int dhid)
+        {
+            SqlCommand cmd = conn.CreateCommand(); //Specify the SELECT SQL statement
+            cmd.CommandText = @"SELECT * FROM DeliveryHistory WHERE RecordID = @rid"; //Open a database connection
+            cmd.Parameters.AddWithValue("@rid", dhid);
+            if (conn.State == System.Data.ConnectionState.Open)
+            {
+                conn.Close();
+            }
+            conn.Open(); //Execute the SELECT SQL through a DataReader
+            SqlDataReader reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                DeliveryHistory dh = new DeliveryHistory
+                {
+                    RecordID = reader.GetInt32(0), //0: 1st column
+                    ParcelID = reader.GetInt32(1), //1: 2nd column
+                    Description = reader.GetString(2), //1: 3rd column
+                };
+                return dh;
+            }
+            return null;
+        }
     }
 }

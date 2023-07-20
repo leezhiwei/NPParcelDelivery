@@ -120,7 +120,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             //Basic Feature 1 - Parcel Receiving, adding parcel delivery record
             string desc = $"Recieved parcel by {HttpContext.Session.GetString("UserID")} on {DateTime.Now.ToString("dd MMM yyyy hh:mm tt")}.";
 
-            DeliveryHistory dh = new DeliveryHistory
+          DeliveryHistory dh = new DeliveryHistory
             {
                 ParcelID = pdal.Add(p),
                 Description = desc,
@@ -431,16 +431,13 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             if (ModelState.IsValid)
             {
                 List<ShippingRate> shippingRateList = srd.GetAllShippingRate();
-                foreach (ShippingRate s in shippingRateList)
+                if (srd.IsInfoExist(shippingRate))
                 {
-                    if (s.ToCity == shippingRate.ToCity && s.ToCountry == shippingRate.ToCountry
-                        && s.FromCity == shippingRate.FromCity && s.FromCountry == shippingRate.FromCountry)
-                    {
-                        TempData["ErrorMessage"] = "Error Such Ship Rate Info is already Exisit!";
-                        return View();
-                    }
-
+                    TempData["ErrorMessage"] = "Error Such Ship Rate Info is already Exisit!";
+                    return View();
                 }
+
+                
                 string loginID = HttpContext.Session.GetString("UserID");
                 List<Staff> staffli = sdal.GetAllStaff();
                 foreach (Staff s in staffli)
