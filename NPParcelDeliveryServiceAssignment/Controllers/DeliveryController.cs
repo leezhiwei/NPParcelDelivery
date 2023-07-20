@@ -342,13 +342,65 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 TempData["Error2"] = "More than 5 parcel set. Please fufil more deliveries.";
                 return RedirectToAction("AssignParcels");
             }
+            
             Staff s = sdal.GetOneStaff(staffid);
+            if (s is null)
+            {
+                TempData["Error2"] = "Invalid StaffID!";
+                return RedirectToAction("AssignParcels");
+            }
             if (s.Appointment != "Delivery Man")
             {
                 TempData["Error2"] = "The selected Staff is not a delivery man";
                 return RedirectToAction("AssignParcels");
             }
-            int? rcount = pdal.Update(p);
+            void Merge(Parcel existingobject, Parcel somevalues)
+            {
+                // From stackoverflow, https://stackoverflow.com/questions/8702603/merging-two-objects-in-c-sharp, Reflection method
+                Type t = typeof(Parcel);
+                // get type obj of ShippingRate
+                var properties = t.GetProperties().Where(prop => prop.CanRead && prop.CanWrite);
+                // get property of obj
+                foreach (var prop in properties)
+                { // foreach property
+                    var value = prop.GetValue(somevalues);
+                    // get the value from the "blank" from form object, some value null or 0
+                    if (value is null)
+                    { // if the value is indeed null
+                        var valuefromexistingobj = prop.GetValue(existingobject);
+                        // get this data from the "existing" object
+                        prop.SetValue(somevalues, valuefromexistingobj);
+                        // set it into the new object
+                        continue; // move on to next property
+                    }
+                    try // try to convert to int, exception move to catch
+                    { // if above never trigger, check for ID 0 or number 0
+                        int? numberval = (int)value; // convert to int 
+                        if (numberval == 0)
+                        { // if the numbervalue is 0, eg id
+                            var valuefromexistingobj = prop.GetValue(existingobject);
+                            // get this data from "existing" object.
+                            prop.SetValue(somevalues, valuefromexistingobj);
+                            // set it into new object
+                            continue; // move on to next property
+                        }
+                    }
+                    catch // catch the exception
+                    {
+                        continue; // move to new object
+                    }
+                }
+            }
+            int? rcount = 0;
+            foreach (Parcel pa in plist)
+            {
+                if (pa.ParcelID == p.ParcelID)
+                {
+                    Merge(pa, p);
+                    rcount = pdal.Update(p);
+                }
+            }
+            
             if (rcount is null)
             {
                 TempData["NotFound"] = $"There is no StaffID matching {p.DeliveryManID}";
@@ -636,6 +688,57 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             });
             TempData["Success"] = "You have successfully updated the database.";
             return RedirectToAction("List");
+        }
+
+        public ActionResult DeliverySearch()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeliverySearch(IFormCollection form)
+        {
+            List<Parcel> pl = pdal.GetAllParcel();
+            List<Parcel> parcelTemp = new List<Parcel>();
+            Parcel pTemp = null;
+            string ParcelId;
+            string rname;
+            string sname;
+            int pid = 0;
+
+            
+            ParcelId = form["ParcelID"];
+            rname = form["rnameSearch"];
+            sname = form["snameSearch"];
+            try
+            {
+                pid = Convert.ToInt32(ParcelId);
+            }
+            catch
+            {
+                pid = 0;
+            }
+            foreach (Parcel parcel in pl)
+            {
+                if (parcel.ParcelID == pid || parcel.ReceiverName == rname || parcel.SenderName == sname)
+                {
+                    parcelTemp.Add(parcel); //If parcel matches the record in the list, add parcel to tempparcel for viewing
+                    pTemp = parcel;
+                    break;
+                }
+            }
+
+            if (parcelTemp.Count > 0) //If tempparcel is NOT empty and contains information
+            {
+                TempData["ParcelFound"] = $"Parcel with the ID: {ParcelId}, found.";
+                return View(pTemp);
+            }
+            else //prints the error msg that parcel is not found, since the tempparcel is empty
+            {
+                TempData["ParcelError"] = $"Parcel with the ID: {ParcelId}, does not exist in the delivery orders.";
+                return View(pTemp);
+            }
         }
     }
 }

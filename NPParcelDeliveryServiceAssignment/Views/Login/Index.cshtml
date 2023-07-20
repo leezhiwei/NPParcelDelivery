@@ -14,75 +14,120 @@
     <link rel="stylesheet" href="~/css/site.css">
 </head>
 <body>
-<div>
-    <h1 class="text-center">Welcome to NPCS</h1>
-    <h3 class="text-center">Please Login</h3>
-</div>
-<div class="container d-flex justify-content-center" id="loginContainer">
-    <form asp-controller="Login" asp-action="Index" method="post">
-        <!-- Email input -->
-        <div class="form-outline mb-4" id="emailInput">
-            <label class="form-label" for="UserID">UserID</label>
-            <input type="text" name="UserID" id="UserID" class="form-control" />
-        </div>
+    <div>
+        <h1 class="text-center">Welcome to NPCS</h1>
+        <h3 class="text-center">Please Login</h3>
+    </div>
+    <div class="container d-flex justify-content-center" id="loginContainer">
+        <form asp-controller="Login" asp-action="Index" method="post">
+            <!-- Email input -->
+            <div class="form-outline mb-4" id="emailInput">
+                <label class="form-label" for="UserID">UserID</label>
+                <input type="text" name="UserID" id="UserID" class="form-control" />
+            </div>
 
-        <!-- Password input -->
-        <div class="form-outline mb-4" id="passwordInput">
-            <label class="form-label" for="UserPass">Password</label>
-            <input type="password" name="UserPass" id="UserPass" class="form-control" />
-        </div>
-      
-       
-        <!-- 2 column grid layout for inline styling -->
-        <div class="row mb-4">
-            <!--<div class="col d-flex justify-content-center">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="form2Example31" checked />
-                        <label class="form-check-label" for="form2Example31"> Remember me </label>
-                    </div>
-            </div>-->
-            <!-- Simple link -->
-            <!--<div class="col">
-                <a href="#!">Forgot password?</a>
-            </div>-->
-        </div>
-        <!-- Submit button -->
-        <div class="text-center">
-            <button type="submit" class="btn btn-primary btn-block mb-4">Sign in</button>
-        </div>
-       
-        
-        <!--<div class="text-center">
-            <p>Not a member? <a href="#!">Register</a></p>
-            <p>or sign up with:</p>
-            <button type="button" class="btn btn-link btn-floating mx-1">
-                <i class="fab fa-facebook-f"></i>
-            </button>
-
-            <button type="button" class="btn btn-link btn-floating mx-1">
-                <i class="fab fa-google"></i>
-            </button>
-
-            <button type="button" class="btn btn-link btn-floating mx-1">
-                <i class="fab fa-twitter"></i>
-            </button>
-
-            <button type="button" class="btn btn-link btn-floating mx-1">
-                <i class="fab fa-github"></i>
-            </button>-->
+            <!-- Password input -->
+            <div class="form-outline mb-4" id="passwordInput">
+                <label class="form-label" for="UserPass">Password</label>
+                <input type="password" name="UserPass" id="UserPass" class="form-control" />
+            </div>
 
 
-        <div class="text-center" id="ErrorMsg">@ViewData["ErrorMsg"]</div>
-        <!-- Register buttons -->
-        <p class="text-center"> Not a member? Register Here:</p>
-        <a asp-action="Register">Register Member</a>
-        
-        
-  
-    </form>
-        
-   
-</div>
-<script src="/_framework/aspnetcore-browser-refresh.js"></script>
+            <!-- 2 column grid layout for inline styling -->
+            <div class="row mb-4">
+                <!--<div class="col d-flex justify-content-center">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="form2Example31" checked />
+                            <label class="form-check-label" for="form2Example31"> Remember me </label>
+                        </div>
+                </div>-->
+                <!-- Simple link -->
+                <!--<div class="col">
+                    <a href="#!">Forgot password?</a>
+                </div>-->
+            </div>
+            <!-- Submit button -->
+            <div class="text-center">
+                <button id="sbutton" type="button" class="btn btn-primary btn-block mb-4">Sign in</button>
+            </div>
+
+
+            <!--<div class="text-center">
+                <p>Not a member? <a href="#!">Register</a></p>
+                <p>or sign up with:</p>
+                <button type="button" class="btn btn-link btn-floating mx-1">
+                    <i class="fab fa-facebook-f"></i>
+                </button>
+
+                <button type="button" class="btn btn-link btn-floating mx-1">
+                    <i class="fab fa-google"></i>
+                </button>
+
+                <button type="button" class="btn btn-link btn-floating mx-1">
+                    <i class="fab fa-twitter"></i>
+                </button>
+
+                <button type="button" class="btn btn-link btn-floating mx-1">
+                    <i class="fab fa-github"></i>
+                </button>-->
+
+
+            <div class="text-center" id="ErrorMsg">@ViewData["ErrorMsg"]</div>
+            <!-- Register buttons -->
+            <p class="text-center"> Not a member? Register Here:</p>
+            <a asp-action="Register">Register Member</a>
+
+
+
+        </form>
+
+
+    </div>
+    <script src="/_framework/aspnetcore-browser-refresh.js"></script>
+    <script src="/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/lib/jquery/dist/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script>
+        let obj;
+        function getsalt() {
+            return new Promise(function (resolve, reject) {
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("GetSalt","Login")',
+                    dataType: "json",
+                    success: function (data) {
+                        resolve(data)
+                    },
+                    error: function (err) {
+                        reject(err)
+                    }
+                }
+                );
+            });
+        }
+        getsalt().then(function (data) {
+            obj = data;
+        }).catch(function (err) {
+            window.reload();
+        });
+        function OnSubmit() {
+            var salt = atob(atob(obj.saltString));
+            var pass = $("#UserPass");
+            var cryptoobj = CryptoJS.algo.SHA512.create();
+            cryptoobj.update(pass.val(), 'utf-8');
+            cryptoobj.update(CryptoJS.SHA512(salt), 'utf-8');
+            var hash = cryptoobj.finalize().toString(CryptoJS.enc.Base64);
+
+            // Set the hash value in the element
+            pass.val(hash);
+            return true;
+        }
+        $('#sbutton').click(function () {
+            if (OnSubmit() == true) {
+                var form = $('form');
+                form.submit();
+            }
+        });
+    </script>
 </body>
 </html>

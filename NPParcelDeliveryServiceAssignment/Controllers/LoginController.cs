@@ -4,6 +4,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.TagHelpers;
 using NPParcelDeliveryServiceAssignment.DALs;
 using NPParcelDeliveryServiceAssignment.Models;
+using System.Buffers.Text;
+using System.Runtime.InteropServices.ObjectiveC;
+using System.Security.Cryptography.X509Certificates;
+using System.Security.Permissions;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace NPParcelDeliveryServiceAssignment.Controllers
 {
@@ -53,17 +58,28 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             return View();
         }
 
-        public ActionResult Register() {
+        public ActionResult Register() 
+        {
             return View();
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Register(Member member)
         {
+            var props = typeof(Member).GetProperties(); // getallprop from typeofmember
+            foreach (var prop in props)
+            { //foreach prop
+                object value = prop.GetValue(member, null); // get the value
+                if (value is null)
+                { // if null
+                    ViewData["ErrorMsg"] = "Please fill in all required fields"; // error
+                    return View(); // return view
+                }
+            }
             List<Member> mlist = md.GetAllMember();
             foreach (Member m in mlist)
             {
-                if (m.IsDeepEqual(member))
+                if (m.EmailAddr == member.EmailAddr)
                 {
                     ViewData["ErrorMsg"] = "Error: Record exists in Database.";
                     return View();
@@ -71,7 +87,16 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             }
 			md.AddMember(member);
             return RedirectToAction("Index");
-            
 		}
-    }
+        [HttpPost]
+        public async Task<ActionResult> GetSalt()
+        {
+            string salt = "ThisIsASaltToMakePassHashesNotSoEasyToCrack";
+            var plainbytes = System.Text.Encoding.UTF8.GetBytes(salt);
+            Salt s = new Salt();
+            s.Id = 1;
+            s.SaltString = System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(Convert.ToString(System.Convert.ToBase64String(plainbytes))));
+            return Json(s);
+        }
+	}
 }
