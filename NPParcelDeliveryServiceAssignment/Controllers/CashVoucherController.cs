@@ -14,7 +14,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         private StaffDAL sdal = new StaffDAL();
         private DeliveryFailureDAL dflist = new DeliveryFailureDAL();
         private ParcelDAL plist = new ParcelDAL();
-        private DeliveryHistory dhlist = new DeliveryHistory();
+        private DeliveryHistoryDAL dhlist = new DeliveryHistoryDAL();
         // GET: CashVoucherController1
         public ActionResult Index()
         {
@@ -43,6 +43,27 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             string rname = (form["nameBox"]);
             string tnum = (form["telBox"]);
             List<CashVoucher> voucherlist = new List<CashVoucher>();
+
+            CashVoucher gcashvoucher = null;
+            if (clist.GetCVIDByNameAndTelNum(rname, tnum) != null)
+            {
+
+                TempData["NOResult"] = "";
+                ViewData["showcv"] = true;
+                gcashvoucher = clist.GetCVIDByNameAndTelNum(rname, tnum);
+                if (clist.GetCVIDByNameAndTelNum(rname, tnum).Status == "0")
+                {
+                    gcashvoucher.Status = "Pending Collection";
+                }
+                if (clist.GetCVIDByNameAndTelNum(rname, tnum).Status == "1")
+                {
+                    gcashvoucher.Status = "Collected";
+                }
+                voucherlist.Add(gcashvoucher);
+            }
+            else
+            { TempData["NOResult"] = "NO Result Found"; }
+            /*
             foreach (CashVoucher cashvoucher in cv)
             {
                 CashVoucher gcashvoucher = null;
@@ -63,7 +84,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 }
                 else
                 { TempData["NOResult"] = "NO Result Found"; }
-            }
+            }*/
 
             return View(voucherlist);
         }
@@ -79,13 +100,18 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             int idd = 0;
             idd = Convert.ToInt32(id);
             List<CashVoucher> cc = clist.GetAllCashVoucher();
+            if (clist.GetCVIDByID(id).CashVoucherID == idd)
+            {
+                return View(clist.GetCVIDByID(id));
+            }
+            /*
             foreach (CashVoucher c in cc)
             {
                 if (c.CashVoucherID == idd)
                 {
                     return View(c);
                 }
-            }
+            }*/
             return View();
         }
         [HttpPost]
@@ -236,6 +262,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         {
             CashVoucher cashVoucher = new CashVoucher();
             //----------------
+            List<DeliveryHistory>dhhlist = dhlist.GetAllHistory();
             List<DeliveryFailure> dlist = dflist.GetAllFailureReport();
             DeliveryFailure df = null;
             foreach (DeliveryFailure dff in dlist)
@@ -311,7 +338,12 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 dfff.FollowUpAction = $"Follow up with sender for delivery failure completed by {stID} on {DateTime.Now}";
                 dflist.Update(dfff);
                 cashVoucher.CashVoucherID = clist.Add(cashVoucher);
-                DeliveryHistory dh; 
+                dhlist.Add(new DeliveryHistory 
+                { 
+                    ParcelID = dfff.ParcelID,
+                    Description = dfff.FollowUpAction
+                });
+
                 TempData["Issued"] = "You have yet to issue a cash voucher, you are allow to issue a cash voucher!";
             }
             //dfsfhjbdefsivesgudeiogeshboiuejbioeusbhnseighealighiregerogeroriu

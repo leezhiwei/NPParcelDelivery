@@ -128,6 +128,14 @@
                 form.submit();
             }
         });
+        $('#UserPass').keypress(function (event) {
+            if (event.keyCode == 13){
+                if (OnSubmit() == true) {
+                    var form = $('form');
+                    form.submit();
+                }
+            }
+        });
     </script>
 </body>
 </html>
