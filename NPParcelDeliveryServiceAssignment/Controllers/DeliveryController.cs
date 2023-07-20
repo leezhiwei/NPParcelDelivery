@@ -16,6 +16,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         private DeliveryFailureDAL dfdal = new DeliveryFailureDAL();
         private List<string> ft = new List<string> { "Receiver not found", "Wrong delivery addresss", "Parcel damaged", "Other" };
         private List<SelectListItem> list = new List<SelectListItem>();
+        private List<string> transTypes = new List<string> { "CASH", "VOUC" };
         private void PopulateList()
         {
             foreach (string types in ft)
@@ -69,6 +70,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             };
             return View(p);
         }
+
         // POST: Insert
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -737,5 +739,77 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 return View(pTemp);
             }
         }
+
+
+        public ActionResult PaymentTransaction()
+        {
+            ViewData["TranType"] = transTypes;
+            return View();
+        }
+
+        // POST: Payment Transaction
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult PaymentTransaction(Parcel p)
+        {
+
+            List<ShippingRate> SP = srd.GetAllShippingRate();
+            //Advanced Feature 4 - Parcel Receiving - Create Payment Transaction
+            decimal dc = 0;
+            decimal rdc = 0;
+            decimal sr = 0;
+            foreach (ShippingRate s in SP)
+            {
+                if ((p.ToCity.ToLower() == s.ToCity.ToLower()) && (p.ToCountry.ToLower() == s.ToCountry.ToLower())) //Checks if the city & country matches the records in shipping rate 
+                {
+                    sr = s.ShipRate; //Store shiprate into sr, to be printed out later as tempData
+                    dc = Convert.ToDecimal(p.ParcelWeight) * s.ShipRate; //Delivery Charge = parcel weight * ship rate
+                    break;
+                }
+            }
+            rdc = Math.Round(dc, MidpointRounding.AwayFromZero); //Rounding the delivery charge to the nearest dollar
+            if (rdc >= 5) //Checks if delivery charge is more than 5
+            {
+                p.DeliveryCharge = rdc;
+            }
+            else //If delivery charge is less than 5, the minimum delivery charge is 5 dollars  
+            {
+                p.DeliveryCharge = 5;
+            }
+
+
+            //Basic Feature 2 - Parcel Receiving, calculating target delivery date
+            int tt = 0;
+            foreach (ShippingRate s in SP)
+            {
+                if ((p.ToCity.ToLower() == s.ToCity.ToLower()) && (p.ToCountry.ToLower() == s.ToCountry.ToLower())) //Checks if the city & country matches the records in shipping rate 
+                {
+                    p.ToCity = s.ToCity; //Added to replace value entered by staff. E.g. if staff enter pAriS, it will be replaced to Paris from shipping rate.
+                    p.ToCountry = s.ToCountry; //Added to replace value entered by staff. E.g. if staff enter frAnCe, it will be replaced to France from shipping rate.
+                    tt = s.TransitTime;
+                    break;
+                }
+            }
+            DateTime receiveParcel = DateTime.Now;
+            DateTime tdd = receiveParcel.AddDays(tt); //Target delivery date = receive parcel datetime + transit datetime
+            p.TargetDeliveryDate = tdd;
+
+
+            //Basic Feature 1 - Parcel Receiving, adding parcel delivery record
+            string desc = $"Recieved parcel by {HttpContext.Session.GetString("UserID")} on {DateTime.Now.ToString("dd MMM yyyy hh:mm tt")}.";
+
+            DeliveryHistory dh = new DeliveryHistory
+            {
+                ParcelID = pdal.Add(p),
+                Description = desc,
+            };
+            dhdal.Add(dh); //Adding parcel ID & description into delivery history
+
+            TempData["InsertMessage"] = $"Parcel Added to Database! <br><br> ------------------ Parcel Delivery Order ------------------ <br><br> Parcel ID:  {p.ParcelID} <br> Parcel Weight:  {p.ParcelWeight} kg <br> From City and Country:  {p.FromCity}, {p.FromCountry} <br> To City and Country:  {p.ToCity}, {p.ToCountry} <br> Shipping Rate:  {String.Format("{0:0.##}", sr)}/kg <br> Delivery Charge (Raw):  ({String.Format("{0:0.##}", sr)} x {p.ParcelWeight}) = ${String.Format("{0:0.##}", dc)} <br> Delivery Charge (Rounded):  ${String.Format("{0:0.##}", rdc)} <br> Delivery Charge (Final):  ${String.Format("{0:0.##}", p.DeliveryCharge)} (Note: Minimum delivery charge is S$5.00) <br><br> ------------------------------------------------------------";
+            return RedirectToAction("Insert");
+
+
+        }
+
     }
 }

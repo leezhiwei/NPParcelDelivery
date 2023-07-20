@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.TagHelpers;
 using NPParcelDeliveryServiceAssignment.DALs;
 using NPParcelDeliveryServiceAssignment.Models;
 using System.Buffers.Text;
+using System.Data.SqlTypes;
 using System.Runtime.InteropServices.ObjectiveC;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Permissions;
@@ -58,7 +59,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             return View();
         }
 
-        public ActionResult Register() 
+        public ActionResult Register()
         {
             return View();
         }
@@ -85,18 +86,21 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                     return View();
                 }
             }
-			md.AddMember(member);
+            md.AddMember(member);
             return RedirectToAction("Index");
-		}
+        }
         [HttpPost]
         public async Task<ActionResult> GetSalt()
         {
             string salt = "ThisIsASaltToMakePassHashesNotSoEasyToCrack";
             var plainbytes = System.Text.Encoding.UTF8.GetBytes(salt);
-            Salt s = new Salt();
-            s.Id = 1;
-            s.SaltString = System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(Convert.ToString(System.Convert.ToBase64String(plainbytes))));
+            Salt s = new Salt
+            {
+                Id = 1,
+                SaltString = System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(Convert.ToString(System.Convert.ToBase64String(plainbytes))))
+            };
+
             return Json(s);
         }
-	}
+    }
 }
