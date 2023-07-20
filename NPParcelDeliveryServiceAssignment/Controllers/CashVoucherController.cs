@@ -43,6 +43,27 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             string rname = (form["nameBox"]);
             string tnum = (form["telBox"]);
             List<CashVoucher> voucherlist = new List<CashVoucher>();
+
+            CashVoucher gcashvoucher = null;
+            if (clist.GetCVIDByNameAndTelNum(rname, tnum) != null)
+            {
+
+                TempData["NOResult"] = "";
+                ViewData["showcv"] = true;
+                gcashvoucher = clist.GetCVIDByNameAndTelNum(rname, tnum);
+                if (clist.GetCVIDByNameAndTelNum(rname, tnum).Status == "0")
+                {
+                    gcashvoucher.Status = "Pending Collection";
+                }
+                if (clist.GetCVIDByNameAndTelNum(rname, tnum).Status == "1")
+                {
+                    gcashvoucher.Status = "Collected";
+                }
+                voucherlist.Add(gcashvoucher);
+            }
+            else
+            { TempData["NOResult"] = "NO Result Found"; }
+            /*
             foreach (CashVoucher cashvoucher in cv)
             {
                 CashVoucher gcashvoucher = null;
@@ -63,7 +84,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 }
                 else
                 { TempData["NOResult"] = "NO Result Found"; }
-            }
+            }*/
 
             return View(voucherlist);
         }
@@ -79,13 +100,18 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             int idd = 0;
             idd = Convert.ToInt32(id);
             List<CashVoucher> cc = clist.GetAllCashVoucher();
+            if (clist.GetCVIDByID(id).CashVoucherID == idd)
+            {
+                return View(clist.GetCVIDByID(id));
+            }
+            /*
             foreach (CashVoucher c in cc)
             {
                 if (c.CashVoucherID == idd)
                 {
                     return View(c);
                 }
-            }
+            }*/
             return View();
         }
         [HttpPost]
