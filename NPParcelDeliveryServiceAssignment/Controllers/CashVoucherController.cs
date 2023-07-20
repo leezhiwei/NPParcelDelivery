@@ -91,8 +91,8 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
 
         public ActionResult IssueCashVoucherList()
         {
-			List<Member> mblist = mlist.GetAllMember();
-			return View(mblist);
+			List<Member> mblist = mlist.GetMemberDOBMonth();
+            return View(mblist);
         }
 
         public ActionResult CashVoucherUpdate(int id)

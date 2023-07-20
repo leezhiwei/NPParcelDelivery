@@ -109,5 +109,34 @@ namespace NPParcelDeliveryServiceAssignment.DALs
             }
             return null;
         }
+        public List<Member> GetMemberDOBMonth()
+        {
+            List<Member> members = new List<Member>();
+            SqlCommand cmd = conn.CreateCommand(); //Specify the SELECT SQL statement
+            cmd.CommandText = @"SELECT * FROM Member WHERE MONTH(BirthDate) = MONTH(GETDATE())"; //Open a database connection
+            if (conn.State == System.Data.ConnectionState.Open)
+            {
+                conn.Close();
+            }
+            conn.Open(); //Execute the SELECT SQL through a DataReader
+            SqlDataReader reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                members.Add(new Member
+                {
+                    MemberID = reader.GetInt32(0), //0: 1st column
+                    Name = reader.GetString(1), //1: 2nd column 
+                    //Get the first character of a string
+                    Salutation = reader.GetString(2), //2: 3rd column
+                    TelNo = reader.GetString(3), //3: 4th column
+                    EmailAddr = reader.GetString(4), //4: 4th column
+                    Password = reader.GetString(5), //6: 5th column
+                    BirthDate = reader.GetDateTime(6), //9: 6th column
+                    City = reader.GetString(7),
+                    Country = reader.GetString(8),
+                });
+            }
+            return members;
+        }
     }
 }
