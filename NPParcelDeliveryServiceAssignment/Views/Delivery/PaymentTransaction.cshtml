@@ -5,7 +5,7 @@
     Layout = "~/Views/Shared/_fostaffLayout.cshtml";
 }
 
-<h1>PaymentTransaction</h1>
+<h1>Payment Transaction</h1>
 
 <hr />
 <div class="row">
@@ -37,6 +37,9 @@
                 <input type="submit" value="Create" class="btn btn-primary" />
                 <input type="reset" value="Cancel" class="btn btn-primary" />
             </div>
+            <br />
+            <p style="color:green">@TempData["SuccessMsg"]</p>
+            <p style="color:red">@TempData["ErrorMsg"]</p>
         </form>
     </div>
 </div>
