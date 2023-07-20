@@ -14,6 +14,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         private StaffDAL sdal = new StaffDAL();
         private DeliveryFailureDAL dflist = new DeliveryFailureDAL();
         private ParcelDAL plist = new ParcelDAL();
+        private DeliveryHistory dhlist = new DeliveryHistory();
         // GET: CashVoucherController1
         public ActionResult Index()
         {
@@ -296,10 +297,6 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 {
                     TempData["readyIssued"] = "You have already issue a cash voucher for this report, you cannot issue again!";
                     allowAdd = false;
-                    DeliveryFailure dfff = dflist.GetOne(par.ParcelID);
-                    dfff.StationMgrID = cashVoucher.StaffID;
-                    dfff.FollowUpAction = $"Follow up with sender for delivery failure completed by {stID} on {DateTime.Now}";
-                    dflist.Update(dfff);
                     break;
                 }
                 else
@@ -314,6 +311,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 dfff.FollowUpAction = $"Follow up with sender for delivery failure completed by {stID} on {DateTime.Now}";
                 dflist.Update(dfff);
                 cashVoucher.CashVoucherID = clist.Add(cashVoucher);
+                DeliveryHistory dh 
                 TempData["Issued"] = "You have yet to issue a cash voucher, you are allow to issue a cash voucher!";
             }
             //dfsfhjbdefsivesgudeiogeshboiuejbioeusbhnseighealighiregerogeroriu

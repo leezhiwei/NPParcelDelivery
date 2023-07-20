@@ -121,7 +121,7 @@ namespace NPParcelDeliveryServiceAssignment.DALs
             //Define the parameters used in SQL statement, value for each parameter
             //is retrieved from respective class's property.
             cmd.Parameters.AddWithValue("@FUpaction", df.FollowUpAction);
-            cmd.Parameters.AddWithValue("@ReportId", df.ParcelID);
+            cmd.Parameters.AddWithValue("@ReportId", df.ReportID);
             //Open a database connection
             if (conn.State == System.Data.ConnectionState.Open)
             {
