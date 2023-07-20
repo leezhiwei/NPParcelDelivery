@@ -16,7 +16,21 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         private DeliveryFailureDAL dfdal = new DeliveryFailureDAL();
         private List<string> ft = new List<string> { "Receiver not found", "Wrong delivery addresss", "Parcel damaged", "Other" };
         private List<SelectListItem> list = new List<SelectListItem>();
-        private List<string> transTypes = new List<string> { "CASH", "VOUC" };
+        private List<SelectListItem> PopulateAgain()
+        {
+            List<SelectListItem> list = new List<SelectListItem>();
+            list.Add(new SelectListItem
+            {
+                Text = "Cash",
+                Value = "CASH"
+            });
+            list.Add(new SelectListItem
+            {
+                Text = "Voucher",
+                Value = "VOUC"
+            });
+            return list;
+        }
         private void PopulateList()
         {
             foreach (string types in ft)
@@ -743,7 +757,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
 
         public ActionResult PaymentTransaction()
         {
-            ViewData["TranType"] = transTypes;
+            ViewData["TranType"] = PopulateAgain();
             return View();
         }
 

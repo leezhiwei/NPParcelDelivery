@@ -34,7 +34,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="TranType" class="control-label"></label>
-                <select asp-for="TranType" asp-items="@ViewData["TranType"] as List<SelectListItem>"></select>
+                <select asp-for="TranType" asp-items="@(new SelectList(ViewData["TranType"] as List<SelectListItem>,"Value","Text"))" class="form-select"></select>
                 
             </div>
             <div class="form-group">
