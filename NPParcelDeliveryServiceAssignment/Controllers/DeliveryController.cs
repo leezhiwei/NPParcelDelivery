@@ -16,6 +16,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         private DeliveryFailureDAL dfdal = new DeliveryFailureDAL();
         private List<string> ft = new List<string> { "Receiver not found", "Wrong delivery addresss", "Parcel damaged", "Other" };
         private List<SelectListItem> list = new List<SelectListItem>();
+        private MemberDAL mdal = new MemberDAL();
         private List<SelectListItem> PopulateCVlist()
         {
             List<SelectListItem> list = new List<SelectListItem>();
@@ -705,6 +706,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
 
         public ActionResult DeliverySearch()
         {
+            ViewData["ShowDetail"] = false;
             return View();
         }
 
@@ -745,11 +747,37 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             if (parcelTemp.Count > 0) //If tempparcel is NOT empty and contains information
             {
                 TempData["ParcelFound"] = $"Parcel with the ID: {ParcelId}, found.";
-                return View(pTemp);
+                ViewData["ShowDetail"] = true;
+                if (pTemp.DeliveryStatus == "0")
+                {
+                    TempData["ParcelStatus"] = "Pending Delivery";
+				}
+                else if (pTemp.DeliveryStatus == "1")
+				{
+					TempData["ParcelStatus"] = "Delivery to Destination in Progress";
+			    }
+				else if (pTemp.DeliveryStatus == "2")
+				{
+					TempData["ParcelStatus"] = "Delivery to Airport in Progress";
+				}
+				else if (pTemp.DeliveryStatus == "3")
+				{
+					TempData["ParcelStatus"] = "Delivery Completed";
+				}
+                else if (pTemp.DeliveryStatus == "4")
+				{
+					TempData["ParcelStatus"] = "Delivery Failed";
+				}
+                else
+                {
+                    TempData["ParcelStatus"] = " ";
+                }
+				return View(pTemp);
             }
             else //prints the error msg that parcel is not found, since the tempparcel is empty
             {
                 TempData["ParcelError"] = $"Parcel with the ID: {ParcelId}, does not exist in the delivery orders.";
+                ViewData["ShowDetail"] = false;
                 return View(pTemp);
             }
         }
@@ -817,5 +845,26 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
 
         }
 
+        public ActionResult DeliveryHist(int? id)
+        {
+            int tempid = 0;
+            try
+            {
+                tempid = Convert.ToInt32(id);
+            }
+            catch
+            {
+				return View(new List<DeliveryHistory>());
+			}
+            List<DeliveryHistory> vList = dhdal.GetParcelHistory(tempid);
+            return View(vList);
+        }
+
+        public IActionResult CustomerTracking()
+        {
+            Member m = mdal.GetMemberfromLoginID(HttpContext.Session.GetString("UserID"));
+            List<Parcel> plist = pdal.GetParcelFromMember(m);
+            return View(plist);
+        }
     }
 }

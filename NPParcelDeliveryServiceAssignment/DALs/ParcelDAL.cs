@@ -194,5 +194,46 @@ namespace NPParcelDeliveryServiceAssignment.DALs
             }
             return null;
         }
-    }
+		public List<Parcel> GetParcelFromMember(Member m)
+		{
+			//Create a SqlCommand object from connection object
+			SqlCommand cmd = conn.CreateCommand(); //Specify the SELECT SQL statement
+			cmd.CommandText = @"SELECT * FROM Parcel WHERE (SenderName = @sn AND SenderTelNo = @stelno) OR (ReceiverName = @sn AND ReceiverTelNo = @stelno)"; //Open a database connection
+			cmd.Parameters.AddWithValue("@sn", m.Name);
+			cmd.Parameters.AddWithValue("@stelno", m.TelNo);
+			conn.Open(); //Execute the SELECT SQL through a DataReader
+			SqlDataReader reader = cmd.ExecuteReader();
+			//Read all records until the end, save data into a staff list
+			List<Parcel> parcelList = new List<Parcel>();
+			while (reader.Read())
+			{
+				parcelList.Add(new Parcel
+				{
+					ParcelID = reader.GetInt32(0),
+					ItemDescription = !reader.IsDBNull(1) ?
+					reader.GetString(1) : (string)null,
+					SenderName = reader.GetString(2),
+					SenderTelNo = reader.GetString(3),
+					ReceiverName = reader.GetString(4),
+					ReceiverTelNo = reader.GetString(5),
+					DeliveryAddress = reader.GetString(6),
+					FromCity = reader.GetString(7),
+					FromCountry = reader.GetString(8),
+					ToCity = reader.GetString(9),
+					ToCountry = reader.GetString(10),
+					ParcelWeight = reader.GetDouble(11),
+					DeliveryCharge = reader.GetDecimal(12),
+					Currency = reader.GetString(13),
+					TargetDeliveryDate = reader.GetDateTime(14),
+					DeliveryStatus = reader.GetString(15),
+					DeliveryManID = CheckNull(reader, 16),
+				});
+			}
+			//Close DataReader
+			reader.Close();
+			//Close the database connection
+			conn.Close();
+			return parcelList;
+		}
+	}
 }

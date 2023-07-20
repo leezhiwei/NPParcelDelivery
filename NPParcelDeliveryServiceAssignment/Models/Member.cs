@@ -22,6 +22,7 @@ namespace NPParcelDeliveryServiceAssignment.Models
 
         [Required]
         [Display(Name = "Email Address")]
+        [DataType(DataType.EmailAddress)]
         [RegisterValidation]
         [RegexStringValidator("^\\\\S+@\\\\S+\\\\.\\\\S+$")]
 		public string EmailAddr { get; set; }
