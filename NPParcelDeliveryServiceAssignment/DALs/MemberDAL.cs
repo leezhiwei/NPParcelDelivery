@@ -171,7 +171,6 @@ namespace NPParcelDeliveryServiceAssignment.DALs
 			}
 			return m;
 		}
-	}
         public Member GetMIDByID(int id)
         {
             SqlCommand cmd = conn.CreateCommand(); //Specify the SELECT SQL statement
