@@ -92,8 +92,12 @@ namespace NPParcelDeliveryServiceAssignment.DALs
 			cmd.Parameters.AddWithValue("@rtn", cashVoucher.ReceiverTelNo);
 			cmd.Parameters.AddWithValue("@dti", cashVoucher.DateTimeIssued);
 			cmd.Parameters.AddWithValue("@status", cashVoucher.Status);
-			//A connection to database must be opened before any operations made.
-			conn.Open();
+            //A connection to database must be opened before any operations made.
+            if (conn.State == System.Data.ConnectionState.Open)
+            {
+                conn.Close();
+            }
+            conn.Open();
 
 				//shipping rate  after executing the INSERT SQL statement
 				cashVoucher.CashVoucherID = (int)cmd.ExecuteScalar();
