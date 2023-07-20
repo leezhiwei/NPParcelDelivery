@@ -16,7 +16,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         private DeliveryFailureDAL dfdal = new DeliveryFailureDAL();
         private List<string> ft = new List<string> { "Receiver not found", "Wrong delivery addresss", "Parcel damaged", "Other" };
         private List<SelectListItem> list = new List<SelectListItem>();
-        private List<SelectListItem> PopulateAgain()
+        private List<SelectListItem> PopulateCVlist()
         {
             List<SelectListItem> list = new List<SelectListItem>();
             list.Add(new SelectListItem
@@ -757,60 +757,50 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
 
         public ActionResult PaymentTransaction()
         {
-            ViewData["TranType"] = PopulateAgain();
+            ViewData["TranType"] = PopulateCVlist();
             return View();
         }
 
         // POST: Payment Transaction
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult PaymentTransaction(Parcel p)
+        public ActionResult PaymentTransaction(PaymentTransaction pt)
         {
+            List<Parcel> pcls = pdal.GetAllParcel();
+            //Advanced Feature 4 - Parcel Receiving, Create Payment Transaction
 
-            List<ShippingRate> SP = srd.GetAllShippingRate();
-            //Advanced Feature 4 - Parcel Receiving - Create Payment Transaction
             decimal dc = 0;
             decimal rdc = 0;
             decimal sr = 0;
-            foreach (ShippingRate s in SP)
+
+            bool cPID = false;
+
+            foreach (Parcel p in pcls) //Checks if parcel ID entered by user, exists in the database
             {
-                if ((p.ToCity.ToLower() == s.ToCity.ToLower()) && (p.ToCountry.ToLower() == s.ToCountry.ToLower())) //Checks if the city & country matches the records in shipping rate 
+                if (pt.ParcelID == p.ParcelID)
                 {
-                    sr = s.ShipRate; //Store shiprate into sr, to be printed out later as tempData
-                    dc = Convert.ToDecimal(p.ParcelWeight) * s.ShipRate; //Delivery Charge = parcel weight * ship rate
+                    cPID = true; //Check parcel found turns true
                     break;
                 }
             }
-            rdc = Math.Round(dc, MidpointRounding.AwayFromZero); //Rounding the delivery charge to the nearest dollar
-            if (rdc >= 5) //Checks if delivery charge is more than 5
+
+            if (cPID == false) //If parcel is not found in database, return back to page with temp data message
             {
-                p.DeliveryCharge = rdc;
-            }
-            else //If delivery charge is less than 5, the minimum delivery charge is 5 dollars  
-            {
-                p.DeliveryCharge = 5;
+                TempData["ErrorMsg"] = $"Parcel ID: {pt.ParcelID} does not EXIST.";
+                return RedirectToAction("Payment Transaction");
             }
 
-
-            //Basic Feature 2 - Parcel Receiving, calculating target delivery date
-            int tt = 0;
-            foreach (ShippingRate s in SP)
-            {
-                if ((p.ToCity.ToLower() == s.ToCity.ToLower()) && (p.ToCountry.ToLower() == s.ToCountry.ToLower())) //Checks if the city & country matches the records in shipping rate 
-                {
-                    p.ToCity = s.ToCity; //Added to replace value entered by staff. E.g. if staff enter pAriS, it will be replaced to Paris from shipping rate.
-                    p.ToCountry = s.ToCountry; //Added to replace value entered by staff. E.g. if staff enter frAnCe, it will be replaced to France from shipping rate.
-                    tt = s.TransitTime;
-                    break;
-                }
-            }
-            DateTime receiveParcel = DateTime.Now;
-            DateTime tdd = receiveParcel.AddDays(tt); //Target delivery date = receive parcel datetime + transit datetime
-            p.TargetDeliveryDate = tdd;
-
+            pt.TranDate = DateTime.Now; //Sets the transaction date to current time
 
             //Basic Feature 1 - Parcel Receiving, adding parcel delivery record
             string desc = $"Recieved parcel by {HttpContext.Session.GetString("UserID")} on {DateTime.Now.ToString("dd MMM yyyy hh:mm tt")}.";
+
+            /*
+            
+            PaymentTransaction pts = new PaymentTransaction
+            {
+
+            }
 
             DeliveryHistory dh = new DeliveryHistory
             {
@@ -819,8 +809,10 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             };
             dhdal.Add(dh); //Adding parcel ID & description into delivery history
 
-            TempData["InsertMessage"] = $"Parcel Added to Database! <br><br> ------------------ Parcel Delivery Order ------------------ <br><br> Parcel ID:  {p.ParcelID} <br> Parcel Weight:  {p.ParcelWeight} kg <br> From City and Country:  {p.FromCity}, {p.FromCountry} <br> To City and Country:  {p.ToCity}, {p.ToCountry} <br> Shipping Rate:  {String.Format("{0:0.##}", sr)}/kg <br> Delivery Charge (Raw):  ({String.Format("{0:0.##}", sr)} x {p.ParcelWeight}) = ${String.Format("{0:0.##}", dc)} <br> Delivery Charge (Rounded):  ${String.Format("{0:0.##}", rdc)} <br> Delivery Charge (Final):  ${String.Format("{0:0.##}", p.DeliveryCharge)} (Note: Minimum delivery charge is S$5.00) <br><br> ------------------------------------------------------------";
-            return RedirectToAction("Insert");
+            */
+
+            //TempData["InsertMessage"] = $"Parcel Added to Database! <br><br> ------------------ Parcel Delivery Order ------------------ <br><br> Parcel ID:  {p.ParcelID} <br> Parcel Weight:  {p.ParcelWeight} kg <br> From City and Country:  {p.FromCity}, {p.FromCountry} <br> To City and Country:  {p.ToCity}, {p.ToCountry} <br> Shipping Rate:  {String.Format("{0:0.##}", sr)}/kg <br> Delivery Charge (Raw):  ({String.Format("{0:0.##}", sr)} x {p.ParcelWeight}) = ${String.Format("{0:0.##}", dc)} <br> Delivery Charge (Rounded):  ${String.Format("{0:0.##}", rdc)} <br> Delivery Charge (Final):  ${String.Format("{0:0.##}", p.DeliveryCharge)} (Note: Minimum delivery charge is S$5.00) <br><br> ------------------------------------------------------------";
+            return RedirectToAction("PaymentTransaction");
 
 
         }

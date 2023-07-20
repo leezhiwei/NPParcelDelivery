@@ -74,11 +74,10 @@ namespace NPParcelDeliveryServiceAssignment.DALs
             //return the auto-generated StaffID after insertion
             cmd.CommandText = @"INSERT INTO Parcel (ItemDescription, SenderName, SenderTelNo,
                                 ReceiverName, ReceiverTelNo, DeliveryAddress, FromCity, FromCountry, ToCity, ToCountry, 
-                                ParcelWeight, DeliveryCharge, Currency, TargetDeliveryDate, DeliveryStatus, DeliveryManID)
+                                ParcelWeight, DeliveryCharge, Currency, TargetDeliveryDate)
                                 OUTPUT INSERTED.ParcelID
                                 VALUES(@itemDesc, @senderName, @senderTelNo, @receiverName, @receiverTelNo, @deliveryAddrs, 
-                                @fromCity, @fromCountry, @toCity, @toCountry, @parcelWeight, @deliveryCharge, @currency, @targetDeliveryDate, 
-                                @deliveryStatus, @deliveryManID)";
+                                @fromCity, @fromCountry, @toCity, @toCountry, @parcelWeight, @deliveryCharge, @currency, @targetDeliveryDate)";
             //Define the parameters used in SQL statement, value for each parameter
             //is retrieved from respective class's property.
             SqlParameter itmd = cmd.Parameters.AddWithValue("@itemDesc", parcel.ItemDescription);
@@ -99,12 +98,7 @@ namespace NPParcelDeliveryServiceAssignment.DALs
             cmd.Parameters.AddWithValue("@deliveryCharge", parcel.DeliveryCharge);
             cmd.Parameters.AddWithValue("@currency", parcel.Currency);
             cmd.Parameters.AddWithValue("@targetDeliveryDate", parcel.TargetDeliveryDate);
-            cmd.Parameters.AddWithValue("@deliveryStatus", parcel.DeliveryStatus);
-            SqlParameter dmid = cmd.Parameters.AddWithValue("@deliveryManID", parcel.DeliveryManID);
-            if (parcel.DeliveryManID is null)// Checks if item desc is null, if so it adds a null value to the db directly
-            {
-                dmid.Value = DBNull.Value;
-            }
+
             //A connection to database must be opened before any operations made.
             conn.Open();
             //ExecuteScalar is used to retrieve the auto-generated

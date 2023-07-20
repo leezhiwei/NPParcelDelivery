@@ -13,11 +13,6 @@
         <form asp-action="PaymentTransaction">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="TransactionID" class="control-label"></label>
-                <input asp-for="TransactionID" class="form-control" />
-                <span asp-validation-for="TransactionID" class="text-danger"></span>
-            </div>
-            <div class="form-group">
                 <label asp-for="ParcelID" class="control-label"></label>
                 <input asp-for="ParcelID" class="form-control" />
                 <span asp-validation-for="ParcelID" class="text-danger"></span>
@@ -37,21 +32,15 @@
                 <select asp-for="TranType" asp-items="@(new SelectList(ViewData["TranType"] as List<SelectListItem>,"Value","Text"))" class="form-select"></select>
                 
             </div>
-            <div class="form-group">
-                <label asp-for="TranDate" class="control-label"></label>
-                <input asp-for="TranDate" class="form-control" />
-                <span asp-validation-for="TranDate" class="text-danger"></span>
-            </div>
+            <br />
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="reset" value="Cancel" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
