@@ -238,7 +238,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             cashVoucher.DateTimeIssued = DateTime.Now;
             cashVoucher.Status = "0";
             bool allowAdd =false;
-            foreach (CashVoucher c in nclist)
+            /*foreach (CashVoucher c in nclist)
             {
                 if (m.Name == c.ReceiverName && m.TelNo == c.ReceiverTelNo && c.IssuingCode == "1" && c.DateTimeIssued.Year == yearcheck)
                 {
@@ -256,16 +256,17 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             {
                 cashVoucher.CashVoucherID = clist.Add(cashVoucher);
                 TempData["Issued"] = "You have successfully issue cash voucher";
-            }
-            /*if (clist.GetCVIDByNameAndTelNum(cashVoucher.ReceiverName, cashVoucher.ReceiverTelNo).DateTimeIssued.Year == DateTime.Now.Year && clist.GetCVIDByNameAndTelNum(cashVoucher.ReceiverName, cashVoucher.ReceiverTelNo).Status=="1")
+            }*/
+            CashVoucher cvvvvvv = clist.GetCVIDByNameAndTelNum2(cashVoucher.ReceiverName, cashVoucher.ReceiverTelNo);
+            if (cvvvvvv.DateTimeIssued.Year == DateTime.Now.Year)
             {
                 TempData["readyIssued"] = "Issuse Cash Voucher Failed! You have already Issue cash voucher this year!";
             }
-            else if(clist.GetCVIDByNameAndTelNum(cashVoucher.ReceiverName, cashVoucher.ReceiverTelNo).DateTimeIssued.Year != DateTime.Now.Year && clist.GetCVIDByNameAndTelNum(cashVoucher.ReceiverName, cashVoucher.ReceiverTelNo).Status == "1")
+            else 
             {
                 cashVoucher.CashVoucherID = clist.Add(cashVoucher);
                 TempData["Issued"] = "You have successfully issue cash voucher";
-            }*/
+            }
             return View();
 		}
 
@@ -277,13 +278,14 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             List<DeliveryHistory>dhhlist = dhlist.GetAllHistory();
             List<DeliveryFailure> dlist = dflist.GetAllFailureReport();
             DeliveryFailure df = null;
-            foreach (DeliveryFailure dff in dlist)
+            /*foreach (DeliveryFailure dff in dlist)
             {
                 if (dff.ReportID == id)
                 {
                     df = dff; break;
                 }
-            }
+            }*/
+            df = dflist.GetOne(id);
             TempData["Delivery"] = JsonConvert.SerializeObject(df);
             //-----------------*******************----------------------------------
             int yearcheck = DateTime.Now.Year;
@@ -320,6 +322,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                     break;
                 }
             }
+
             cashVoucher.Amount = 20;
             cashVoucher.Currency = "SGD";
             cashVoucher.IssuingCode = "2";
