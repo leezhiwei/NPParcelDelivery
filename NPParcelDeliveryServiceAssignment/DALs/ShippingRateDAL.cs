@@ -161,5 +161,36 @@ namespace NPParcelDeliveryServiceAssignment.DALs
             }
 			return infoFound;
 		}
-	}
+
+        public ShippingRate GetSRIDByID(string id)
+        {
+            SqlCommand cmd = conn.CreateCommand(); //Specify the SELECT SQL statement
+            cmd.CommandText = @"SELECT * FROM ShippingRate WHERE ShippingRateID = @idd"; //Open a database connection
+            cmd.Parameters.AddWithValue("@idd", id);
+            if (conn.State == System.Data.ConnectionState.Open)
+            {
+                conn.Close();
+            }
+            conn.Open(); //Execute the SELECT SQL through a DataReader
+            ShippingRate sr = new ShippingRate();
+            SqlDataReader reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                sr = new ShippingRate
+                {
+                    ShippingRateID = reader.GetInt32(0), //0: 1st colu                              //mn
+                    FromCity = reader.GetString(1), //1: 2nd column 
+                    //Get the first character of a string
+                    FromCountry = reader.GetString(2), //2: 3rd column
+                    ToCity = reader.GetString(3), //3: 4th column
+                    ToCountry = reader.GetString(4), //4: 4th column
+                    ShipRate = reader.GetDecimal(5), //6: 5th column
+                    Currency = reader.GetString(6), //9: 6th column 
+                    TransitTime = reader.GetInt32(7), //9: 7th column
+                    LastUpdatedBy = reader.GetInt32(8), //9: 8th column
+                };
+            }
+            return sr;
+        }
+    }
 }

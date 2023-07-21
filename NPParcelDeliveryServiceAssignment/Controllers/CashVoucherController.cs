@@ -238,7 +238,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             cashVoucher.DateTimeIssued = DateTime.Now;
             cashVoucher.Status = "0";
             bool allowAdd =false;
-            foreach (CashVoucher c in nclist)
+            /*foreach (CashVoucher c in nclist)
             {
                 if (m.Name == c.ReceiverName && m.TelNo == c.ReceiverTelNo && c.IssuingCode == "1" && c.DateTimeIssued.Year == yearcheck)
                 {
@@ -256,16 +256,17 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             {
                 cashVoucher.CashVoucherID = clist.Add(cashVoucher);
                 TempData["Issued"] = "You have successfully issue cash voucher";
-            }
-            /*if (clist.GetCVIDByNameAndTelNum(cashVoucher.ReceiverName, cashVoucher.ReceiverTelNo).DateTimeIssued.Year == DateTime.Now.Year && clist.GetCVIDByNameAndTelNum(cashVoucher.ReceiverName, cashVoucher.ReceiverTelNo).Status=="1")
+            }*/
+            CashVoucher cvv = clist.GetCVIDByNameAndTelNum2(cashVoucher.ReceiverName, cashVoucher.ReceiverTelNo,1);
+            if (cvv.DateTimeIssued.Year == DateTime.Now.Year)
             {
                 TempData["readyIssued"] = "Issuse Cash Voucher Failed! You have already Issue cash voucher this year!";
             }
-            else if(clist.GetCVIDByNameAndTelNum(cashVoucher.ReceiverName, cashVoucher.ReceiverTelNo).DateTimeIssued.Year != DateTime.Now.Year && clist.GetCVIDByNameAndTelNum(cashVoucher.ReceiverName, cashVoucher.ReceiverTelNo).Status == "1")
+            else 
             {
                 cashVoucher.CashVoucherID = clist.Add(cashVoucher);
                 TempData["Issued"] = "You have successfully issue cash voucher";
-            }*/
+            }
             return View();
 		}
 
@@ -284,6 +285,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                     df = dff; break;
                 }
             }
+            //df = dflist.GetOne(id);
             TempData["Delivery"] = JsonConvert.SerializeObject(df);
             //-----------------*******************----------------------------------
             int yearcheck = DateTime.Now.Year;
@@ -310,7 +312,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             }
             Parcel par = null;
             List<Parcel> palist = plist.GetAllParcel();
-            foreach ( Parcel p in palist)
+            /*foreach ( Parcel p in palist)
             {
                 if (p.ParcelID == d.ParcelID)
                 {
@@ -319,7 +321,11 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                     cashVoucher.ReceiverTelNo = p.ReceiverTelNo;
                     break;
                 }
-            }
+            }*/
+            int pd = d.ParcelID;
+            par = plist.GetPIDByPID(pd);
+            cashVoucher.ReceiverName = par.ReceiverName;
+            cashVoucher.ReceiverTelNo = par.ReceiverTelNo;
             cashVoucher.Amount = 20;
             cashVoucher.Currency = "SGD";
             cashVoucher.IssuingCode = "2";
@@ -327,18 +333,28 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             cashVoucher.DateTimeIssued = DateTime.Now;
             cashVoucher.Status = "0";
             bool allowAdd = false;
-            foreach (CashVoucher c in nclist)
+            /* foreach (CashVoucher c in nclist)
+             {
+                 if (cashVoucher.ReceiverName == c.ReceiverName && cashVoucher.ReceiverTelNo == c.ReceiverTelNo && c.IssuingCode == "2" && c.DateTimeIssued.Year == yearcheck)
+                 {
+                     TempData["readyIssued"] = "You have already issue a cash voucher for this report, you cannot issue again!";
+                     allowAdd = false;
+                     break;
+                 }
+                 else
+                 {
+                     allowAdd = true;
+                 }
+             }*/
+            CashVoucher cvv = clist.GetCVIDByNameAndTelNum2(cashVoucher.ReceiverName, cashVoucher.ReceiverTelNo, 2);
+            if (cvv.DateTimeIssued.Year == DateTime.Now.Year)
             {
-                if (cashVoucher.ReceiverName == c.ReceiverName && cashVoucher.ReceiverTelNo == c.ReceiverTelNo && c.IssuingCode == "2" && c.DateTimeIssued.Year == yearcheck)
-                {
-                    TempData["readyIssued"] = "You have already issue a cash voucher for this report, you cannot issue again!";
-                    allowAdd = false;
-                    break;
-                }
-                else
-                {
-                    allowAdd = true;
-                }
+                TempData["readyIssued"] = "You have already issue a cash voucher for this report, you cannot issue again!";
+                allowAdd = false;
+            }
+            else
+            {
+                allowAdd = true;
             }
             if (allowAdd == true)
             {//$"Follow up with sender for delivery failure  completed by StationMgrSG on {DateTime.Now}"
