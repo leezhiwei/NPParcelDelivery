@@ -1,0 +1,39 @@
+﻿@model IEnumerable<NPParcelDeliveryServiceAssignment.Models.DeliveryHistory>
+
+@{
+    ViewData["Title"] = "Delivery History";
+    Layout = "~/Views/Shared/_fostaffLayout.cshtml";
+}
+
+<h1>Delivery History</h1>
+<hr />
+<table id="viewHistory" class="table table-striped table-bordered">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.RecordID)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ParcelID)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.RecordID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ParcelID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
