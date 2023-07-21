@@ -39,7 +39,7 @@ namespace NPParcelDeliveryServiceAssignment.DALs
                     AmtTran = reader.GetDecimal(2), //2: 3rd column
                     Currency = reader.GetString(3), //2: 4th column
                     TranType = reader.GetString(4), //2: 5th column
-                    TranDate = Convert.ToDateTime(reader.GetString(5)), //2: 6th column
+                    TranDate = reader.GetDateTime(5), //2: 6th column
                 });
             }
             //Close DataReader

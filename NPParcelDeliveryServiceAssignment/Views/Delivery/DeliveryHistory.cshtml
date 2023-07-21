@@ -7,6 +7,15 @@
 
 <h1>Delivery History</h1>
 <hr />
+<form asp-controller="Delivery" asp-action="DeliveryHistory" method="post">
+    <label for="idbox">@Html.DisplayNameFor(model => model.RecordID)</label><br />
+    <input type="text" id="rIdSearch" name="rIdSearch" />
+    <button type="submit">Search</button>
+</form>
+<br />
+<p style="color:green">@TempData["rFound"]</p>
+<p style="color:red">@TempData["rError"]</p>
+<br />
 <table id="viewHistory" class="table table-striped table-bordered">
     <thead>
         <tr>
