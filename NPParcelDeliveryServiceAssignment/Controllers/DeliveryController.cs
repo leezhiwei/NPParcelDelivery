@@ -19,6 +19,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         private List<string> ft = new List<string> { "Receiver not found", "Wrong delivery addresss", "Parcel damaged", "Other" };
         private List<SelectListItem> list = new List<SelectListItem>();
         private MemberDAL mdal = new MemberDAL();
+        private List<string> country = new List<string> { "Singapore", "Malaysia", "Indonesia", "China", "USA", "Japan", "France", "UK", "Australia"};
         private List<SelectListItem> PopulateCVlist()
         {
             List<SelectListItem> list = new List<SelectListItem>();
@@ -51,6 +52,45 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             List<DeliveryHistory> dhList = dhdal.GetAllHistory();
             return View(dhList);
         }
+
+
+        // POST: Parcel Delivery History
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeliveryHistory(IFormCollection form)
+        {
+            List<DeliveryHistory> dh = dhdal.GetAllHistory();
+            List<DeliveryHistory> dhTemp = new List<DeliveryHistory>();
+            int rId = 0;
+            try
+            {
+                rId = Convert.ToInt32(form["rIdSearch"]);
+            }
+            catch (Exception ex) //Catch if the textbox is empty and display error msg
+            {
+                TempData["rError"] = $"The search textbox is empty, contains letters or special characters, unable to search for any delivery history!  Please enter numeric values.";
+                return View(dh);
+            }
+            foreach (DeliveryHistory dhh in dh)
+            {
+                if (dhh.RecordID == rId)
+                {
+                    dhTemp.Add(dhh); //If recordID matches the record in the list, add record to deliveryhistoryTemp for viewing
+                }
+            }
+
+            if (dhTemp.Count > 0) //If deliveryhistoryTemp is NOT empty and contains information
+            {
+                TempData["rFound"] = $"Delivery History with the record ID: {rId}, found.";
+                return View(dhTemp);
+            }
+            else //prints the error msg that record is not found, since the deliveryhistoryTemp is empty
+            {
+                TempData["rError"] = $"Delivery History with the ID: {rId}, does not exist in the delivery history records.";
+                return View(dh);
+            }
+        }
+
         private List<SelectListItem> GetCountries()
         {
             List<SelectListItem> countries = new List<SelectListItem>();
@@ -74,7 +114,31 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 Value = "China",
                 Text = "China"
             });
-
+            countries.Add(new SelectListItem
+            {
+                Value = "USA",
+                Text = "USA"
+            });
+            countries.Add(new SelectListItem
+            {
+                Value = "Japan",
+                Text = "Japan"
+            });
+            countries.Add(new SelectListItem
+            {
+                Value = "France",
+                Text = "France"
+            });
+            countries.Add(new SelectListItem
+            {
+                Value = "UK",
+                Text = "UK"
+            });
+            countries.Add(new SelectListItem
+            {
+                Value = "Australia",
+                Text = "Australia"
+            });
             return countries;
         }
         public ActionResult Insert()
@@ -582,7 +646,6 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         {
             List<Parcel> pl = pdal.GetAllParcel();
             List<Parcel> ppTemp = new List<Parcel>();
-            Parcel pTemp = null;
             int pId = 0;
             try
             {
@@ -590,7 +653,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             }
             catch (Exception ex) //Catch if the textbox is empty and display error msg
             {
-                TempData["ParcelError"] = $"The search textbox is empty, unable to search for any existing parcels.";
+                TempData["ParcelError"] = $"The search textbox is empty, contains letters or special characters, unable to search for any existing parcels!  Please enter numeric values.";
                 return View(pl);
             }
             foreach (Parcel parcel in pl)
@@ -796,7 +859,6 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
 
 
         
-        
         public ActionResult PaymentTransaction()
         {
             ViewData["TranType"] = PopulateCVlist();
@@ -916,5 +978,55 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             List<Parcel> plist = pdal.GetParcelFromMember(m);
             return View(plist);
         }
+
+
+        // GET: Payment Transaction
+        public ActionResult PaymentTransactionHistory()
+        {
+            if (HttpContext.Session.GetString("UserID") is null)
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            List<PaymentTransaction> pth = paydal.GetAllPayment();
+            return View(pth);
+        }
+
+        // POST: Payment Transaction
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult PaymentTransactionHistory(IFormCollection form)
+        {
+            List<PaymentTransaction> pt = paydal.GetAllPayment();
+            List<PaymentTransaction> ptnTemp = new List<PaymentTransaction>();
+            int tId = 0;
+            try
+            {
+                tId = Convert.ToInt32(form["tIdSearch"]);
+            }
+            catch (Exception ex) //Catch if the textbox is empty and display error msg
+            {
+                TempData["tError"] = $"The search textbox is empty, contains letters or special characters, unable to search for any payment transaction!  Please enter numeric values.";
+                return View(pt);
+            }
+            foreach (PaymentTransaction ptn in pt)
+            {
+                if (ptn.TransactionID == tId)
+                {
+                    ptnTemp.Add(ptn); //If transaction matches the record in the list, add transaction to tempTransaction for viewing
+                }
+            }
+
+            if (ptnTemp.Count > 0) //If tempTransaction is NOT empty and contains information
+            {
+                TempData["tFound"] = $"Payment Transaction with the ID: {tId}, found.";
+                return View(ptnTemp);
+            }
+            else //prints the error msg that transaction is not found, since the tempparcel is empty
+            {
+                TempData["tError"] = $"Payment Transaction with the ID: {tId}, does not exist in the transaction history.";
+                return View(pt);
+            }
+        }
+
     }
 }

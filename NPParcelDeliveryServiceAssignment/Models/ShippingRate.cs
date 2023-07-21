@@ -1,4 +1,6 @@
-﻿namespace NPParcelDeliveryServiceAssignment.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace NPParcelDeliveryServiceAssignment.Models
 {
     public class ShippingRate
     {
@@ -10,7 +12,7 @@
 		public string ToCountry { get; set; }
 
         public decimal ShipRate { get; set; }
-
+        [RegularExpression(@"^[a-zA-Z]+$", ErrorMessage = "Use letters only please")]
         public string Currency { get; set; }
 
         public int TransitTime { get; set; }
