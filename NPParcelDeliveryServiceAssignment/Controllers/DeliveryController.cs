@@ -208,13 +208,18 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 return RedirectToAction("ShowShippingRateInfo");
             }
             List<ShippingRate> sr = srd.GetAllShippingRate();
-            foreach (ShippingRate s in sr)
+            /*foreach (ShippingRate s in sr)
             {
                 if (s.ShippingRateID == idd)
                 {
                     TempData["PrevObj"] = JsonConvert.SerializeObject(s);
                     return View(s);
                 }
+            }*/
+            if (srd.GetSRIDByID(id).ShippingRateID == idd)
+            {
+                TempData["PrevObj"] = JsonConvert.SerializeObject(srd.GetSRIDByID(id));
+                return View(srd.GetSRIDByID(id));
             }
             return View();
         }
@@ -295,13 +300,18 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 return RedirectToAction("Index", "Login");
             }
             List<ShippingRate> sr = srd.GetAllShippingRate();
-            foreach (ShippingRate s in sr)
+            /*foreach (ShippingRate s in sr)
             {
                 if (s.ShippingRateID == id)
                 {
                     TempData["shiprateobj"] = JsonConvert.SerializeObject(s);
                     return View(s);
                 }
+            }*/
+            if (srd.GetSRIDByID(Convert.ToString(id)).ShippingRateID == id)
+            {
+                TempData["shiprateobj"] = JsonConvert.SerializeObject(srd.GetSRIDByID(Convert.ToString(id)));
+                return View(srd.GetSRIDByID(Convert.ToString(id)));
             }
             return View();
         }

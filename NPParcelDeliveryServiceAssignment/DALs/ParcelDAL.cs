@@ -235,5 +235,44 @@ namespace NPParcelDeliveryServiceAssignment.DALs
 			conn.Close();
 			return parcelList;
 		}
-	}
+
+        public Parcel GetPIDByPID(int parid)
+        {
+            SqlCommand cmd = conn.CreateCommand(); //Specify the SELECT SQL statement
+            cmd.CommandText = @"SELECT * FROM Parcel WHERE ParcelID = @pid"; //Open a database connection
+            cmd.Parameters.AddWithValue("@pid", parid);
+            if (conn.State == System.Data.ConnectionState.Open)
+            {
+                conn.Close();
+            }
+            conn.Open(); //Execute the SELECT SQL through a DataReader
+            Parcel p = new Parcel();
+            SqlDataReader reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                p = new Parcel
+                {
+                    ParcelID = reader.GetInt32(0),
+                    ItemDescription = !reader.IsDBNull(1) ?
+                    reader.GetString(1) : (string)null,
+                    SenderName = reader.GetString(2),
+                    SenderTelNo = reader.GetString(3),
+                    ReceiverName = reader.GetString(4),
+                    ReceiverTelNo = reader.GetString(5),
+                    DeliveryAddress = reader.GetString(6),
+                    FromCity = reader.GetString(7),
+                    FromCountry = reader.GetString(8),
+                    ToCity = reader.GetString(9),
+                    ToCountry = reader.GetString(10),
+                    ParcelWeight = reader.GetDouble(11),
+                    DeliveryCharge = reader.GetDecimal(12),
+                    Currency = reader.GetString(13),
+                    TargetDeliveryDate = reader.GetDateTime(14),
+                    DeliveryStatus = reader.GetString(15),
+                    DeliveryManID = CheckNull(reader, 16),
+                };
+            }
+            return p;
+        }
+    }
 }
