@@ -138,13 +138,14 @@ namespace NPParcelDeliveryServiceAssignment.DALs
             }
             return null;
         }
-        public CashVoucher GetCVIDByNameAndTelNum2(string rname, string tnum)
+        public CashVoucher GetCVIDByNameAndTelNum2(string rname, string tnum, int code)
         {
             SqlCommand cmd = conn.CreateCommand(); //Specify the SELECT SQL statement
             cmd.CommandText = @"SELECT * FROM CashVoucher WHERE ReceiverName = @rn AND ReceiverTelNo = @tu AND YEAR(GETDATE()) = YEAR(DateTimeIssued)
-                                    AND IssuingCode ='1'"; //Open a database connection
+                                    AND IssuingCode =@co"; //Open a database connection
             cmd.Parameters.AddWithValue("@rn", rname);
             cmd.Parameters.AddWithValue("@tu", tnum);
+            cmd.Parameters.AddWithValue("@co", code);
             if (conn.State == System.Data.ConnectionState.Open)
             {
                 conn.Close();
