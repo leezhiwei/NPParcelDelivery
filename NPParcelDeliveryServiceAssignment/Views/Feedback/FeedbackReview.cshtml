@@ -1,0 +1,68 @@
+﻿@model IEnumerable<NPParcelDeliveryServiceAssignment.Models.FeedbackEnquiry>
+
+@{
+    ViewData["Title"] = "FeedbackReview";
+    Layout = "~/Views/Shared/_smanagerLayout.cshtml";
+}
+
+<h1>FeedbackReview</h1>
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.FeedbackEnquiryID)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MemberID)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Content)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DateTimePosted)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.StaffID)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Response)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.FeedbackEnquiryID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MemberID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Content)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DateTimePosted)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.StaffID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Response)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Status)
+            </td>
+            <td>
+                <a asp-action="Respond" asp-route-id="@item.FeedbackEnquiryID">Respond</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

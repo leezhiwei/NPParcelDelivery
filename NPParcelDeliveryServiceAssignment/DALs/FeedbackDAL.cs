@@ -48,7 +48,8 @@ namespace NPParcelDeliveryServiceAssignment.DALs
                     Content = reader.GetString(2),
                     DateTimePosted = reader.GetDateTime(3),
                     StaffID = CheckNull(reader, 4),
-                    Response = reader.GetString(5),
+                    Response = !reader.IsDBNull(5) ?
+                    reader.GetString(5) : (string)null,
                     Status = reader.GetString(6),
                 });
             }
@@ -61,17 +62,17 @@ namespace NPParcelDeliveryServiceAssignment.DALs
             SqlCommand cmd = conn.CreateCommand();
             //Specify an INSERT SQL statement which will
             //return the auto-generated StaffID after insertion
-            cmd.CommandText = @"INSERT INTO FeedbackEnquiry (MemberID, Content, DateTinePosted, StaffID,
+            cmd.CommandText = @"INSERT INTO FeedbackEnquiry (MemberID, Content, DateTimePosted, StaffID,
                                 Response, Status)
                                 OUTPUT INSERTED.FeedbackEnquiryID
                                 VALUES(@mid, @c, @dtp, @sid, @r, @s)";
             //Define the parameters used in SQL statement, value for each parameter
             //is retrieved from respective class's property.
-           
-           
+
+
             cmd.Parameters.AddWithValue("@mid", fb.MemberID);
             cmd.Parameters.AddWithValue("@c", fb.Content);
-            cmd.Parameters.AddWithValue("@mid", fb.DateTimePosted);
+            cmd.Parameters.AddWithValue("@dtp", fb.DateTimePosted);
             cmd.Parameters.AddWithValue("@s", fb.Status);
             SqlParameter itmd1 = cmd.Parameters.AddWithValue("@sid", fb.StaffID);
             if (fb.StaffID is null)// Checks if item desc is null, if so it adds a null value to the db directly
@@ -100,14 +101,14 @@ namespace NPParcelDeliveryServiceAssignment.DALs
             SqlCommand cmd = conn.CreateCommand();
             //Specify an UPDATE SQL statement
             cmd.CommandText = @"UPDATE FeedbackEnquiry SET MemberID=@mid,
-            Content=@c, DateTinePosted=@dtp, StaffID=@sid, Response=@r, Status=@s                               
+            Content=@c, DateTimePosted=@dtp, StaffID=@sid, Response=@r, Status=@s                               
             WHERE FeedbackEnquiryID = @fid";
             //Define the parameters used in SQL statement, value for each parameter
             //is retrieved from respective class's property.
             cmd.Parameters.AddWithValue("@fid", f.FeedbackEnquiryID);
             cmd.Parameters.AddWithValue("@mid", f.MemberID);
             cmd.Parameters.AddWithValue("@c", f.Content);
-            cmd.Parameters.AddWithValue("@mid", f.DateTimePosted);
+            cmd.Parameters.AddWithValue("@dtp", f.DateTimePosted);
             cmd.Parameters.AddWithValue("@s", f.Status);
             SqlParameter itmd1 = cmd.Parameters.AddWithValue("@sid", f.StaffID);
             if (f.StaffID is null)// Checks if item desc is null, if so it adds a null value to the db directly
@@ -130,6 +131,58 @@ namespace NPParcelDeliveryServiceAssignment.DALs
             //Close the database connection
             conn.Close();
             return count;
+        }
+        public List<FeedbackEnquiry> GetMemberFeedback(Member m)
+        { //Create a SqlCommand object from connection object
+            SqlCommand cmd = conn.CreateCommand(); //Specify the SELECT SQL statement
+            cmd.CommandText = @"SELECT * FROM FeedbackEnquiry WHERE MemberID = @m ORDER BY FeedbackEnquiryID"; //Open a database connection
+            cmd.Parameters.AddWithValue("@m", m.MemberID);
+            conn.Open(); //Execute the SELECT SQL through a DataReader
+            SqlDataReader reader = cmd.ExecuteReader();
+            //Read all records until the end, save data into a staff list
+            List<FeedbackEnquiry> feedbacklist = new List<FeedbackEnquiry>();
+            while (reader.Read())
+            {
+                feedbacklist.Add(new FeedbackEnquiry
+                {
+                    FeedbackEnquiryID = reader.GetInt32(0),
+                    MemberID = reader.GetInt32(1),
+                    Content = reader.GetString(2),
+                    DateTimePosted = reader.GetDateTime(3),
+                    StaffID = CheckNull(reader, 4),
+                    Response = !reader.IsDBNull(5) ?
+                    reader.GetString(5) : (string)null,
+                    Status = reader.GetString(6),
+                });
+            }
+            return feedbacklist;
+
+        }
+        public FeedbackEnquiry GetOneFeedback(int fid)
+        { //Create a SqlCommand object from connection object
+            SqlCommand cmd = conn.CreateCommand(); //Specify the SELECT SQL statement
+            cmd.CommandText = @"SELECT * FROM FeedbackEnquiry WHERE FeedbackEnquiryID = @fid"; //Open a database connection
+            cmd.Parameters.AddWithValue("@fid", fid);
+            conn.Open(); //Execute the SELECT SQL through a DataReader
+            SqlDataReader reader = cmd.ExecuteReader();
+            //Read all records until the end, save data into a staff list
+            FeedbackEnquiry f = new FeedbackEnquiry();
+            while (reader.Read())
+            {
+                f = new FeedbackEnquiry
+                {
+                    FeedbackEnquiryID = reader.GetInt32(0),
+                    MemberID = reader.GetInt32(1),
+                    Content = reader.GetString(2),
+                    DateTimePosted = reader.GetDateTime(3),
+                    StaffID = CheckNull(reader, 4),
+                    Response = !reader.IsDBNull(5) ?
+                    reader.GetString(5) : (string)null,
+                    Status = reader.GetString(6),
+                };
+            }
+            return f;
+
         }
     }
 }
