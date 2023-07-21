@@ -19,6 +19,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         private List<string> ft = new List<string> { "Receiver not found", "Wrong delivery addresss", "Parcel damaged", "Other" };
         private List<SelectListItem> list = new List<SelectListItem>();
         private MemberDAL mdal = new MemberDAL();
+        private List<string> country = new List<string> { "Singapore", "Malaysia", "Indonesia", "China", "USA", "Japan", "France", "UK", "Australia"};
         private List<SelectListItem> PopulateCVlist()
         {
             List<SelectListItem> list = new List<SelectListItem>();
@@ -74,7 +75,31 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 Value = "China",
                 Text = "China"
             });
-
+            countries.Add(new SelectListItem
+            {
+                Value = "USA",
+                Text = "USA"
+            });
+            countries.Add(new SelectListItem
+            {
+                Value = "Japan",
+                Text = "Japan"
+            });
+            countries.Add(new SelectListItem
+            {
+                Value = "France",
+                Text = "France"
+            });
+            countries.Add(new SelectListItem
+            {
+                Value = "UK",
+                Text = "UK"
+            });
+            countries.Add(new SelectListItem
+            {
+                Value = "Australia",
+                Text = "Australia"
+            });
             return countries;
         }
         public ActionResult Insert()
