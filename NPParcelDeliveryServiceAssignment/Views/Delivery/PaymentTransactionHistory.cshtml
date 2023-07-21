@@ -1,0 +1,66 @@
+﻿@model IEnumerable<NPParcelDeliveryServiceAssignment.Models.PaymentTransaction>
+
+@{
+    ViewData["Title"] = "Payment Transaction History";
+    Layout = "~/Views/Shared/_fostaffLayout.cshtml";
+}
+
+<h1>Payment Transactions</h1>
+<hr />
+<form asp-controller="Delivery" asp-action="PaymentTransactionHistory" method="post">
+    <label for="idbox">@Html.DisplayNameFor(model => model.TransactionID)</label><br />
+    <input type="text" id="tIdSearch" name="tIdSearch" />
+    <button type="submit">Search for payment</button>
+</form>
+<br />
+<p style="color:green">@TempData["tFound"]</p>
+<p style="color:red">@TempData["tError"]</p>
+<br />
+<table id="viewHistory" class="table table-striped table-bordered">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.TransactionID)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ParcelID)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AmtTran)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Currency)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TranType)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TranDate)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.TransactionID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ParcelID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AmtTran)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Currency)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TranType)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TranDate)
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
