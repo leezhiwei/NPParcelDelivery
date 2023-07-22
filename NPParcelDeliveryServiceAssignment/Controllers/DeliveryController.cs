@@ -562,8 +562,8 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
-            Parcel pobj = pdal.ReturnParcel(pid);
-            if (pobj is null)
+            Parcel pobj = pdal.GetPIDByPID(pid);
+            if (pobj == new Parcel())
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -726,8 +726,8 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
-            Parcel pobj = pdal.ReturnParcel(pid);
-            if (pobj is null)
+            Parcel pobj = pdal.GetPIDByPID(pid);
+            if (pobj == new Parcel())
             {
                 return RedirectToAction("Index", "Home");
             }

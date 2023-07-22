@@ -44,13 +44,13 @@ namespace NPParcelDeliveryServiceAssignment.DALs
                 parcellist.Add(new Parcel
                 {
                     ParcelID = reader.GetInt32(0),
-                    ItemDescription = !reader.IsDBNull(1) ? 
-                    reader.GetString(1) : (string)null, 
-                    SenderName = reader.GetString(2), 
-                    SenderTelNo = reader.GetString(3), 
-                    ReceiverName = reader.GetString(4), 
-                    ReceiverTelNo = reader.GetString(5), 
-                    DeliveryAddress = reader.GetString(6), 
+                    ItemDescription = !reader.IsDBNull(1) ?
+                    reader.GetString(1) : (string)null,
+                    SenderName = reader.GetString(2),
+                    SenderTelNo = reader.GetString(3),
+                    ReceiverName = reader.GetString(4),
+                    ReceiverTelNo = reader.GetString(5),
+                    DeliveryAddress = reader.GetString(6),
                     FromCity = reader.GetString(7),
                     FromCountry = reader.GetString(8),
                     ToCity = reader.GetString(9),
@@ -81,7 +81,7 @@ namespace NPParcelDeliveryServiceAssignment.DALs
             //Define the parameters used in SQL statement, value for each parameter
             //is retrieved from respective class's property.
             SqlParameter itmd = cmd.Parameters.AddWithValue("@itemDesc", parcel.ItemDescription);
-            if(parcel.ItemDescription is null)// Checks if item desc is null, if so it adds a null value to the db directly
+            if (parcel.ItemDescription is null)// Checks if item desc is null, if so it adds a null value to the db directly
             {
                 itmd.Value = DBNull.Value;
             }
@@ -168,73 +168,80 @@ namespace NPParcelDeliveryServiceAssignment.DALs
         }
         public List<Parcel> CheckAssigned(int StaffID)
         {
-            List<Parcel> allparcel = GetAllParcel();
-            List<Parcel> asslist = new List<Parcel>();
-            foreach (Parcel p in allparcel)
+            SqlCommand cmd = conn.CreateCommand(); //Specify the SELECT SQL statement
+            cmd.CommandText = @"SELECT * FROM Parcel WHERE DeliveryManID = @sid AND DeliveryStatus = '1'"; //Open a database connection
+            cmd.Parameters.AddWithValue("@sid", StaffID);
+            conn.Open(); //Execute the SELECT SQL through a DataReader
+            SqlDataReader reader = cmd.ExecuteReader();
+            //Read all records until the end, save data into a staff list
+            List<Parcel> parcellist = new List<Parcel>();
+            while (reader.Read())
             {
-                if (p.DeliveryManID == StaffID)
+                parcellist.Add(new Parcel
                 {
-                    if (p.DeliveryStatus == "1")
-                    {
-                        asslist.Add(p);
-                    }
-                }
+                    ParcelID = reader.GetInt32(0),
+                    ItemDescription = !reader.IsDBNull(1) ?
+                    reader.GetString(1) : (string)null,
+                    SenderName = reader.GetString(2),
+                    SenderTelNo = reader.GetString(3),
+                    ReceiverName = reader.GetString(4),
+                    ReceiverTelNo = reader.GetString(5),
+                    DeliveryAddress = reader.GetString(6),
+                    FromCity = reader.GetString(7),
+                    FromCountry = reader.GetString(8),
+                    ToCity = reader.GetString(9),
+                    ToCountry = reader.GetString(10),
+                    ParcelWeight = reader.GetDouble(11),
+                    DeliveryCharge = reader.GetDecimal(12),
+                    Currency = reader.GetString(13),
+                    TargetDeliveryDate = reader.GetDateTime(14),
+                    DeliveryStatus = reader.GetString(15),
+                    DeliveryManID = CheckNull(reader, 16),
+                });
             }
-            return asslist;
+            return parcellist;
         }
-        public Parcel ReturnParcel(int pid)
+        public List<Parcel> GetParcelFromMember(Member m)
         {
-            List<Parcel> plist = GetAllParcel();
-            foreach (Parcel p in plist)
+            //Create a SqlCommand object from connection object
+            SqlCommand cmd = conn.CreateCommand(); //Specify the SELECT SQL statement
+            cmd.CommandText = @"SELECT * FROM Parcel WHERE (SenderName = @sn AND SenderTelNo = @stelno) OR (ReceiverName = @sn AND ReceiverTelNo = @stelno)"; //Open a database connection
+            cmd.Parameters.AddWithValue("@sn", m.Name);
+            cmd.Parameters.AddWithValue("@stelno", m.TelNo);
+            conn.Open(); //Execute the SELECT SQL through a DataReader
+            SqlDataReader reader = cmd.ExecuteReader();
+            //Read all records until the end, save data into a staff list
+            List<Parcel> parcelList = new List<Parcel>();
+            while (reader.Read())
             {
-                if (pid == p.ParcelID)
+                parcelList.Add(new Parcel
                 {
-                    return p;
-                }
+                    ParcelID = reader.GetInt32(0),
+                    ItemDescription = !reader.IsDBNull(1) ?
+                    reader.GetString(1) : (string)null,
+                    SenderName = reader.GetString(2),
+                    SenderTelNo = reader.GetString(3),
+                    ReceiverName = reader.GetString(4),
+                    ReceiverTelNo = reader.GetString(5),
+                    DeliveryAddress = reader.GetString(6),
+                    FromCity = reader.GetString(7),
+                    FromCountry = reader.GetString(8),
+                    ToCity = reader.GetString(9),
+                    ToCountry = reader.GetString(10),
+                    ParcelWeight = reader.GetDouble(11),
+                    DeliveryCharge = reader.GetDecimal(12),
+                    Currency = reader.GetString(13),
+                    TargetDeliveryDate = reader.GetDateTime(14),
+                    DeliveryStatus = reader.GetString(15),
+                    DeliveryManID = CheckNull(reader, 16),
+                });
             }
-            return null;
+            //Close DataReader
+            reader.Close();
+            //Close the database connection
+            conn.Close();
+            return parcelList;
         }
-		public List<Parcel> GetParcelFromMember(Member m)
-		{
-			//Create a SqlCommand object from connection object
-			SqlCommand cmd = conn.CreateCommand(); //Specify the SELECT SQL statement
-			cmd.CommandText = @"SELECT * FROM Parcel WHERE (SenderName = @sn AND SenderTelNo = @stelno) OR (ReceiverName = @sn AND ReceiverTelNo = @stelno)"; //Open a database connection
-			cmd.Parameters.AddWithValue("@sn", m.Name);
-			cmd.Parameters.AddWithValue("@stelno", m.TelNo);
-			conn.Open(); //Execute the SELECT SQL through a DataReader
-			SqlDataReader reader = cmd.ExecuteReader();
-			//Read all records until the end, save data into a staff list
-			List<Parcel> parcelList = new List<Parcel>();
-			while (reader.Read())
-			{
-				parcelList.Add(new Parcel
-				{
-					ParcelID = reader.GetInt32(0),
-					ItemDescription = !reader.IsDBNull(1) ?
-					reader.GetString(1) : (string)null,
-					SenderName = reader.GetString(2),
-					SenderTelNo = reader.GetString(3),
-					ReceiverName = reader.GetString(4),
-					ReceiverTelNo = reader.GetString(5),
-					DeliveryAddress = reader.GetString(6),
-					FromCity = reader.GetString(7),
-					FromCountry = reader.GetString(8),
-					ToCity = reader.GetString(9),
-					ToCountry = reader.GetString(10),
-					ParcelWeight = reader.GetDouble(11),
-					DeliveryCharge = reader.GetDecimal(12),
-					Currency = reader.GetString(13),
-					TargetDeliveryDate = reader.GetDateTime(14),
-					DeliveryStatus = reader.GetString(15),
-					DeliveryManID = CheckNull(reader, 16),
-				});
-			}
-			//Close DataReader
-			reader.Close();
-			//Close the database connection
-			conn.Close();
-			return parcelList;
-		}
 
         public Parcel GetPIDByPID(int parid)
         {
@@ -284,7 +291,7 @@ namespace NPParcelDeliveryServiceAssignment.DALs
                 conn.Close();
             }
             conn.Open(); //Execute the SELECT SQL through a DataReader
-            int count = (int) cmd.ExecuteScalar();
+            int count = (int)cmd.ExecuteScalar();
             return count;
         }
     }
