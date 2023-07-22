@@ -98,18 +98,34 @@ namespace NPParcelDeliveryServiceAssignment.DALs
         
         public Member CheckMember(string email, string password)
         {
-            List<Member> mlist = GetAllMember();
-            foreach (Member m in mlist)
+            SqlCommand cmd = conn.CreateCommand(); //Specify the SELECT SQL statement
+            cmd.CommandText = @"SELECT * FROM Member WHERE EmailAddr = @LoginID AND Password = @pwd"; //Open a database connection
+            cmd.Parameters.AddWithValue("@LoginID", email);
+            cmd.Parameters.AddWithValue("@pwd", password);
+            if (conn.State == System.Data.ConnectionState.Open)
             {
-                if (m.EmailAddr == email)   
-                {
-                    if (m.Password == password)
-                    {
-                        return m;
-                    }
-                }
+                conn.Close();
             }
-            return null;
+            conn.Open(); //Execute the SELECT SQL through a DataReader
+            Member m = null;
+            SqlDataReader reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                m = new Member
+                {
+                    MemberID = reader.GetInt32(0), //0: 1st column
+                    Name = reader.GetString(1), //1: 2nd column 
+                                                //Get the first character of a string
+                    Salutation = reader.GetString(2), //2: 3rd column
+                    TelNo = reader.GetString(3), //3: 4th column
+                    EmailAddr = reader.GetString(4), //4: 4th column
+                    Password = reader.GetString(5), //6: 5th column
+                    BirthDate = reader.GetDateTime(6), //9: 6th column
+                    City = reader.GetString(7),
+                    Country = reader.GetString(8),
+                };
+            }
+            return m;
         }
         public List<Member> GetMemberDOBMonth()
         {

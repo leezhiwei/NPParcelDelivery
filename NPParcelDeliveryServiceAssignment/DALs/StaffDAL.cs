@@ -45,54 +45,87 @@ namespace NPParcelDeliveryServiceAssignment.DALs
         }
         public Staff CheckStaff(string LoginID, string Password)
         {
-            List<Staff> stafflist = GetAllStaff();
-            foreach (Staff staff in stafflist)
+            SqlCommand cmd = conn.CreateCommand(); //Specify the SELECT SQL statement
+            cmd.CommandText = @"SELECT * FROM Staff WHERE LoginID = @lid AND Password = @pwd"; //Open a database connection
+            cmd.Parameters.AddWithValue("@lid", LoginID);
+            cmd.Parameters.AddWithValue("@pwd", Password);
+            conn.Open(); //Execute the SELECT SQL through a DataReader
+            SqlDataReader reader = cmd.ExecuteReader();
+            //Read all records until the end, save data into a staff list
+            Staff s = null;
+            while (reader.Read())
             {
-                if (staff.LoginID == LoginID)
+                s = new Staff
                 {
-                    if (staff.Password == Password)
-                    {
-                        return staff;
-                    }
-                }
+                    StaffID = reader.GetInt32(0), //0: 1st column
+                    StaffName = reader.GetString(1), //1: 2nd column 
+                    //Get the first character of a string
+                    LoginID = reader.GetString(2), //2: 3rd column
+                    Password = reader.GetString(3), //3: 4th column
+                    Appointment = reader.GetString(4), //4: 4th column
+                    OfficeTelNo = reader.GetString(5), //6: 5th column
+                    Location = reader.GetString(6), //9: 6th column 
+                };
             }
-            return null;
+            conn.Close();
+            return s;
         }
         public bool IfStaffExist(int sid)
         {
-            List<Staff> stafflist = GetAllStaff();
-            foreach (Staff s in stafflist)
+            SqlCommand cmd = conn.CreateCommand(); //Specify the SELECT SQL statement
+            cmd.CommandText = @"SELECT COUNT(*) FROM Staff WHERE StaffID = @sid"; //Open a database connection
+            cmd.Parameters.AddWithValue("@sid", sid);
+            conn.Open(); //Execute the SELECT SQL through a DataReader
+            int staffcount = (int)cmd.ExecuteScalar();
+            conn.Close();
+            if (staffcount == 1)
             {
-                if (s.StaffID == sid)
-                {
-                    return true;
-                }
+                return true;
             }
-            return false;
+            else
+            {
+                return false;
+            }
         }
         public int ReturnStaffID(string LoginID)
         {
-            List<Staff> slist = GetAllStaff();
-            foreach (Staff s in slist)
+            SqlCommand cmd = conn.CreateCommand(); //Specify the SELECT SQL statement
+            cmd.CommandText = @"SELECT StaffID FROM Staff WHERE LoginID = @lid"; //Open a database connection
+            cmd.Parameters.AddWithValue("@lid", LoginID);
+            conn.Open(); //Execute the SELECT SQL through a DataReader
+            var result = cmd.ExecuteScalar();
+            conn.Close();
+            if (result is null)
             {
-                if (s.LoginID == LoginID)
-                {
-                    return s.StaffID;
-                }
+                return -1;
             }
-            return -1;
+            return (int)result;
         }
         public Staff GetOneStaff(int StaffID)
         {
-            List<Staff> staff = GetAllStaff();
-            foreach(Staff s in staff)
+            SqlCommand cmd = conn.CreateCommand(); //Specify the SELECT SQL statement
+            cmd.CommandText = @"SELECT * FROM Staff WHERE StaffID = @sid"; //Open a database connection
+            cmd.Parameters.AddWithValue("@sid", StaffID);
+            conn.Open(); //Execute the SELECT SQL through a DataReader
+            SqlDataReader reader = cmd.ExecuteReader();
+            //Read all records until the end, save data into a staff list
+            Staff s = null;
+            while (reader.Read())
             {
-                if (s.StaffID == StaffID)
+                s = new Staff
                 {
-                    return s;
-                }
+                    StaffID = reader.GetInt32(0), //0: 1st column
+                    StaffName = reader.GetString(1), //1: 2nd column 
+                    //Get the first character of a string
+                    LoginID = reader.GetString(2), //2: 3rd column
+                    Password = reader.GetString(3), //3: 4th column
+                    Appointment = reader.GetString(4), //4: 4th column
+                    OfficeTelNo = reader.GetString(5), //6: 5th column
+                    Location = reader.GetString(6), //9: 6th column 
+                };
             }
-            return null;
+            conn.Close();
+            return s;
         }
 
         public Staff GetSIDByID(int id)
