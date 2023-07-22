@@ -274,5 +274,18 @@ namespace NPParcelDeliveryServiceAssignment.DALs
             }
             return p;
         }
+        public int GetCountFromStaffID(int staffID)
+        {
+            SqlCommand cmd = conn.CreateCommand(); //Specify the SELECT SQL statement
+            cmd.CommandText = @"SELECT COUNT(*) FROM Parcel WHERE DeliveryManID = @dmanid AND (DeliveryStatus = '1' OR DeliveryStatus = '2')"; //Open a database connection
+            cmd.Parameters.AddWithValue("@dmanid", staffID);
+            if (conn.State == System.Data.ConnectionState.Open)
+            {
+                conn.Close();
+            }
+            conn.Open(); //Execute the SELECT SQL through a DataReader
+            int count = (int) cmd.ExecuteScalar();
+            return count;
+        }
     }
 }

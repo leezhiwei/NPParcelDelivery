@@ -386,13 +386,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 ViewData["Error"] = true;
                 return View();
             }
-            foreach (Parcel parcel in lp)
-            {
-                if (parcel.ParcelID == pid)
-                {
-                    p = parcel;
-                }
-            }
+            p = pdal.GetPIDByPID(pid);
             if (p is not null)
             {
                 ViewData["ShowParcel"] = true;
@@ -419,18 +413,8 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 TempData["Error2"] = "Invalid input.";
                 return RedirectToAction("AssignParcels");
             }
-            int count = 0;
-            foreach (Parcel pa in plist)
-            {
-                if (pa.DeliveryManID == staffid)
-                {
-                    if (pa.DeliveryStatus == "1" || pa.DeliveryStatus == "2")
-                    {
-                        count++;
-                    }
-                }
-            }
-            if (count == 5)
+            int count = pdal.GetCountFromStaffID(staffid);
+            if (count >= 5)
             {
                 TempData["Error2"] = "More than 5 parcel set. Please fufil more deliveries.";
                 return RedirectToAction("AssignParcels");
@@ -485,14 +469,9 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 }
             }
             int? rcount = 0;
-            foreach (Parcel pa in plist)
-            {
-                if (pa.ParcelID == p.ParcelID)
-                {
-                    Merge(pa, p);
-                    rcount = pdal.Update(p);
-                }
-            }
+            Parcel pa = pdal.GetPIDByPID(p.ParcelID);
+            Merge(pa, p);
+            rcount = pdal.Update(p);
             
             if (rcount is null)
             {
