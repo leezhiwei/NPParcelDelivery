@@ -19,7 +19,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         private List<string> ft = new List<string> { "Receiver not found", "Wrong delivery addresss", "Parcel damaged", "Other" };
         private List<SelectListItem> list = new List<SelectListItem>();
         private MemberDAL mdal = new MemberDAL();
-        private List<string> country = new List<string> { "Singapore", "Malaysia", "Indonesia", "China", "USA", "Japan", "France", "UK", "Australia"};
+        private List<string> country = new List<string> { "Singapore", "Malaysia", "Indonesia", "China", "USA", "Japan", "France", "UK", "Australia" };
         private List<SelectListItem> PopulateCVlist()
         {
             List<SelectListItem> list = new List<SelectListItem>();
@@ -419,7 +419,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 TempData["Error2"] = "More than 5 parcel set. Please fufil more deliveries.";
                 return RedirectToAction("AssignParcels");
             }
-            
+
             Staff s = sdal.GetOneStaff(staffid);
             if (s is null)
             {
@@ -472,7 +472,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             Parcel pa = pdal.GetPIDByPID(p.ParcelID);
             Merge(pa, p);
             rcount = pdal.Update(p);
-            
+
             if (rcount is null)
             {
                 TempData["NotFound"] = $"There is no StaffID matching {p.DeliveryManID}";
@@ -509,7 +509,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                     return View();
                 }
 
-                
+
                 string loginID = HttpContext.Session.GetString("UserID");
                 List<Staff> staffli = sdal.GetAllStaff();
                 foreach (Staff s in staffli)
@@ -642,7 +642,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                     ppTemp.Add(parcel); //If parcel matches the record in the list, add parcel to tempparcel for viewing
                 }
             }
-            
+
             if (ppTemp.Count > 0) //If tempparcel is NOT empty and contains information
             {
                 TempData["ParcelFound"] = $"Parcel with the ID: {pId}, found.";
@@ -670,45 +670,39 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             string loginid = HttpContext.Session.GetString("UserID");
             int staffid = sdal.ReturnStaffID(loginid);
             df.DeliveryManID = staffid;
-            List<DeliveryFailure> dflist = dfdal.GetAllFailureReport();
-            foreach (DeliveryFailure d in dflist)
+            if (dfdal.CheckIfSimilar(df))
             {
-                if (d.IsDeepEqual(df))
-                {
-                    ViewData["Error"] = "Cannot insert a similar deliveryfailure report.";
-                    return View();
-                }
+                ViewData["Error"] = "Cannot insert a similar deliveryfailure report.";
+                return View();
             }
-            List<Parcel> p = pdal.GetAllParcel();
-            foreach (Parcel parcel in p)
+            Parcel parcel = pdal.GetPIDByPID(df.ParcelID);
+            if (parcel == new Parcel())
             {
-                if (parcel.ParcelID == df.ParcelID)
-                {
-                    int dmanid = 0;
-                    try
-                    {
-                        dmanid = (int)parcel.DeliveryManID;
-                    }
-                    catch
-                    {
-                        continue;
-                    }
-                    if (dmanid != df.DeliveryManID)
-                    {
-                        ViewData["Error"] = "This parcel is not assigned to you.";
-                        return View();
-                    }
-                    if (parcel.DeliveryStatus != "4")
-                    {
-                        ViewData["Error"] = "This parcel has not failed delivery, please check again.";
-                        return View();
-                    }
-                    dfdal.Add(df);
-                    ViewData["Success"] = "You have successfully updated the database.";
-                    return View();
-                }
+                ViewData["Error"] = "Unable to get Parcel Object";
+                return View();
             }
-            ViewData["Error"] = "An unknown error occured, please contact the developers";
+            int dmanid = 0;
+            try
+            {
+                dmanid = (int)parcel.DeliveryManID;
+            }
+            catch
+            {
+                ViewData["Error"] = "Unable to convert.";
+                return View();
+            }
+            if (dmanid != df.DeliveryManID)
+            {
+                ViewData["Error"] = "This parcel is not assigned to you.";
+                return View();
+            }
+            if (parcel.DeliveryStatus != "4")
+            {
+                ViewData["Error"] = "This parcel has not failed delivery, please check again.";
+                return View();
+            }
+            dfdal.Add(df);
+            ViewData["Success"] = "You have successfully updated the database.";
             return View();
         }
         public ActionResult FailedDel(string id)
@@ -776,7 +770,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             string sname;
             int pid = 0;
 
-            
+
             ParcelId = form["ParcelID"];
             rname = form["rnameSearch"];
             sname = form["snameSearch"];
@@ -805,28 +799,28 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 if (pTemp.DeliveryStatus == "0")
                 {
                     TempData["ParcelStatus"] = "Pending Delivery";
-				}
+                }
                 else if (pTemp.DeliveryStatus == "1")
-				{
-					TempData["ParcelStatus"] = "Delivery to Destination in Progress";
-			    }
-				else if (pTemp.DeliveryStatus == "2")
-				{
-					TempData["ParcelStatus"] = "Delivery to Airport in Progress";
-				}
-				else if (pTemp.DeliveryStatus == "3")
-				{
-					TempData["ParcelStatus"] = "Delivery Completed";
-				}
+                {
+                    TempData["ParcelStatus"] = "Delivery to Destination in Progress";
+                }
+                else if (pTemp.DeliveryStatus == "2")
+                {
+                    TempData["ParcelStatus"] = "Delivery to Airport in Progress";
+                }
+                else if (pTemp.DeliveryStatus == "3")
+                {
+                    TempData["ParcelStatus"] = "Delivery Completed";
+                }
                 else if (pTemp.DeliveryStatus == "4")
-				{
-					TempData["ParcelStatus"] = "Delivery Failed";
-				}
+                {
+                    TempData["ParcelStatus"] = "Delivery Failed";
+                }
                 else
                 {
                     TempData["ParcelStatus"] = " ";
                 }
-				return View(pTemp);
+                return View(pTemp);
             }
             else //prints the error msg that parcel is not found, since the tempparcel is empty
             {
@@ -837,7 +831,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         }
 
 
-        
+
         public ActionResult PaymentTransaction()
         {
             ViewData["TranType"] = PopulateCVlist();
@@ -850,7 +844,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             return View(pt);
         }
 
-        
+
 
         // POST: Payment Transaction
         [HttpPost]
@@ -898,9 +892,9 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
 
             if (pt.TranType == "VOUC") //If transaction type is voucher
             {
-                foreach(CashVoucher cvs in cv)
+                foreach (CashVoucher cvs in cv)
                 {
-                    if(sName == cvs.ReceiverName) //Checks if sender name matches receiver name from cashvoucher
+                    if (sName == cvs.ReceiverName) //Checks if sender name matches receiver name from cashvoucher
                     {
                         if (pt.AmtTran > cvs.Amount) //Checks if amount exceeds available voucher
                         {
@@ -924,7 +918,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             {
                 ParcelID = pt.ParcelID,
                 AmtTran = pt.AmtTran,
-                Currency= pt.Currency,
+                Currency = pt.Currency,
                 TranType = pt.TranType,
                 TranDate = pt.TranDate,
             };
@@ -945,8 +939,8 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             }
             catch
             {
-				return View(new List<DeliveryHistory>());
-			}
+                return View(new List<DeliveryHistory>());
+            }
             List<DeliveryHistory> vList = dhdal.GetParcelHistory(tempid);
             return View(vList);
         }

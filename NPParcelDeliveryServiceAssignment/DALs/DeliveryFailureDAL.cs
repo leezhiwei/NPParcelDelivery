@@ -162,5 +162,25 @@ namespace NPParcelDeliveryServiceAssignment.DALs
             }
             return null;
         }
+        public bool CheckIfSimilar(DeliveryFailure d)
+        {
+            SqlCommand cmd = conn.CreateCommand(); //Specify the SELECT SQL statement
+            cmd.CommandText = @"SELECT COUNT(*) FROM DeliveryFailure WHERE ParcelID = @pid AND DeliveryManID = @dmanid AND FailureType = @ft AND Description = @desc"; //Open a database connection
+            cmd.Parameters.AddWithValue("@pid", d.ParcelID);
+            cmd.Parameters.AddWithValue("@dmanid", d.DeliveryManID);
+            cmd.Parameters.AddWithValue("@ft", d.FailureType);
+            cmd.Parameters.AddWithValue("@desc", d.Description);
+            if (conn.State == System.Data.ConnectionState.Open)
+            {
+                conn.Close();
+            }
+            conn.Open(); //Execute the SELECT SQL through a DataReader
+            int count = (int)cmd.ExecuteScalar();
+            if (count > 0)
+            {
+                return true;
+            }
+            return false;
+        }
     }
 }
