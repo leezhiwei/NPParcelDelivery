@@ -27,8 +27,8 @@
         </form>
             }
         }
-        @TempData["readyIssued"]
-        @TempData["Issued"]
+        <p style="color:red">@TempData["readyIssued"]</p>
+        <p style="color:green">@TempData["Issued"]</p>
         @{
         if((bool)ViewData["CannotIssue"])
         {
