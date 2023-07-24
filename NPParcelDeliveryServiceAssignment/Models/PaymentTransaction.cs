@@ -8,11 +8,9 @@ namespace NPParcelDeliveryServiceAssignment.Models
         public int TransactionID { get; set; }
 
         [Display(Name = "Parcel ID")]
-
-        [RegularExpression(@"^\d+$", ErrorMessage = "Please enter integer values and numbers.")]
         public int ParcelID { get; set; }
 
-
+        [RegularExpression(@"^\d+$", ErrorMessage = "Please enter numeric values for transaction amount.")]
         [Display(Name = "Transaction Amount")]
         public decimal AmtTran { get; set; }
 

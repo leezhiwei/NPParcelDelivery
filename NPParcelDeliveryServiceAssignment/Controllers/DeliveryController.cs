@@ -4,6 +4,7 @@ using NPParcelDeliveryServiceAssignment.Models;
 using NPParcelDeliveryServiceAssignment.DALs;
 using Newtonsoft.Json;
 using DeepEqual.Syntax;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace NPParcelDeliveryServiceAssignment.Controllers
 {
@@ -835,6 +836,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         public ActionResult PaymentTransaction()
         {
             ViewData["TranType"] = PopulateCVlist();
+            /*
             List<SelectListItem> templist = PopulateCVlist();
             PaymentTransaction pt = new PaymentTransaction //Setting default values
             {
@@ -842,6 +844,8 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 TranType = Convert.ToString(templist[0])
             };
             return View(pt);
+            */
+            return View();
         }
 
 
@@ -924,7 +928,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             };
             paydal.Add(pts); //Adding payment details into payment transaction       
 
-            TempData["SuccessMsg"] = $"Payment Transaction with Parcel ID: {pt.ParcelID} is successfully added";
+            TempData["SuccessMsg"] = $"Payment Transaction with Parcel ID: {pt.ParcelID} is successfully!";
             return RedirectToAction("PaymentTransaction");
 
 
