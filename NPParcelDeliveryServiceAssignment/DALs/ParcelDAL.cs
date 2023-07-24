@@ -170,7 +170,7 @@ namespace NPParcelDeliveryServiceAssignment.DALs
         public List<Parcel> CheckAssigned(int StaffID)
         {
             SqlCommand cmd = conn.CreateCommand(); //Specify the SELECT SQL statement
-            cmd.CommandText = @"SELECT * FROM Parcel WHERE DeliveryManID = @sid AND DeliveryStatus = '1' OR DeliveryStatus = '2'"; //Open a database connection
+            cmd.CommandText = @"SELECT * FROM Parcel WHERE DeliveryManID = @sid AND (DeliveryStatus = '1' OR DeliveryStatus = '2')"; //Open a database connection
             cmd.Parameters.AddWithValue("@sid", StaffID);
             conn.Open(); //Execute the SELECT SQL through a DataReader
             SqlDataReader reader = cmd.ExecuteReader();
