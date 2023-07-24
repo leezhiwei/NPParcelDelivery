@@ -285,7 +285,7 @@ namespace NPParcelDeliveryServiceAssignment.DALs
         public int GetCountFromStaffID(int staffID)
         {
             SqlCommand cmd = conn.CreateCommand(); //Specify the SELECT SQL statement
-            cmd.CommandText = @"SELECT COUNT(*) FROM Parcel WHERE DeliveryManID = @dmanid AND (DeliveryStatus = '1' OR DeliveryStatus = '2')"; //Open a database connection
+            cmd.CommandText = @"SELECT COUNT(*) FROM Parcel WHERE DeliveryManID = @dmanid AND DeliveryStatus = '1'"; //Open a database connection
             cmd.Parameters.AddWithValue("@dmanid", staffID);
             if (conn.State == System.Data.ConnectionState.Open)
             {
@@ -299,7 +299,7 @@ namespace NPParcelDeliveryServiceAssignment.DALs
         {
             List<SelectListItem> list = new List<SelectListItem> ();
             SqlCommand cmd = conn.CreateCommand(); //Specify the SELECT SQL statement
-            cmd.CommandText = @"SELECT StaffName, StaffID FROM Staff INNER JOIN (SELECT ParcelID, DeliveryManID FROM Parcel WHERE DeliveryStatus = '1' OR DeliveryStatus = '2') AS a ON a.DeliveryManID = Staff.StaffID GROUP BY StaffName, StaffID HAVING COUNT(*) < 5;"; //Open a database connection
+            cmd.CommandText = @"SELECT StaffName, StaffID FROM Staff LEFT JOIN (SELECT ParcelID, DeliveryManID FROM Parcel WHERE DeliveryStatus = '1') AS ""a"" ON a.DeliveryManID = Staff.StaffID WHERE Appointment = 'Delivery Man' GROUP BY StaffName, StaffID HAVING COUNT(*) < 5;"; //Open a database connection
             if (conn.State == System.Data.ConnectionState.Open)
             {
                 conn.Close();
