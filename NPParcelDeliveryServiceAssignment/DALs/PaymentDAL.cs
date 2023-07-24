@@ -76,6 +76,33 @@ namespace NPParcelDeliveryServiceAssignment.DALs
             return payment.TransactionID;
         }
 
+        public PaymentTransaction GetPTByID(string id)
+        {
+            SqlCommand cmd = conn.CreateCommand(); //Specify the SELECT SQL statement
+            cmd.CommandText = @"SELECT * FROM PaymentTransaction WHERE TransactionID = @tid"; //Open a database connection
+            cmd.Parameters.AddWithValue("@tid", id);
+            if (conn.State == System.Data.ConnectionState.Open)
+            {
+                conn.Close();
+            }
+            conn.Open(); //Execute the SELECT SQL through a DataReader
+            PaymentTransaction pt = new PaymentTransaction();
+            SqlDataReader reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                pt = new PaymentTransaction
+                {
+                    TransactionID = reader.GetInt32(0), //0: 1st column
+                    ParcelID = reader.GetInt32(1), //1: 2nd column 
+                    AmtTran = reader.GetDecimal(2), //2: 3rd column
+                    Currency = reader.GetString(3), //3: 4th column
+                    TranType = reader.GetString(4), //4: 4th column
+                    TranDate = reader.GetDateTime(5), //6: 5th column
+                };
+            }
+            return pt;
+        }
+
 
 
     }
