@@ -90,7 +90,6 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 return View(dh);
             }
         }
-
         private List<SelectListItem> GetCountries()
         {
             List<SelectListItem> countries = new List<SelectListItem>();
@@ -367,14 +366,16 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             }
             ViewData["Error"] = false;
             ViewData["ShowParcel"] = false;
+            ViewData["SelectList"] = pdal.GetDManCount();
             return View();
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult AssignParcels(IFormCollection form)
         {
+            ViewData["SelectList"] = pdal.GetDManCount();
             List<Parcel> lp = pdal.GetAllParcel();
-            Parcel p = null;
+            Parcel p = new Parcel();
             int pid = 0;
             try
             {
@@ -387,15 +388,15 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 return View();
             }
             p = pdal.GetPIDByPID(pid);
-            if (p is not null)
+            if (p.IsDeepEqual(new Parcel()))
             {
-                ViewData["ShowParcel"] = true;
-                ViewData["Error"] = false;
-                return View(p);
+                ViewData["ShowParcel"] = false;
+                ViewData["Error"] = true;
+                return View();
             }
-            ViewData["ShowParcel"] = false;
-            ViewData["Error"] = true;
-            return View();
+            ViewData["ShowParcel"] = true;
+            ViewData["Error"] = false;
+            return View(p);
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
