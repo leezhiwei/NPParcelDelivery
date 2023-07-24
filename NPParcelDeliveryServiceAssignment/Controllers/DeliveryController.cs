@@ -380,7 +380,6 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         public ActionResult AssignParcels(IFormCollection form)
         {
             ViewData["SelectList"] = pdal.GetDManCount();
-            List<Parcel> lp = pdal.GetAllParcel();
             Parcel p = new Parcel();
             int pid = 0;
             try
