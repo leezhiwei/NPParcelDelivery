@@ -4,6 +4,7 @@ using NPParcelDeliveryServiceAssignment.Models;
 using NPParcelDeliveryServiceAssignment.DALs;
 using Newtonsoft.Json;
 using DeepEqual.Syntax;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace NPParcelDeliveryServiceAssignment.Controllers
 {
@@ -140,6 +141,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             });
             return countries;
         }
+
         public ActionResult Insert()
         {
             Parcel p = new Parcel //Setting default values
@@ -156,46 +158,43 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Insert(Parcel p)
         {
+            ShippingRate ccObject = srd.GetSRbyCC(p.ToCity, p.ToCountry); //Creating a shipping rate object to inherit a shipping rate object that has the same tocity & tocountry
 
-            List<ShippingRate> SP = srd.GetAllShippingRate();
-            //Advanced Feature 3 - Parcel Receiving
-            decimal dc = 0;
-            decimal rdc = 0;
-            decimal sr = 0;
-            foreach (ShippingRate s in SP)
+            decimal deliveryCharge = 0;
+            decimal rdelCharge = 0;
+            decimal shipRate = 0;
+            int transitTime = 0;
+
+            if (ccObject.IsDeepEqual(new ShippingRate())) // Checks if the ccObject equals to a new shippingrate that has empty values
             {
-                if ((p.ToCity.ToLower() == s.ToCity.ToLower()) && (p.ToCountry.ToLower() == s.ToCountry.ToLower())) //Checks if the city & country matches the records in shipping rate 
-                {
-                    sr = s.ShipRate; //Store shiprate into sr, to be printed out later as tempData
-                    dc = Convert.ToDecimal(p.ParcelWeight) * s.ShipRate; //Delivery Charge = parcel weight * ship rate
-                    break;
-                }
+                TempData["ErrorMessage"] = $"Parcel creation failed. <br><br>------------------------------------------------------------ <br><br> Invalid ToCity & ToCountry, please try again with the correct city & country names. <br><br> ------------------------------------------------------------";
+                return RedirectToAction("Insert");
             }
-            rdc = Math.Round(dc, MidpointRounding.AwayFromZero); //Rounding the delivery charge to the nearest dollar
-            if (rdc >= 5) //Checks if delivery charge is more than 5
+            else if ((p.ToCity.ToLower() == ccObject.ToCity.ToLower()) && (p.ToCountry.ToLower() == ccObject.ToCountry.ToLower())) //Checks if the city & country matches the records in shipping rate 
             {
-                p.DeliveryCharge = rdc;
+                //Advanced Feature 3 - Parcel Receiving, compute delivery charge
+                shipRate = ccObject.ShipRate; //Store shiprate into shipRate, to be printed out later as tempData
+                deliveryCharge = Convert.ToDecimal(p.ParcelWeight) * ccObject.ShipRate; //Delivery Charge = parcel weight * ship rate
+                //Basic Feature 2 - Parcel Receiving, calculating target delivery date
+                p.ToCity = ccObject.ToCity; //Added to replace value entered by staff. E.g. if staff enter pAriS, it will be replaced to Paris from shipping rate.
+                p.ToCountry = ccObject.ToCountry; //Added to replace value entered by staff. E.g. if staff enter frAnCe, it will be replaced to France from shipping rate.
+                transitTime = ccObject.TransitTime;
+            }
+
+            //Advanced Feature 3 - Parcel Receiving, compute delivery charge
+            rdelCharge = Math.Round(deliveryCharge, MidpointRounding.AwayFromZero); //Rounding the delivery charge to the nearest dollar
+            if (rdelCharge >= 5) //Checks if delivery charge is more than 5
+            {
+                p.DeliveryCharge = rdelCharge;
             }
             else //If delivery charge is less than 5, the minimum delivery charge is 5 dollars  
             {
                 p.DeliveryCharge = 5;
             }
 
-
             //Basic Feature 2 - Parcel Receiving, calculating target delivery date
-            int tt = 0;
-            foreach (ShippingRate s in SP)
-            {
-                if ((p.ToCity.ToLower() == s.ToCity.ToLower()) && (p.ToCountry.ToLower() == s.ToCountry.ToLower())) //Checks if the city & country matches the records in shipping rate 
-                {
-                    p.ToCity = s.ToCity; //Added to replace value entered by staff. E.g. if staff enter pAriS, it will be replaced to Paris from shipping rate.
-                    p.ToCountry = s.ToCountry; //Added to replace value entered by staff. E.g. if staff enter frAnCe, it will be replaced to France from shipping rate.
-                    tt = s.TransitTime;
-                    break;
-                }
-            }
             DateTime receiveParcel = DateTime.Now;
-            DateTime tdd = receiveParcel.AddDays(tt); //Target delivery date = receive parcel datetime + transit datetime
+            DateTime tdd = receiveParcel.AddDays(transitTime); //Target delivery date = receive parcel datetime + transit datetime
             p.TargetDeliveryDate = tdd;
 
 
@@ -204,12 +203,12 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
 
             DeliveryHistory dh = new DeliveryHistory
             {
-                ParcelID = pdal.Add(p),
+                ParcelID = pdal.Add(p), //Obtaining parcel ID by adding details to parcel
                 Description = desc,
             };
             dhdal.Add(dh); //Adding parcel ID & description into delivery history
 
-            TempData["InsertMessage"] = $"Parcel Added to Database! <br><br> ------------------ Parcel Delivery Order ------------------ <br><br> Parcel ID:  {p.ParcelID} <br> Parcel Weight:  {p.ParcelWeight} kg <br> From City and Country:  {p.FromCity}, {p.FromCountry} <br> To City and Country:  {p.ToCity}, {p.ToCountry} <br> Shipping Rate:  {String.Format("{0:0.##}", sr)}/kg <br> Delivery Charge (Raw):  ({String.Format("{0:0.##}", sr)} x {p.ParcelWeight}) = ${String.Format("{0:0.##}", dc)} <br> Delivery Charge (Rounded):  ${String.Format("{0:0.##}", rdc)} <br> Delivery Charge (Final):  ${String.Format("{0:0.##}", p.DeliveryCharge)} (Note: Minimum delivery charge is S$5.00) <br><br> ------------------------------------------------------------";
+            TempData["InsertMessage"] = $"Parcel Added to Database! <br><br> ------------------ Parcel Delivery Order ------------------ <br><br> Parcel ID:  {p.ParcelID} <br> Parcel Weight:  {p.ParcelWeight} kg <br> From City and Country:  {p.FromCity}, {p.FromCountry} <br> To City and Country:  {p.ToCity}, {p.ToCountry} <br> Shipping Rate:  {String.Format("{0:0.##}", shipRate)}/kg <br> Delivery Charge (Raw):  ({String.Format("{0:0.##}", shipRate)} x {p.ParcelWeight}) = ${String.Format("{0:0.##}", deliveryCharge)} <br> Delivery Charge (Rounded):  ${String.Format("{0:0.##}", rdelCharge)} <br> Delivery Charge (Final):  ${String.Format("{0:0.##}", p.DeliveryCharge)} (Note: Minimum delivery charge is S$5.00) <br><br> ------------------------------------------------------------";
             return RedirectToAction("Insert");
 
 
@@ -302,14 +301,21 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             Merge(oldobj, s);
             string loginID = (string)HttpContext.Session.GetString("UserID");
             List<Staff> ls = sdal.GetAllStaff();
-            foreach (Staff st in ls)
+            /*foreach (Staff st in ls)
             {
                 if (st.LoginID == loginID)
                 {
                     s.LastUpdatedBy = st.StaffID;
                     break;
                 }
+            }*/
+            int staffIDCheck = sdal.ReturnStaffID(loginID);
+            if (staffIDCheck <= -1)
+            {
+                return View();
             }
+            else
+            { s.LastUpdatedBy = sdal.ReturnStaffID(loginID); }
             srd.Update(s);
             TempData["UpdateSuccess"] = "You have successfully update the shipping rate";
             return View();
@@ -493,6 +499,8 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             {
                 return RedirectToAction("Index", "Login");
             }
+            List<SelectListItem> ge = GetCountries();
+            ViewData["country"]=ge;
             return View();
         }
 
@@ -501,25 +509,32 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult CreateShippingRate(ShippingRate shippingRate)
         {
+            List<SelectListItem> ge = GetCountries();
+            ViewData["country"] = ge;
             if (ModelState.IsValid)
             {
                 List<ShippingRate> shippingRateList = srd.GetAllShippingRate();
                 if (srd.IsInfoExist(shippingRate))
                 {
-                    TempData["ErrorMessage"] = "Error Such Ship Rate Info is already Exisit!";
+                    TempData["Fail"] = "Error Such Ship Rate Info is already Exisit!";
                     return View();
                 }
-
-
                 string loginID = HttpContext.Session.GetString("UserID");
                 List<Staff> staffli = sdal.GetAllStaff();
-                foreach (Staff s in staffli)
+                /*foreach (Staff s in staffli)
                 {
                     if (s.LoginID == loginID)
                     {
                         shippingRate.LastUpdatedBy = Convert.ToInt32(s.StaffID);
                     }
+                }*/
+                int staffIDCheck = sdal.ReturnStaffID(loginID);
+                if (staffIDCheck <= -1)
+                {
+                    return View();
                 }
+                else
+                { shippingRate.LastUpdatedBy = sdal.ReturnStaffID(loginID); }
                 //Add staff record to database
                 shippingRate.ShippingRateID = srd.Add(shippingRate);//.Add(shippingRate);
                 TempData["CreateSuccess"] = "You have successfully create a new shipping rate";
@@ -532,6 +547,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 //to display error message
                 return View(shippingRate);
             }
+
         }
         public ActionResult List()
         {
@@ -836,6 +852,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         public ActionResult PaymentTransaction()
         {
             ViewData["TranType"] = PopulateCVlist();
+            /*
             List<SelectListItem> templist = PopulateCVlist();
             PaymentTransaction pt = new PaymentTransaction //Setting default values
             {
@@ -843,6 +860,8 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 TranType = Convert.ToString(templist[0])
             };
             return View(pt);
+            */
+            return View();
         }
 
 
@@ -925,7 +944,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             };
             paydal.Add(pts); //Adding payment details into payment transaction       
 
-            TempData["SuccessMsg"] = $"Payment Transaction with Parcel ID: {pt.ParcelID} is successfully added";
+            TempData["SuccessMsg"] = $"Payment Transaction with Parcel ID: {pt.ParcelID} is successfully!";
             return RedirectToAction("PaymentTransaction");
 
 
