@@ -96,18 +96,13 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             List<SelectListItem> countries = new List<SelectListItem>();
             countries.Add(new SelectListItem
             {
-                Value = "Singapore",
-                Text = "Singapore"
+                Value = null,
+                Text = "--- Select Country ---"
             });
             countries.Add(new SelectListItem
             {
-                Value = "Malaysia",
-                Text = "Malaysia"
-            });
-            countries.Add(new SelectListItem
-            {
-                Value = "Indonesia",
-                Text = "Indonesia"
+                Value = "Australia",
+                Text = "Australia"
             });
             countries.Add(new SelectListItem
             {
@@ -116,8 +111,13 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             });
             countries.Add(new SelectListItem
             {
-                Value = "USA",
-                Text = "USA"
+                Value = "France",
+                Text = "France"
+            });
+            countries.Add(new SelectListItem
+            {
+                Value = "Indonesia",
+                Text = "Indonesia"
             });
             countries.Add(new SelectListItem
             {
@@ -126,8 +126,13 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             });
             countries.Add(new SelectListItem
             {
-                Value = "France",
-                Text = "France"
+                Value = "Malaysia",
+                Text = "Malaysia"
+            });
+            countries.Add(new SelectListItem
+            {
+                Value = "Singapore",
+                Text = "Singapore"
             });
             countries.Add(new SelectListItem
             {
@@ -136,14 +141,71 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             });
             countries.Add(new SelectListItem
             {
-                Value = "Australia",
-                Text = "Australia"
+                Value = "USA",
+                Text = "USA"
             });
             return countries;
+        }
+        private List<SelectListItem> GetCities()
+        {
+            List<SelectListItem> cities = new List<SelectListItem>();
+            cities.Add(new SelectListItem
+            {
+                Value = null,
+                Text = "--- Select City ---"
+            });
+            cities.Add(new SelectListItem
+            {
+                Value = "Beijing",
+                Text = "Beijing"
+            });
+            cities.Add(new SelectListItem
+            {
+                Value = "Hong Kong",
+                Text = "Hong Kong"
+            });
+            cities.Add(new SelectListItem
+            {
+                Value = "Kuala Lumpur",
+                Text = "Kuala Lumpur"
+            });
+            cities.Add(new SelectListItem
+            {
+                Value = "New York",
+                Text = "New York"
+            });
+            cities.Add(new SelectListItem
+            {
+                Value = "Paris",
+                Text = "Paris"
+            });
+            cities.Add(new SelectListItem
+            {
+                Value = "San Francisco",
+                Text = "San Francisco"
+            });
+            cities.Add(new SelectListItem
+            {
+                Value = "Sdyney",
+                Text = "Sdyney"
+            });
+            cities.Add(new SelectListItem
+            {
+                Value = "Singapore",
+                Text = "Singapore"
+            });
+            cities.Add(new SelectListItem
+            {
+                Value = "Tokyo",
+                Text = "Tokyo"
+            });
+            return cities;
         }
 
         public ActionResult Insert()
         {
+            ViewData["Cities"] = GetCities();
+            ViewData["Countries"] = GetCountries();
             Parcel p = new Parcel //Setting default values
             {
                 Currency = "SGD",

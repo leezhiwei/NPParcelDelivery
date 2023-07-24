@@ -43,22 +43,22 @@
             </div>
             <div class="form-group">
                 <label asp-for="FromCity" class="control-label"></label>
-                <input asp-for="FromCity" class="form-control" />
+                <select asp-for="FromCity" asp-items="@(new SelectList(ViewData["Cities"] as List<SelectListItem>,"Value","Text"))" class="form-select"></select>
                 <span asp-validation-for="FromCity" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="FromCountry" class="control-label"></label>
-                <input asp-for="FromCountry" class="form-control" />
+                <select asp-for="FromCountry" asp-items="@(new SelectList(ViewData["Countries"] as List<SelectListItem>,"Value","Text"))" class="form-select"></select>
                 <span asp-validation-for="FromCountry" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="ToCity" class="control-label"></label>
-                <input asp-for="ToCity" class="form-control" />
+                <select asp-for="ToCity" asp-items="@(new SelectList(ViewData["Cities"] as List<SelectListItem>,"Value","Text"))" class="form-select"></select>
                 <span asp-validation-for="ToCity" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="ToCountry" class="control-label"></label>
-                <input asp-for="ToCountry" class="form-control" />
+                <select asp-for="ToCountry" asp-items="@(new SelectList(ViewData["Countries"] as List<SelectListItem>,"Value","Text"))" class="form-select"></select>
                 <span asp-validation-for="ToCountry" class="text-danger"></span>
             </div>
             <div class="form-group">
