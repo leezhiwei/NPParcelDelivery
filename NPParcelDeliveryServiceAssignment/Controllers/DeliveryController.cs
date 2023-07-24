@@ -96,18 +96,13 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             List<SelectListItem> countries = new List<SelectListItem>();
             countries.Add(new SelectListItem
             {
-                Value = "Singapore",
-                Text = "Singapore"
+                Value = null,
+                Text = "--- Select Country ---"
             });
             countries.Add(new SelectListItem
             {
-                Value = "Malaysia",
-                Text = "Malaysia"
-            });
-            countries.Add(new SelectListItem
-            {
-                Value = "Indonesia",
-                Text = "Indonesia"
+                Value = "Australia",
+                Text = "Australia"
             });
             countries.Add(new SelectListItem
             {
@@ -116,8 +111,13 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             });
             countries.Add(new SelectListItem
             {
-                Value = "USA",
-                Text = "USA"
+                Value = "France",
+                Text = "France"
+            });
+            countries.Add(new SelectListItem
+            {
+                Value = "Indonesia",
+                Text = "Indonesia"
             });
             countries.Add(new SelectListItem
             {
@@ -126,8 +126,13 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             });
             countries.Add(new SelectListItem
             {
-                Value = "France",
-                Text = "France"
+                Value = "Malaysia",
+                Text = "Malaysia"
+            });
+            countries.Add(new SelectListItem
+            {
+                Value = "Singapore",
+                Text = "Singapore"
             });
             countries.Add(new SelectListItem
             {
@@ -136,14 +141,15 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             });
             countries.Add(new SelectListItem
             {
-                Value = "Australia",
-                Text = "Australia"
+                Value = "USA",
+                Text = "USA"
             });
             return countries;
         }
 
         public ActionResult Insert()
         {
+            ViewData["Countries"] = GetCountries();
             Parcel p = new Parcel //Setting default values
             {
                 Currency = "SGD",
@@ -380,7 +386,6 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         public ActionResult AssignParcels(IFormCollection form)
         {
             ViewData["SelectList"] = pdal.GetDManCount();
-            List<Parcel> lp = pdal.GetAllParcel();
             Parcel p = new Parcel();
             int pid = 0;
             try
