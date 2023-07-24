@@ -879,7 +879,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             List<SelectListItem> templist = PopulateCVlist();
             List<Parcel> pcls = pdal.GetAllParcel();
             List<CashVoucher> cv = cvdal.GetAllCashVoucher();
-            //List<PaymentTransaction> ptsn = paydal.GetAllPayment();
+            List<PaymentTransaction> ptsn = paydal.GetAllPayment();
             //Advanced Feature 4 - Parcel Receiving, Create Payment Transaction
 
             bool cPID = false;
@@ -892,7 +892,27 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 {
                     sName = p.SenderName;
                     cPID = true; //Check parcel found turns true
-                    /*
+
+                    if (pt.TranType == "VOUC") //If transaction type is voucher
+                    {
+                        foreach (CashVoucher cvs in cv)
+                        {
+                            if (sName == cvs.ReceiverName) //Checks if sender name matches receiver name from cashvoucher
+                            {
+                                if (pt.AmtTran > cvs.Amount) //Checks if amount exceeds available voucher
+                                {
+                                    TempData["ErrorMsg"] = $"Transaction amount exceeded available cash voucher! Please try again.";
+                                    return RedirectToAction("PaymentTransaction");
+                                }
+                            }
+                            else
+                            {
+                                TempData["ErrorMsg"] = $"You do not have vouchers at the moment. Please choose a different transaction type.";
+                                return RedirectToAction("PaymentTransaction");
+                            }
+                        }
+                    }
+
                     foreach (PaymentTransaction ptn in ptsn)
                     {
                         if (pt.ParcelID == ptn.ParcelID)
@@ -904,7 +924,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                             TempData["ErrorMsg"] = $"Transaction Amount exceeded delivery charge. You are not ALLOWED to pay extra! Please try again.";
                             return RedirectToAction("PaymentTransaction");
                         }
-                    }*/
+                    }
                     if (pt.AmtTran > p.DeliveryCharge)
                     {
                         TempData["ErrorMsg"] = $"Transaction amount exceeded delivery charge. You are not ALLOWED to pay extra! Please try again.";
@@ -915,20 +935,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             }
 
 
-            if (pt.TranType == "VOUC") //If transaction type is voucher
-            {
-                foreach (CashVoucher cvs in cv)
-                {
-                    if (sName == cvs.ReceiverName) //Checks if sender name matches receiver name from cashvoucher
-                    {
-                        if (pt.AmtTran > cvs.Amount) //Checks if amount exceeds available voucher
-                        {
-                            TempData["ErrorMsg"] = $"Transaction amount exceeded available cash voucher! Please try again.";
-                            return RedirectToAction("PaymentTransaction");
-                        }
-                    }
-                }
-            }
+            
 
 
             if (cPID == false) //If parcel is not found in database, return back to page with temp data message
