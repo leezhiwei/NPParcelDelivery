@@ -92,6 +92,10 @@ namespace NPParcelDeliveryServiceAssignment.DALs
             SqlCommand cmd = conn.CreateCommand(); //Specify the SELECT SQL statement
             cmd.CommandText = @"SELECT StaffID FROM Staff WHERE LoginID = @lid"; //Open a database connection
             cmd.Parameters.AddWithValue("@lid", LoginID);
+            if (conn.State == System.Data.ConnectionState.Open)
+            {
+                conn.Close();
+            }
             conn.Open(); //Execute the SELECT SQL through a DataReader
             var result = cmd.ExecuteScalar();
             conn.Close();

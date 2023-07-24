@@ -14,7 +14,7 @@
     <div class="col-md-4">
         <form asp-action="CreateShippingRate">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-           
+            <p style="color:red">@TempData["Fail"]</p>
             <div class="form-group">
                 <label asp-for="FromCity" class="control-label"></label>
                 <input asp-for="FromCity" class="form-control" />
@@ -22,8 +22,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="FromCountry" class="control-label"></label>
-                <input asp-for="FromCountry" class="form-control" />
-                <span asp-validation-for="FromCountry" class="text-danger"></span>
+                <select asp-for="FromCountry" asp-items="@(new SelectList(ViewData["country"]as List<SelectListItem>,"Value","Text" ))" class="form-select"></select>
             </div>
             <div class="form-group">
                 <label asp-for="ToCity" class="control-label"></label>
@@ -32,8 +31,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="ToCountry" class="control-label"></label>
-                <input asp-for="ToCountry" class="form-control" />
-                <span asp-validation-for="ToCountry" class="text-danger"></span>
+                <select asp-for="ToCountry" asp-items="@(new SelectList(ViewData["country"]as List<SelectListItem>,"Value","Text" ))" class="form-select"></select>
             </div>
             <div class="form-group">
                 <label asp-for="ShipRate" class="control-label"></label>

@@ -137,7 +137,7 @@ namespace NPParcelDeliveryServiceAssignment.DALs
         public DeliveryFailure GetOne(int pid)
         {
             SqlCommand cmd = conn.CreateCommand(); //Specify the SELECT SQL statement
-            cmd.CommandText = @"SELECT * FROM DeliveryFailure WHERE ParcelID = @pid"; //Open a database connection
+            cmd.CommandText = @"SELECT * FROM DeliveryFailure WHERE ReportID = @pid"; //Open a database connection
             cmd.Parameters.AddWithValue("@pid", pid);
             if (conn.State == System.Data.ConnectionState.Open)
             {

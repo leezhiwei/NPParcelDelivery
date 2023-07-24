@@ -222,14 +222,22 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             string stID = (string)HttpContext.Session.GetString("UserID");
             List<CashVoucher> nclist = clist.GetAllCashVoucher();
             List<Staff> ls = sdal.GetAllStaff();
-            foreach (Staff st in ls)
+            /*foreach (Staff st in ls)
             {
                 if (st.LoginID == stID)
                 {
                     cashVoucher.StaffID = st.StaffID;
                     break;
                 }
+            }*/
+
+            int staffIDCheck = sdal.ReturnStaffID(stID);
+            if (staffIDCheck <= -1)
+            {
+                return View();
             }
+            else
+            { cashVoucher.StaffID = sdal.ReturnStaffID(stID); }
             cashVoucher.Amount = 10;
             cashVoucher.Currency = "SGD";
             cashVoucher.IssuingCode = "1";
@@ -278,38 +286,34 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             List<DeliveryHistory>dhhlist = dhlist.GetAllHistory();
             List<DeliveryFailure> dlist = dflist.GetAllFailureReport();
             DeliveryFailure df = null;
-            foreach (DeliveryFailure dff in dlist)
+            /*foreach (DeliveryFailure dff in dlist)
             {
                 if (dff.ReportID == id)
                 {
                     df = dff; break;
                 }
-            }
-            //df = dflist.GetOne(id);
-            TempData["Delivery"] = JsonConvert.SerializeObject(df);
-            //-----------------*******************----------------------------------
+            }*/
+            df = dflist.GetOne(id);
             int yearcheck = DateTime.Now.Year;
             DeliveryFailure d = null;
-            //----------------
-            try
-            {
-                d = JsonConvert.DeserializeObject<DeliveryFailure>((string)TempData["Delivery"]);
-            }
-            catch
-            {
-                return View();
-            }
             string stID = (string)HttpContext.Session.GetString("UserID");
             List<CashVoucher> nclist = clist.GetAllCashVoucher();
             List<Staff> ls = sdal.GetAllStaff();
-            foreach (Staff st in ls)
+            /*foreach (Staff st in ls)
             {
                 if (st.LoginID == stID)
                 {
                     cashVoucher.StaffID = st.StaffID;
                     break;
                 }
+            }*/
+            int staffIDCheck = sdal.ReturnStaffID(stID);
+            if (staffIDCheck <= -1)
+            {
+                return View();
             }
+            else
+            { cashVoucher.StaffID = sdal.ReturnStaffID(stID); }
             Parcel par = null;
             List<Parcel> palist = plist.GetAllParcel();
             /*foreach ( Parcel p in palist)
@@ -322,7 +326,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                     break;
                 }
             }*/
-            int pd = d.ParcelID;
+            int pd = df.ParcelID;
             par = plist.GetPIDByPID(pd);
             cashVoucher.ReceiverName = par.ReceiverName;
             cashVoucher.ReceiverTelNo = par.ReceiverTelNo;

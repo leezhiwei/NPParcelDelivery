@@ -142,6 +142,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             });
             return countries;
         }
+
         public ActionResult Insert()
         {
             Parcel p = new Parcel //Setting default values
@@ -301,14 +302,21 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             Merge(oldobj, s);
             string loginID = (string)HttpContext.Session.GetString("UserID");
             List<Staff> ls = sdal.GetAllStaff();
-            foreach (Staff st in ls)
+            /*foreach (Staff st in ls)
             {
                 if (st.LoginID == loginID)
                 {
                     s.LastUpdatedBy = st.StaffID;
                     break;
                 }
+            }*/
+            int staffIDCheck = sdal.ReturnStaffID(loginID);
+            if (staffIDCheck <= -1)
+            {
+                return View();
             }
+            else
+            { s.LastUpdatedBy = sdal.ReturnStaffID(loginID); }
             srd.Update(s);
             TempData["UpdateSuccess"] = "You have successfully update the shipping rate";
             return View();
@@ -490,6 +498,8 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             {
                 return RedirectToAction("Index", "Login");
             }
+            List<SelectListItem> ge = GetCountries();
+            ViewData["country"]=ge;
             return View();
         }
 
@@ -498,25 +508,32 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult CreateShippingRate(ShippingRate shippingRate)
         {
+            List<SelectListItem> ge = GetCountries();
+            ViewData["country"] = ge;
             if (ModelState.IsValid)
             {
                 List<ShippingRate> shippingRateList = srd.GetAllShippingRate();
                 if (srd.IsInfoExist(shippingRate))
                 {
-                    TempData["ErrorMessage"] = "Error Such Ship Rate Info is already Exisit!";
+                    TempData["Fail"] = "Error Such Ship Rate Info is already Exisit!";
                     return View();
                 }
-
-
                 string loginID = HttpContext.Session.GetString("UserID");
                 List<Staff> staffli = sdal.GetAllStaff();
-                foreach (Staff s in staffli)
+                /*foreach (Staff s in staffli)
                 {
                     if (s.LoginID == loginID)
                     {
                         shippingRate.LastUpdatedBy = Convert.ToInt32(s.StaffID);
                     }
+                }*/
+                int staffIDCheck = sdal.ReturnStaffID(loginID);
+                if (staffIDCheck <= -1)
+                {
+                    return View();
                 }
+                else
+                { shippingRate.LastUpdatedBy = sdal.ReturnStaffID(loginID); }
                 //Add staff record to database
                 shippingRate.ShippingRateID = srd.Add(shippingRate);//.Add(shippingRate);
                 TempData["CreateSuccess"] = "You have successfully create a new shipping rate";
@@ -529,6 +546,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 //to display error message
                 return View(shippingRate);
             }
+
         }
         public ActionResult List()
         {
