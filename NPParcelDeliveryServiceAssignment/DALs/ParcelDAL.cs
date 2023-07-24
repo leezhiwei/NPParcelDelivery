@@ -1,4 +1,5 @@
-﻿using NPParcelDeliveryServiceAssignment.Models;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using NPParcelDeliveryServiceAssignment.Models;
 using System.Data.SqlClient;
 
 namespace NPParcelDeliveryServiceAssignment.DALs
@@ -169,7 +170,7 @@ namespace NPParcelDeliveryServiceAssignment.DALs
         public List<Parcel> CheckAssigned(int StaffID)
         {
             SqlCommand cmd = conn.CreateCommand(); //Specify the SELECT SQL statement
-            cmd.CommandText = @"SELECT * FROM Parcel WHERE DeliveryManID = @sid AND DeliveryStatus = '1'"; //Open a database connection
+            cmd.CommandText = @"SELECT * FROM Parcel WHERE DeliveryManID = @sid AND DeliveryStatus = '1' OR DeliveryStatus = '2'"; //Open a database connection
             cmd.Parameters.AddWithValue("@sid", StaffID);
             conn.Open(); //Execute the SELECT SQL through a DataReader
             SqlDataReader reader = cmd.ExecuteReader();
@@ -293,6 +294,28 @@ namespace NPParcelDeliveryServiceAssignment.DALs
             conn.Open(); //Execute the SELECT SQL through a DataReader
             int count = (int)cmd.ExecuteScalar();
             return count;
+        }
+        public List<SelectListItem> GetDManCount()
+        {
+            List<SelectListItem> list = new List<SelectListItem> ();
+            SqlCommand cmd = conn.CreateCommand(); //Specify the SELECT SQL statement
+            cmd.CommandText = @"SELECT StaffName, StaffID FROM Staff INNER JOIN (SELECT ParcelID, DeliveryManID FROM Parcel WHERE DeliveryStatus = '1' OR DeliveryStatus = '2') AS a ON a.DeliveryManID = Staff.StaffID GROUP BY StaffName, StaffID HAVING COUNT(*) < 5;"; //Open a database connection
+            if (conn.State == System.Data.ConnectionState.Open)
+            {
+                conn.Close();
+            }
+            conn.Open(); //Execute the SELECT SQL through a DataReader
+            SqlDataReader r = cmd.ExecuteReader();
+            while (r.Read())
+            {
+                list.Add(new SelectListItem
+                {
+                    Text = r.GetString(0),
+                    Value = r.GetInt32(1).ToString()
+                });
+            }
+            conn.Close();
+            return list;
         }
     }
 }
