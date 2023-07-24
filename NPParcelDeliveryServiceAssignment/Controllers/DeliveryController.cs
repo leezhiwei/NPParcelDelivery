@@ -146,65 +146,9 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             });
             return countries;
         }
-        private List<SelectListItem> GetCities()
-        {
-            List<SelectListItem> cities = new List<SelectListItem>();
-            cities.Add(new SelectListItem
-            {
-                Value = null,
-                Text = "--- Select City ---"
-            });
-            cities.Add(new SelectListItem
-            {
-                Value = "Beijing",
-                Text = "Beijing"
-            });
-            cities.Add(new SelectListItem
-            {
-                Value = "Hong Kong",
-                Text = "Hong Kong"
-            });
-            cities.Add(new SelectListItem
-            {
-                Value = "Kuala Lumpur",
-                Text = "Kuala Lumpur"
-            });
-            cities.Add(new SelectListItem
-            {
-                Value = "New York",
-                Text = "New York"
-            });
-            cities.Add(new SelectListItem
-            {
-                Value = "Paris",
-                Text = "Paris"
-            });
-            cities.Add(new SelectListItem
-            {
-                Value = "San Francisco",
-                Text = "San Francisco"
-            });
-            cities.Add(new SelectListItem
-            {
-                Value = "Sdyney",
-                Text = "Sdyney"
-            });
-            cities.Add(new SelectListItem
-            {
-                Value = "Singapore",
-                Text = "Singapore"
-            });
-            cities.Add(new SelectListItem
-            {
-                Value = "Tokyo",
-                Text = "Tokyo"
-            });
-            return cities;
-        }
 
         public ActionResult Insert()
         {
-            ViewData["Cities"] = GetCities();
             ViewData["Countries"] = GetCountries();
             Parcel p = new Parcel //Setting default values
             {
