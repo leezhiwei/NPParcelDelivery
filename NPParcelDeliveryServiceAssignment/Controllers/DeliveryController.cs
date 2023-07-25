@@ -5,6 +5,7 @@ using NPParcelDeliveryServiceAssignment.DALs;
 using Newtonsoft.Json;
 using DeepEqual.Syntax;
 using Microsoft.Extensions.Logging.Abstractions;
+using NuGet.Packaging.Signing;
 
 namespace NPParcelDeliveryServiceAssignment.Controllers
 {
@@ -882,69 +883,58 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             List<PaymentTransaction> ptsn = paydal.GetAllPayment();
             //Advanced Feature 4 - Parcel Receiving, Create Payment Transaction
 
-            bool cPID = false;
             string sName = "";
-            decimal tAmt = 0;
+            decimal? tAmt;
 
-            foreach (Parcel p in pcls) //Checks if parcel ID entered by user, exists in the database
+            Parcel tempParcel = pdal.GetPIDByPID(pt.ParcelID); //Creating a temporary parcel to hold information from parcel id
+            
+
+            if(tempParcel is not null) //Checks if tempParcel is not null and contains information
             {
-                if (pt.ParcelID == p.ParcelID)
+                sName = tempParcel.SenderName;
+                tAmt = paydal.GetSumAmtByID(pt.ParcelID); //Total Amount is the sum of all previous payments made by the person either cash or voucher
+
+                if (tAmt is null) //If total amount is null, that means the person has not made any previous payment with cash or voucher
                 {
-                    sName = p.SenderName;
-                    cPID = true; //Check parcel found turns true
+                    tAmt = 0; //Total Amount value will be 0
+                }
 
-                    if (pt.TranType == "VOUC") //If transaction type is voucher
+                if (pt.TranType == "VOUC") // Transaction type is voucher
+                {
+                    CashVoucher tempVoucher = cvdal.GetCVIDByName(sName); //Creates a temporary voucher to hold information from name
+                    if (tempVoucher is null) //Checks if temporary voucher is null. If so, the user currently do not own any vouchers
                     {
-                        foreach (CashVoucher cvs in cv)
-                        {
-                            if (sName == cvs.ReceiverName) //Checks if sender name matches receiver name from cashvoucher
-                            {
-                                if (pt.AmtTran > cvs.Amount) //Checks if amount exceeds available voucher
-                                {
-                                    TempData["ErrorMsg"] = $"Transaction amount exceeded available cash voucher! Please try again.";
-                                    return RedirectToAction("PaymentTransaction");
-                                }
-                            }
-                            else
-                            {
-                                TempData["ErrorMsg"] = $"You do not have vouchers at the moment. Please choose a different transaction type.";
-                                return RedirectToAction("PaymentTransaction");
-                            }
-                        }
+                        TempData["ErrorMsg"] = "You do not own any vouchers at the moment. Please choose a different transaction type.";
+                        return RedirectToAction("PaymentTransaction");
                     }
-
-                    foreach (PaymentTransaction ptn in ptsn)
+                    else // If temporary voucher contains information. If so, the current user has vouchers to be used
                     {
-                        if (pt.ParcelID == ptn.ParcelID)
+                        if (pt.AmtTran > tempVoucher.Amount) //Checks if amount exceeds available voucher
                         {
-                            tAmt += ptn.AmtTran; //Total amount = previous transaction amount added together. E.g. a user can used both cash($10) & voucher($10) to pay for delivery charge of $20.
+                            TempData["ErrorMsg"] = "Transaction amount exceeded available cash voucher! Please try again.";
+                            return RedirectToAction("PaymentTransaction");
                         }
-                        if ((pt.AmtTran + tAmt) > p.DeliveryCharge)
+                        else if ((pt.AmtTran + Convert.ToDecimal(tAmt)) > tempParcel.DeliveryCharge) //Checks if amount + total amount made by previous payment exceeds delivery charge
                         {
-                            TempData["ErrorMsg"] = $"Transaction Amount exceeded delivery charge. You are not ALLOWED to pay extra! Please try again.";
+                            TempData["ErrorMsg"] = "Transaction amount exceeded delivery charge. You are not ALLOWED to pay extra! Please try again.";
                             return RedirectToAction("PaymentTransaction");
                         }
                     }
-                    if (pt.AmtTran > p.DeliveryCharge)
+                }
+                else // Transaction type is cash
+                {
+                    if ((pt.AmtTran + Convert.ToDecimal(tAmt)) > tempParcel.DeliveryCharge)
                     {
-                        TempData["ErrorMsg"] = $"Transaction amount exceeded delivery charge. You are not ALLOWED to pay extra! Please try again.";
+                        TempData["ErrorMsg"] = "Transaction Amount exceeded delivery charge. You are not ALLOWED to pay extra! Please try again.";
                         return RedirectToAction("PaymentTransaction");
                     }
-                    break;
                 }
             }
-
-
-            
-
-
-            if (cPID == false) //If parcel is not found in database, return back to page with temp data message
+            else
             {
                 TempData["ErrorMsg"] = $"Parcel ID: {pt.ParcelID} does not EXIST.";
                 return RedirectToAction("PaymentTransaction");
             }
-
-            pt.TranDate = DateTime.Now; //Sets the transaction date to current time
 
             PaymentTransaction pts = new PaymentTransaction
             {
@@ -952,11 +942,11 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 AmtTran = pt.AmtTran,
                 Currency = pt.Currency,
                 TranType = pt.TranType,
-                TranDate = pt.TranDate,
+                TranDate = DateTime.Now, //Sets the transaction date to current time
             };
             paydal.Add(pts); //Adding payment details into payment transaction       
 
-            TempData["SuccessMsg"] = $"Payment Transaction with Parcel ID: {pt.ParcelID} is successfully!";
+            TempData["SuccessMsg"] = $"Payment Transaction with Parcel ID: {pt.ParcelID} is successfull!";
             return RedirectToAction("PaymentTransaction");
 
 

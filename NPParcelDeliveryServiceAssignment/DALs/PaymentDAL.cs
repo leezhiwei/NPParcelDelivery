@@ -103,6 +103,28 @@ namespace NPParcelDeliveryServiceAssignment.DALs
             return pt;
         }
 
+        public decimal? GetSumAmtByID(int id)
+        {
+            SqlCommand cmd = conn.CreateCommand(); //Specify the SELECT SQL statement
+            cmd.CommandText = @"SELECT SUM(AmtTran) FROM PaymentTransaction WHERE ParcelID = @pid"; //Open a database connection
+            cmd.Parameters.AddWithValue("@pid", id);
+            if (conn.State == System.Data.ConnectionState.Open)
+            {
+                conn.Close();
+            }
+            conn.Open(); //Execute the SELECT SQL through a DataReader
+            decimal? totalAmt = 0;
+            var totalAmtValue = cmd.ExecuteScalar();
+            conn.Close();
+            if (totalAmtValue == DBNull.Value)
+            {
+                totalAmt = null;
+                return totalAmt;
+            }
+            totalAmt = (decimal?)totalAmtValue;
+            return totalAmt;
+        }
+
 
 
     }

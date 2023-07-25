@@ -279,8 +279,10 @@ namespace NPParcelDeliveryServiceAssignment.DALs
                     DeliveryStatus = reader.GetString(15),
                     DeliveryManID = CheckNull(reader, 16),
                 };
+                return p;
             }
-            return p;
+            return null;
+            
         }
         public int GetCountFromStaffID(int staffID)
         {
