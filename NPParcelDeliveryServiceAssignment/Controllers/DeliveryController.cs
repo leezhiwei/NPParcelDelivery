@@ -805,16 +805,14 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             {
                 pid = 0;
             }
-            foreach (Parcel parcel in pl)
+            pTemp = pdal.GetEitherByParcelIDReceiverNameOrSenderName(pid, rname, sname);
+            if (pTemp is null)
             {
-                if (parcel.ParcelID == pid || parcel.ReceiverName == rname || parcel.SenderName == sname)
-                {
-                    parcelTemp.Add(parcel); //If parcel matches the record in the list, add parcel to tempparcel for viewing
-                    pTemp = parcel;
-                    break;
-                }
+                TempData["ParcelError"] = $"Parcel with the ID: {ParcelId}, does not exist in the delivery orders.";
+                ViewData["ShowDetail"] = false;
+                return View();
             }
-
+            parcelTemp.Add(pTemp);
             if (parcelTemp.Count > 0) //If tempparcel is NOT empty and contains information
             {
                 TempData["ParcelFound"] = $"Parcel with the ID: {ParcelId}, found.";

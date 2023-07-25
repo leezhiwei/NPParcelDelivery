@@ -77,14 +77,10 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                     return View(); // return view
                 }
             }
-            List<Member> mlist = md.GetAllMember();
-            foreach (Member m in mlist)
+            if (md.CheckEmail(member.EmailAddr))
             {
-                if (m.EmailAddr == member.EmailAddr)
-                {
-                    ViewData["ErrorMsg"] = "Error: Record exists in Database.";
-                    return View();
-                }
+                ViewData["ErrorMsg"] = "Error: Record exists in Database.";
+                return View();
             }
             md.AddMember(member);
             return RedirectToAction("Index");

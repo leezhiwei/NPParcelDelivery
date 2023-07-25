@@ -217,5 +217,19 @@ namespace NPParcelDeliveryServiceAssignment.DALs
             }
             return null;
         }
+        public bool CheckEmail(string email)
+        {
+            SqlCommand cmd = conn.CreateCommand(); //Specify the SELECT SQL statement
+            cmd.CommandText = @"SELECT COUNT(*) FROM Member WHERE EmailAddr = @ea "; //Open a database connection
+            cmd.Parameters.AddWithValue("@ea", email);
+            if (conn.State == System.Data.ConnectionState.Open)
+            {
+                conn.Close();
+            }
+            conn.Open(); //Execute the SELECT SQL through a DataReader
+            int count = (int)cmd.ExecuteScalar();
+            conn.Close();
+            return count >= 1;
+        }
     }
 }
