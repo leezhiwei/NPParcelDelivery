@@ -16,8 +16,9 @@
                 <label for="telBox">@Html.DisplayNameFor(CashVoucher =>CashVoucher.ReceiverTelNo)</label><br />
                 <input type="text" id="telBox" name="telBox" /><br>
                 <button type="submit">Search Cash Voucher</button>
-                <p>@TempData["NOResult"]</p>
-                <p>@TempData["collectcv"]</p>
+            <p style="color:red">@TempData["NOResult"]</p>
+            <p style="color:green">@TempData["Issued"]</p>
+            <p>@TempData["collectcv"]</p>
             </form>
             <br>
         if ((bool)ViewData["showcv"])
