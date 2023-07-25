@@ -38,6 +38,7 @@
             </div>
             <br />
             <p style="color:green">@TempData["SuccessMsg"]</p>
+            <p style="color:black">@Html.Raw((string)TempData["Details"])</p>
             <p style="color:red">@TempData["ErrorMsg"]</p>
         </form>
     </div>
