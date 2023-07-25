@@ -78,14 +78,14 @@ namespace NPParcelDeliveryServiceAssignment.DALs
 
         public PaymentTransaction GetPTByID(string id)
         {
-            SqlCommand cmd = conn.CreateCommand(); //Specify the SELECT SQL statement
-            cmd.CommandText = @"SELECT * FROM PaymentTransaction WHERE TransactionID = @tid"; //Open a database connection
+            SqlCommand cmd = conn.CreateCommand(); 
+            cmd.CommandText = @"SELECT * FROM PaymentTransaction WHERE TransactionID = @tid"; 
             cmd.Parameters.AddWithValue("@tid", id);
             if (conn.State == System.Data.ConnectionState.Open)
             {
                 conn.Close();
             }
-            conn.Open(); //Execute the SELECT SQL through a DataReader
+            conn.Open(); 
             PaymentTransaction pt = new PaymentTransaction();
             SqlDataReader reader = cmd.ExecuteReader();
             while (reader.Read())
@@ -105,14 +105,14 @@ namespace NPParcelDeliveryServiceAssignment.DALs
 
         public decimal? GetSumAmtByID(int id)
         {
-            SqlCommand cmd = conn.CreateCommand(); //Specify the SELECT SQL statement
-            cmd.CommandText = @"SELECT SUM(AmtTran) FROM PaymentTransaction WHERE ParcelID = @pid"; //Open a database connection
+            SqlCommand cmd = conn.CreateCommand(); 
+            cmd.CommandText = @"SELECT SUM(AmtTran) FROM PaymentTransaction WHERE ParcelID = @pid"; 
             cmd.Parameters.AddWithValue("@pid", id);
             if (conn.State == System.Data.ConnectionState.Open)
             {
                 conn.Close();
             }
-            conn.Open(); //Execute the SELECT SQL through a DataReader
+            conn.Open(); 
             decimal? totalAmt = 0;
             var totalAmtValue = cmd.ExecuteScalar();
             conn.Close();

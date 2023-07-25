@@ -917,6 +917,11 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                             TempData["ErrorMsg"] = "Transaction amount exceeded delivery charge. You are not ALLOWED to pay extra! Please try again.";
                             return RedirectToAction("PaymentTransaction");
                         }
+                        // Update voucher details, if user used $5 voucher out of $10. Update remaining voucher details
+                        decimal originalVamt = cvdal.GetVByName(sName);
+                        decimal tempUVamt = tempVoucher.Amount - pt.AmtTran; //Temporary updated voucher amount = total voucher amount - voucher transaction amount used
+                        decimal updatedVamt = cvdal.UpdateCVbyNameAmount( tempUVamt,sName);
+                        TempData["Details"] = $"---------------------------------- <br><br> Voucher amount used: ${String.Format("{0:0}", pt.AmtTran)} <br> Original Voucher amount: ${String.Format("{0:0}", originalVamt)} <br> Updated Voucher amount: ${String.Format("{0:0}", updatedVamt)} <br><br> ----------------------------------"; 
                     }
                 }
                 else // Transaction type is cash

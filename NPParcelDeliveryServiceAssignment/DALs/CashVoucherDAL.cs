@@ -173,13 +173,13 @@ namespace NPParcelDeliveryServiceAssignment.DALs
         public CashVoucher GetCVIDByID(int id)
         {
             SqlCommand cmd = conn.CreateCommand(); //Specify the SELECT SQL statement
-            cmd.CommandText = @"SELECT * FROM CashVoucher WHERE CashVoucherID = @cid "; //Open a database connection
+            cmd.CommandText = @"SELECT * FROM CashVoucher WHERE CashVoucherID = @cid "; 
             cmd.Parameters.AddWithValue("@cid", id);
             if (conn.State == System.Data.ConnectionState.Open)
             {
                 conn.Close();
             }
-            conn.Open(); //Execute the SELECT SQL through a DataReader
+            conn.Open(); 
             SqlDataReader reader = cmd.ExecuteReader();
             while (reader.Read())
             {
@@ -203,13 +203,13 @@ namespace NPParcelDeliveryServiceAssignment.DALs
         public CashVoucher GetCVIDByName(string rname)
         {
             SqlCommand cmd = conn.CreateCommand(); //Specify the SELECT SQL statement
-            cmd.CommandText = @"SELECT * FROM CashVoucher WHERE ReceiverName = @name "; //Open a database connection
+            cmd.CommandText = @"SELECT * FROM CashVoucher WHERE ReceiverName = @name "; 
             cmd.Parameters.AddWithValue("@name", rname);
             if (conn.State == System.Data.ConnectionState.Open)
             {
                 conn.Close();
             }
-            conn.Open(); //Execute the SELECT SQL through a DataReader
+            conn.Open(); 
             SqlDataReader reader = cmd.ExecuteReader();
             while (reader.Read())
             {
@@ -225,9 +225,49 @@ namespace NPParcelDeliveryServiceAssignment.DALs
                     DateTimeIssued = reader.GetDateTime(7),//2: 8th column
                     Status = reader.GetString(8),//2: 9th column
                 };
+                conn.Close();
                 return cv;
             }
             return null;
+        }
+
+        public decimal GetVByName(string rname)
+        {
+            SqlCommand cmd = conn.CreateCommand();
+            cmd.CommandText = @"SELECT Amount FROM CashVoucher WHERE ReceiverName = @name "; //Sql statement to select original amount
+            cmd.Parameters.AddWithValue("@name", rname);
+            if (conn.State == System.Data.ConnectionState.Open)
+            {
+                conn.Close();
+            }
+            conn.Open();
+            var OriginalAmt = cmd.ExecuteScalar();
+            decimal oAmt = (decimal)OriginalAmt;
+            conn.Close();
+            return oAmt;
+
+        }
+
+        public decimal UpdateCVbyNameAmount(decimal ramount, string rname)
+        {
+            SqlCommand cmd = conn.CreateCommand(); 
+            cmd.CommandText = @"UPDATE CashVoucher SET Amount = @amount WHERE ReceiverName = @name "; //First sql statement to update amount
+            cmd.Parameters.AddWithValue("@amount", ramount);
+            cmd.Parameters.AddWithValue("@name", rname);
+            SqlCommand cmd2 = conn.CreateCommand();
+            cmd2.CommandText = @"SELECT Amount FROM CashVoucher WHERE ReceiverName = @name "; //Second sql statement to select updated amount
+            cmd2.Parameters.AddWithValue("@name", rname);
+            if (conn.State == System.Data.ConnectionState.Open)
+            {
+                conn.Close();
+            }
+            conn.Open();
+            cmd.ExecuteNonQuery(); // First sql statement
+            var UpdatedAmt = cmd2.ExecuteScalar(); // Second sql statement
+            decimal currentAmt = (decimal)UpdatedAmt;
+            conn.Close();
+            return currentAmt;
+            
         }
 
     }
