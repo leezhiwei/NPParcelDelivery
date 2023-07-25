@@ -150,6 +150,10 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
 
         public ActionResult Insert()
         {
+            if (HttpContext.Session.GetString("UserID") is null)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             ViewData["Countries"] = GetCountries();
             Parcel p = new Parcel //Setting default values
             {
@@ -679,6 +683,10 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         }
         public ActionResult Report()
         {
+            if (HttpContext.Session.GetString("UserID") is null)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             PopulateList();
             ViewData["SListI"] = list;
             return View();
@@ -777,6 +785,10 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
 
         public ActionResult DeliverySearch()
         {
+            if (HttpContext.Session.GetString("UserID") is null)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             ViewData["ShowDetail"] = false;
             return View();
         }
@@ -855,6 +867,10 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
 
         public ActionResult PaymentTransaction()
         {
+            if (HttpContext.Session.GetString("UserID") is null)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             ViewData["TranType"] = PopulateCVlist();
             /*
             List<SelectListItem> templist = PopulateCVlist();
@@ -957,6 +973,10 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
 
         public ActionResult DeliveryHist(int? id)
         {
+            if (HttpContext.Session.GetString("UserID") is null)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             int tempid = 0;
             try
             {
@@ -972,6 +992,10 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
 
         public IActionResult CustomerTracking()
         {
+            if (HttpContext.Session.GetString("UserID") is null)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             Member m = mdal.GetMemberfromLoginID(HttpContext.Session.GetString("UserID"));
             List<Parcel> plist = pdal.GetParcelFromMember(m);
             return View(plist);

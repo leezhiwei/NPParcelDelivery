@@ -12,6 +12,10 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         private StaffDAL sdal = new StaffDAL();
         public IActionResult MakeFeedback()
         {
+            if (HttpContext.Session.GetString("UserID") is null)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             return View();
         }
         [HttpPost]
@@ -27,17 +31,29 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         }
         public IActionResult Index()
         {
+            if (HttpContext.Session.GetString("UserID") is null)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             Member m = mdal.GetMemberfromLoginID(HttpContext.Session.GetString("UserID"));
             List<FeedbackEnquiry> l = fdal.GetMemberFeedback(m);
             return View(l);
         }
         public IActionResult FeedbackReview()
         {
+            if (HttpContext.Session.GetString("UserID") is null)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             List<FeedbackEnquiry> l = fdal.GetAllFeedback();
             return View(l);
         }
         public IActionResult Respond(int? id)
         {
+            if (HttpContext.Session.GetString("UserID") is null)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             int idd = 0;
             try
             {

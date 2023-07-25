@@ -15,20 +15,22 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         private DeliveryFailureDAL dflist = new DeliveryFailureDAL();
         private ParcelDAL plist = new ParcelDAL();
         private DeliveryHistoryDAL dhlist = new DeliveryHistoryDAL();
-        // GET: CashVoucherController1
-        public ActionResult Index()
-        {
-            return View();
-        }
-
         public ActionResult FailurereportList()
         {
+            if (HttpContext.Session.GetString("UserID") is null)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             List<DeliveryFailure> dlist = dflist.GetAllFailureReport();
             return View(dlist);
         }
 
         public ActionResult CashvoucherList()
         {
+            if (HttpContext.Session.GetString("UserID") is null)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             ViewData["showcv"] = false;
             return View();
         }
@@ -91,7 +93,11 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
 
         public ActionResult IssueCashVoucherList()
         {
-			List<Member> mblist = mlist.GetMemberDOBMonth();
+            if (HttpContext.Session.GetString("UserID") is null)
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            List<Member> mblist = mlist.GetMemberDOBMonth();
             return View(mblist);
         }
 
@@ -130,28 +136,12 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             return View();
         }
 
-        // GET: CashVoucherController1/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: CashVoucherController1/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
 		public ActionResult IssueSpecialVoucher(int id)
 		{
+            if (HttpContext.Session.GetString("UserID") is null)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             ViewData["CanIssue"] = false;
             ViewData["CannotIssue"] = false;
 			//----------------
@@ -281,6 +271,10 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
 
         public ActionResult IssueCompensationVoucher(int id)
         {
+            if (HttpContext.Session.GetString("UserID") is null)
+            {
+                return RedirectToAction("Index", "Login");
+            }
             CashVoucher cashVoucher = new CashVoucher();
             //----------------
             List<DeliveryHistory>dhhlist = dhlist.GetAllHistory();
@@ -448,49 +442,6 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 TempData["Issued"] = "You have successfully issue cash voucher";
             }*/
             return View();
-        }
-
-
-        // GET: CashVoucherController1/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: CashVoucherController1/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: CashVoucherController1/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: CashVoucherController1/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
         }
     }
 }

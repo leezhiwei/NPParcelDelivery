@@ -61,6 +61,10 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
 
         public ActionResult Register()
         {
+            if (HttpContext.Session.GetString("UserID") is not null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
             return View();
         }
         [HttpPost]
