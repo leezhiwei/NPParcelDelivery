@@ -14,7 +14,7 @@
 </head>
 <body class="index-page" data-bs-spy="scroll" data-bs-target="#navmenu">
     <header id="header" class="header fixed-top d-flex align-items-center">
-        <div class="container-fluid d-flex align-items-center justify-content-between">
+        <div class="container-fluid align-items-center justify-content-between">
             <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
                 <div class="container-fluid">
                     <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">NPCS</a>
@@ -45,12 +45,10 @@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Delivery" asp-action="PaymentTransactionHistory">Payment Transactions</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="LogOut">Logout</a>
-                            </li>
                         </ul>
                     </div>
                 </div>
+                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="LogOut">Logout</a>
             </nav>
         </div>
     </header>
