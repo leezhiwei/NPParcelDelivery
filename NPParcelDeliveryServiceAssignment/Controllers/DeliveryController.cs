@@ -1049,6 +1049,25 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 return View(pt);
             }
         }
-
+        public async Task<IActionResult> GetInfoOfMember(string id)
+        {
+            if (id is null)
+            {
+                return NotFound();
+            }
+            Member m = mdal.GetMemberfromLoginID(id);
+            if (m is null)
+            {
+                return NotFound();
+            }
+            APIObject a = new APIObject
+            {
+                MemberName = m.Name,
+                MemberSalutation = m.Salutation,
+                CashVouchersAssigned = cvdal.GetCashVoucherByMember(m),
+                ParcelsAssignedMember = pdal.GetParcelFromMember(m),
+            };
+            return Json(a);
+        }
     }
 }
