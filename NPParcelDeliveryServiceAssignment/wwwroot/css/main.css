@@ -808,7 +808,7 @@ section {
   width: 100%;
   min-height: 100vh;
   position: relative;
-  padding: 160px 0 80px 0;
+  padding: 0px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -856,29 +856,6 @@ section {
   border-radius: 7px;
   background: var(--color-box-background);
   box-shadow: 0 15px 30px 0 rgba(0, 0, 0, 0.1);
-}
-
-.hero .sign-up-form .form-control {
-  border: none;
-}
-
-.hero .sign-up-form .form-control:active,
-.hero .sign-up-form .form-control:focus {
-  outline: none;
-  box-shadow: none;
-}
-
-.hero .sign-up-form input[type=submit] {
-  box-shadow: 0 15px 30px 0 rgba(0, 0, 0, 0.2);
-  background-color: var(--color-primary);
-  border-color: var(--color-primary);
-  padding: 8px 20px 10px 20px;
-  border-radius: 7px;
-  color: var(--color-inverse);
-}
-
-.hero .sign-up-form input[type=submit]:hover {
-  background-color: rgba(var(--color-primary-rgb), 0.9);
 }
 
 @media (max-width: 768px) {
