@@ -1,4 +1,8 @@
-﻿.mySlides {
+﻿footer {
+    height: 5%;
+}
+
+.mySlides {
     display: flex;
 }
 
