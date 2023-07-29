@@ -3,9 +3,12 @@
 }
 
 .mySlides {
-    display: none;
+    display: flex;
 }
 
+img {
+    vertical-align: middle;
+}
 
 /* Slideshow container */
 .slideshow-container {

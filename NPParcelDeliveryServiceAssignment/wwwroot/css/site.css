@@ -29,3 +29,11 @@ register {
     color: darkgoldenrod;
 }
 
+footer {
+    height: 5%;
+}
+
+#content{
+    padding-top:10%;
+}
+
