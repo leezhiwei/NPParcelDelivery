@@ -33,7 +33,7 @@ footer {
     height: 5%;
 }
 .mySlides {
-    display: none;
+    display: flex;
 }
 
 img {
@@ -65,5 +65,8 @@ img {
     to {
         opacity: 1
     }
+}
+#content{
+    padding-top:10%;
 }
 
