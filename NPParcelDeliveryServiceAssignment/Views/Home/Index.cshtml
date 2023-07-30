@@ -37,8 +37,6 @@
     <div class="mySlides fade">
         <img src="~/img/pexels-mister-mister-3434533.jpg" alt="" data-aos="fade-in">
     </div>
-    
-
     <div class="container">
         <div class="row">
             <div class="col-lg-10">
@@ -47,5 +45,22 @@
             </div>
         </div>
     </div>
-
 </section><!-- End Hero Section -->
+@section Scripts
+{
+    <script>
+        let slideIndex = 0;
+    showSlides();
+    function showSlides() {
+        let i;
+        let slides = document.getElementsByClassName("mySlides");
+        for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = "none";
+        }
+        slideIndex++;
+        if (slideIndex > slides.length) { slideIndex = 1 }
+    slides[slideIndex - 1].style.display = "block";
+    setTimeout(showSlides, 8000); // Change image every 2 seconds
+    }
+    </script>
+}

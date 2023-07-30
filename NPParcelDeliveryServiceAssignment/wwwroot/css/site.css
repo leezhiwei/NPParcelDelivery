@@ -28,12 +28,38 @@ div#ErrorMsg {
 register {
     color: darkgoldenrod;
 }
-
-footer {
-    height: 5%;
+.mySlides {
+    display: flex;
 }
 
-#content{
-    padding-top:10%;
+img {
+    vertical-align: middle;
+}
+/* Slideshow container */
+.slideshow-container {
+    max-width: 1000px;
+    position: relative;
+    margin: auto;
 }
 
+.active {
+    background-color: #717171;
+}
+/* Fading animation */
+.fade {
+    animation-name: fade;
+    animation-duration: 7s;
+}
+
+@keyframes fade {
+    from {
+        opacity: .4
+    }
+
+    to {
+        opacity: 1
+    }
+}
+#content {
+    padding-top: 10%;
+}

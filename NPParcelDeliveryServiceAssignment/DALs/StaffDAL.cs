@@ -160,5 +160,36 @@ namespace NPParcelDeliveryServiceAssignment.DALs
             }
             return null;
         }
+        public int Update(Staff s)
+        {
+            //Create a SqlCommand object from connection object
+            SqlCommand cmd = conn.CreateCommand();
+            //Specify an UPDATE SQL statement
+            cmd.CommandText = @"update Staff
+                                set StaffName = @sn,
+                                LoginID = @lid,
+                                Password = @pwd,
+                                Appointment = @apt,
+                                OfficeTelNo = @otn,
+                                Location = @loc,
+                                OriginalPassword = NULL
+                                WHERE StaffID = @sid";
+            //Define the parameters used in SQL statement, value for each parameter
+            //is retrieved from respective class's property.
+            cmd.Parameters.AddWithValue("@sn", s.StaffName);
+            cmd.Parameters.AddWithValue("@lid",s.LoginID);
+            cmd.Parameters.AddWithValue("@pwd", s.Password);
+            cmd.Parameters.AddWithValue("@apt",s.Appointment);
+            cmd.Parameters.AddWithValue("@otn",s.OfficeTelNo);
+            cmd.Parameters.AddWithValue("@loc", s.Location);
+            cmd.Parameters.AddWithValue("@sid", s.StaffID);
+            //Open a database connection
+            conn.Open();
+            //ExecuteNonQuery is used for UPDATE and DELETE
+            int count = cmd.ExecuteNonQuery();
+            //Close the database connection
+            conn.Close();
+            return count;
+        }
     }
 }

@@ -1,0 +1,176 @@
+﻿@model NPParcelDeliveryServiceAssignment.Models.UserInfo
+
+@{
+    ViewData["Title"] = "UpdateUserDetails";
+    if ((string)ViewData["TypeOfUser"] == "Front Office Staff")
+    {
+        Layout = "~/Views/Shared/_fostaffLayout.cshtml";
+    }
+    else if ((string)ViewData["TypeOfUser"] == "Station Manager")
+    {
+        Layout = "~/Views/Shared/_smanagerLayout.cshtml";
+    }
+    else if ((string)ViewData["TypeOfUser"] == "Admin Manager")
+    {
+        Layout = "~/Views/Shared/_amanagerLayout.cshtml";
+    }
+    else if ((string)ViewData["TypeOfUser"] == "Delivery Man")
+    {
+        Layout = "~/Views/Shared/_dmanLayout.cshtml";
+    }
+    else if ((string)ViewData["TypeOfUser"] == "Member")
+    {
+        Layout = "~/Views/Shared/_memberLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_memberLayout.cshtml";
+    }
+}
+
+<h1>UpdateUserDetails</h1>
+
+<h4>UserInfo</h4>
+<hr />
+<div class="row">
+    <p style="color:red">@ViewData["Error"]</p>
+    <p style="color:green">@ViewData["Success"]</p>
+    <div class="col-md-4">
+        <form asp-action="UpdateUserDetails">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Password" class="control-label"></label>
+                <input asp-for="Password" class="form-control" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TelNo" class="control-label"></label>
+                <input asp-for="TelNo" class="form-control" />
+                <span asp-validation-for="TelNo" class="text-danger"></span>
+            </div>
+            @if (Model.UserType == "Staff")
+            {
+                <div class="form-group">
+                    <label asp-for="LoginID" class="control-label"></label>
+                    <input asp-for="LoginID" class="form-control" />
+                    <span asp-validation-for="LoginID" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Location" class="control-label"></label>
+                    <input asp-for="Location" class="form-control" />
+                    <span asp-validation-for="Location" class="text-danger"></span>
+                </div>
+            }
+            else
+            {
+                <div class="form-group">
+                    <label asp-for="Email" class="control-label"></label>
+                    <input asp-for="Email" class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Salutation" class="control-label"></label>
+                    <input asp-for="Salutation" class="form-control" />
+                    <span asp-validation-for="Salutation" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="BirthDate" class="control-label"></label>
+                    <input asp-for="BirthDate" class="form-control" />
+                    <span asp-validation-for="BirthDate" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="City" class="control-label"></label>
+                    <input asp-for="City" class="form-control" />
+                    <span asp-validation-for="City" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Country" class="control-label"></label>
+                    <input asp-for="Country" class="form-control" />
+                    <span asp-validation-for="Country" class="text-danger"></span>
+                </div>
+            }
+            <div class="form-group">
+                <button id="sbutton" type="button" class="btn btn-primary btn-block mb-4">Submit</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-controller="Home" asp-action="Index">Back to Home</a>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+@section Scripts {
+    <script>
+        let obj;
+        function getsalt() {
+            return new Promise(function (resolve, reject) {
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("GetSalt","Login")',
+                    dataType: "json",
+                    success: function (data) {
+                        resolve(data)
+                    },
+                    error: function (err) {
+                        reject(err)
+                    }
+                }
+                );
+            });
+        }
+        getsalt().then(function (data) {
+            obj = data;
+        }).catch(function (err) {
+            window.reload();
+        });
+        function OnSubmit() {
+            var salt = atob(atob(obj.saltString));
+            var pass = $("#Password");
+            var cryptoobj = CryptoJS.algo.SHA512.create();
+            cryptoobj.update(pass.val(), 'utf-8');
+            cryptoobj.update(CryptoJS.SHA512(salt), 'utf-8');
+            var hash = cryptoobj.finalize().toString(CryptoJS.enc.Base64);
+
+            // Set the hash value in the element
+            pass.val(hash);
+            return true;
+        }
+        $('#sbutton').click(function () {
+            if (OnSubmit() == true) {
+                var form = $('form');
+                form.submit();
+            }
+        });
+        $('#Password').keypress(function (event) {
+            if (event.keyCode == 13) {
+                if (OnSubmit() == true) {
+                    var form = $('form');
+                    form.submit();
+                }
+            }
+        });
+        $('#Location').keypress(function (event) {
+            if (event.keyCode == 13) {
+                if (OnSubmit() == true) {
+                    var form = $('form');
+                    form.submit();
+                }
+            }
+        });
+        $('#Country').keypress(function (event) {
+            if (event.keyCode == 13) {
+                if (OnSubmit() == true) {
+                    var form = $('form');
+                    form.submit();
+                }
+            }
+        });
+</script>
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.TagHelpers;
+using Newtonsoft.Json;
 using NPParcelDeliveryServiceAssignment.DALs;
 using NPParcelDeliveryServiceAssignment.Models;
 using System.Buffers.Text;
@@ -101,6 +102,128 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             };
 
             return Json(s);
+        }
+        public ActionResult UpdateUserDetails()
+        {
+            UserInfo u = new UserInfo();
+            if (HttpContext.Session.GetString("UserID") is null)
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            string tou = HttpContext.Session.GetString("TypeOfUser");
+            ViewData["typeofuser"] = tou;
+            string LoginID = HttpContext.Session.GetString("UserID");
+            if (LoginID.Contains("@"))
+            {
+                Member m = md.GetMemberfromLoginID(LoginID);
+                if (m is null)
+                {
+                    TempData["Error"] = "An unknown error occured, please contact the developers.";
+                    return View();
+                }
+                u.Id = m.MemberID;
+                u.UserType = "Member";
+                u.Name = m.Name;
+                u.Salutation = m.Salutation;
+                u.TelNo = m.TelNo;
+                u.Email = m.EmailAddr;
+                u.Password = m.Password;
+                u.BirthDate = m.BirthDate;
+                u.City = m.City;
+                u.Country = m.Country;
+            }
+            else
+            {
+                Staff s = sd.GetOneStaff(sd.ReturnStaffID(LoginID));
+                if (s is null)
+                {
+                    TempData["Error"] = "An unknown error occured, please contact the developers.";
+                    return View();
+                }
+                u.Id = s.StaffID;
+                u.UserType = "Staff";
+                u.Name = s.StaffName;
+                u.LoginID = s.LoginID;
+                u.Password = s.Password;
+                u.TelNo = s.OfficeTelNo;
+                u.Location = s.Location;
+            }
+            TempData["obj"] = JsonConvert.SerializeObject(u);
+            return View(u);
+        }
+        [HttpPost]
+        public ActionResult UpdateUserDetails(UserInfo u)
+        {
+            string tou = HttpContext.Session.GetString("TypeOfUser");
+            ViewData["typeofuser"] = tou;
+            UserInfo us = JsonConvert.DeserializeObject<UserInfo>((string)TempData["obj"]);
+            void Merge(UserInfo existingobject, UserInfo somevalues)
+            {
+                // From stackoverflow, https://stackoverflow.com/questions/8702603/merging-two-objects-in-c-sharp, Reflection method
+                Type t = typeof(UserInfo);
+                // get type obj of ShippingRate
+                var properties = t.GetProperties().Where(prop => prop.CanRead && prop.CanWrite);
+                // get property of obj
+                foreach (var prop in properties)
+                { // foreach property
+                    var value = prop.GetValue(somevalues);
+                    // get the value from the "blank" from form object, some value null or 0
+                    if (value is null)
+                    { // if the value is indeed null
+                        var valuefromexistingobj = prop.GetValue(existingobject);
+                        // get this data from the "existing" object
+                        prop.SetValue(somevalues, valuefromexistingobj);
+                        // set it into the new object
+                        continue; // move on to next property
+                    }
+                    try // try to convert to int, exception move to catch
+                    { // if above never trigger, check for ID 0 or number 0
+                        int? numberval = (int)value; // convert to int 
+                        if (numberval == 0)
+                        { // if the numbervalue is 0, eg id
+                            var valuefromexistingobj = prop.GetValue(existingobject);
+                            // get this data from "existing" object.
+                            prop.SetValue(somevalues, valuefromexistingobj);
+                            // set it into new object
+                            continue; // move on to next property
+                        }
+                    }
+                    catch // catch the exception
+                    {
+                        continue; // move to new object
+                    }
+                }
+            }
+            Merge(us, u);
+            if (u.UserType == "Staff")
+            {
+                Staff s = sd.GetOneStaff(u.Id);
+                s.StaffName = u.Name;
+                s.LoginID = u.LoginID;
+                s.Password = u.Password;
+                s.OfficeTelNo = u.TelNo;
+                s.Location = u.Location;
+                sd.Update(s);
+                ViewData["Success"] = "Database updated successfully";
+                TempData["obj"] = JsonConvert.SerializeObject(u);
+                return View(u);
+            }
+            else
+            {
+                Member m = md.GetMIDByID(u.Id);
+                m.Name = u.Name;
+                m.Salutation = u.Salutation;
+                m.TelNo = u.TelNo;
+                m.EmailAddr = u.Email;
+                m.Password = u.Password;
+                m.BirthDate = u.BirthDate;
+                m.City = u.City;
+                m.Country = u.Country;
+                md.Update(m);
+                ViewData["Success"] = "Database updated successfully";
+                TempData["obj"] = JsonConvert.SerializeObject(u);
+                return View(u);
+            }
         }
     }
 }
