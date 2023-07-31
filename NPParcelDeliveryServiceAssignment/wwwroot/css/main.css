@@ -58,7 +58,6 @@ body {
 }
 
 a {
-  color: var(--color-primary);
   text-decoration: none;
   transition: 0.3s;
 }
