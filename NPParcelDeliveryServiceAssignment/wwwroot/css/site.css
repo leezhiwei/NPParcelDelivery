@@ -23,7 +23,7 @@ body {
     clear: both;
 }
 
-div#ErrorMsg {
+p#ErrorMsg {
     color: red;
 }
 
