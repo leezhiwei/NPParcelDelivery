@@ -82,6 +82,12 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                     return View(); // return view
                 }
             }
+
+            if (!member.EmailAddr.Contains("@") || !member.EmailAddr.Contains("."))
+            {
+                ViewData["ErrorMsg"] = "Error: Invalid email.";
+                return View();
+            }
             if (md.CheckEmail(member.EmailAddr))
             {
                 ViewData["ErrorMsg"] = "Error: Record exists in Database.";
