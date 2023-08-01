@@ -33,6 +33,7 @@ namespace NPParcelDeliveryServiceAssignment.Models
         public string Password { get; set; }
         
         [Display(Name = "BirthDate")]
+        [DataType(DataType.Date)]
 		public DateTime? BirthDate { get; set; }
 
         [Display(Name = "City")]
