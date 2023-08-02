@@ -14,7 +14,7 @@ namespace NPParcelDeliveryServiceAssignment.Models
         public int ParcelID { get; set; }
 
         [Required]
-        [RegularExpression(@"^\d+$", ErrorMessage = "Please enter numeric values for transaction amount.")]
+        [RegularExpression(@"^[0-9]+(\.[0-9]+)?$", ErrorMessage = "Please enter numeric values for transaction amount.")]
         [Display(Name = "Transaction Amount")]
         public decimal AmtTran { get; set; }
 
