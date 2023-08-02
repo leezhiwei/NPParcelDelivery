@@ -158,8 +158,11 @@
     <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/intlTelInput.min.js"></script>
     <script>
         const input = document.querySelector("#TelNo");
-        window.intlTelInput(input, {
+        const iti = intlTelInput(input, {
             utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js",
+            nationalMode: false,
+            initialCountry: "sg",
+            seperateDialCode: true
         });
     </script>
     <script>
@@ -205,15 +208,31 @@
         }
         $('#sbutton').click(function () {
             if (OnSubmit() == true) {
-                var form = $('form');
-                form.submit();
+                if (iti.isValidNumber()){
+                    $('#TelNo').val(iti.getNumber());
+                    var form = $('form');
+                    form.submit();
+                }
+                else {
+                    $('#Password').val('');
+                    $('#Pass2').val('');
+                    $('#ErrorMsg').text("Error: Invalid Phone Number");
+                }
             }
         });
         $('#Country').keypress(function (event) {
             if (event.keyCode == 13) {
                 if (OnSubmit() == true) {
-                    var form = $('form');
-                    form.submit();
+                    if (iti.isValidNumber()){
+                        $('#TelNo').val(iti.getNumber());
+                        var form = $('form');
+                        form.submit();
+                    }
+                    else {
+                        $('#Password').val('');
+                        $('#Pass2').val('');
+                        $('#ErrorMsg').text("Error: Invalid Phone Number");
+                    }
                 }
             }
         });
