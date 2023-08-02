@@ -923,6 +923,11 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                     }
                     else // If temporary voucher contains information. If so, the current user has vouchers to be used
                     {
+                        if (pt.AmtTran != Math.Floor(pt.AmtTran)) //Checks if the amount entered for transaction is a whole number
+                        {
+                            TempData["ErrorMsg"] = "Voucher amount should be whole numbers and do not contain decimal places! Pleaase try again.";
+                            return RedirectToAction("PaymentTransaction");
+                        }
                         if (pt.AmtTran > tempVoucher.Amount) //Checks if amount exceeds available voucher
                         {
                             TempData["ErrorMsg"] = "Transaction amount exceeded available cash voucher! Please try again.";
