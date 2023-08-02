@@ -33,7 +33,7 @@
 <h4>UserInfo</h4>
 <hr />
 <div class="row">
-    <p style="color:red">@ViewData["Error"]</p>
+    <p style="color:red" id="error">@ViewData["Error"]</p>
     <p style="color:green">@ViewData["Success"]</p>
     <div class="col-md-4">
         <form asp-action="UpdateUserDetails">
@@ -47,6 +47,10 @@
                 <label asp-for="Password" class="control-label"></label>
                 <input asp-for="Password" class="form-control" />
                 <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label for="Pass2" class="control-label">Confirm Password</label>
+                <input type="password" id="Pass2" name="Pass2" class="form-control" />
             </div>
             <div class="form-group">
                 <label asp-for="TelNo" class="control-label"></label>
@@ -132,6 +136,11 @@
         function OnSubmit() {
             var salt = atob(atob(obj.saltString));
             var pass = $("#Password");
+            var pass2 = $('#Pass2');
+            if (!(pass.val()==pass2.val())){
+                $('#error').text("Error: Both passwords are not the same");
+                return false;
+            }
             var cryptoobj = CryptoJS.algo.SHA512.create();
             cryptoobj.update(pass.val(), 'utf-8');
             cryptoobj.update(CryptoJS.SHA512(salt), 'utf-8');
@@ -139,6 +148,7 @@
 
             // Set the hash value in the element
             pass.val(hash);
+            pass2.val(hash);
             return true;
         }
         $('#sbutton').click(function () {
@@ -147,7 +157,7 @@
                 form.submit();
             }
         });
-        $('#Password').keypress(function (event) {
+        $('#Pass2').keypress(function (event) {
             if (event.keyCode == 13) {
                 if (OnSubmit() == true) {
                     var form = $('form');
