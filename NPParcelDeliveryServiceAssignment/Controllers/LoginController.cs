@@ -72,6 +72,11 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Register(Member member)
         {
+            if (member.BirthDate > DateTime.Now)
+            {
+                ViewData["ErrorMsg"] = "Error: Date of Birth cannot be after current Date. Please Re-select Date of Birth";
+                return View(member);
+            }
             var props = typeof(Member).GetProperties(); // getallprop from typeofmember
             foreach (var prop in props)
             { //foreach prop
