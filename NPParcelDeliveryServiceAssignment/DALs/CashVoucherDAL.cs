@@ -324,7 +324,7 @@ namespace NPParcelDeliveryServiceAssignment.DALs
                     ReceiverName = reader.GetString(5), //2: 6th column
                     ReceiverTelNo = reader.GetString(6), //2: 7th column
                     DateTimeIssued = reader.GetDateTime(7),//2: 8th column
-                    Status = reader.GetString(8),//2: 9th column
+                    Status = "Pending Collection"//2: 9th column
                 });
             }
             //Close DataReader
