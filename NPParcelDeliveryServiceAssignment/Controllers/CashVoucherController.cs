@@ -443,5 +443,20 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             }*/
             return View();
         }
+        public ActionResult CheckCashVoucher()
+        {
+            if (HttpContext.Session.GetString("UserID") is null)
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            Member m = mlist.GetMemberfromLoginID((string)HttpContext.Session.GetString("UserID"));
+            if (m is null)
+            {
+                ViewData["Error"] = "Member is null";
+                return View();
+            }
+            List<CashVoucher> cvlist = clist.GetCashVoucherByMemberNotCollect(m);
+            return View(cvlist);
+        }
     }
 }

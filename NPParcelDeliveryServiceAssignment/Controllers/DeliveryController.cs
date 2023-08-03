@@ -1074,5 +1074,9 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             };
             return Json(a);
         }
+        public ActionResult Calculate()
+        {
+
+        }
     }
 }

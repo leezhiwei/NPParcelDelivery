@@ -1,0 +1,76 @@
+﻿@model IEnumerable<NPParcelDeliveryServiceAssignment.Models.CashVoucher>
+
+@{
+    ViewData["Title"] = "CheckCashVoucher";
+    Layout = "~/Views/Shared/_memberLayout.cshtml";
+}
+
+<h1>CheckCashVoucher</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.CashVoucherID)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.StaffID)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Amount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Currency)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IssuingCode)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ReceiverName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ReceiverTelNo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DateTimeIssued)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.CashVoucherID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.StaffID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Amount)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Currency)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IssuingCode)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ReceiverName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ReceiverTelNo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DateTimeIssued)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Status)
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
