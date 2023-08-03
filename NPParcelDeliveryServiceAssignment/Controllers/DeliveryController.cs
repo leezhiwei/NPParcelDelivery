@@ -1074,5 +1074,53 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             };
             return Json(a);
         }
+
+        // GET: Shipping Calculator
+        public ActionResult ShippingCalculator()
+        {
+            if (HttpContext.Session.GetString("UserID") is null)
+            {
+                return RedirectToAction("Index", "Login");
+            }
+            ViewData["Countries"] = GetCountries();
+            return View();
+        }
+
+        // POST: Shipping Calculator
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult ShippingCalculator(ShippingCalculatorViewModel ShipCalc)
+        {
+            ShippingRate ccObject = srd.GetSRbyCC(ShipCalc.ToCity, ShipCalc.ToCountry); //Creating a shipping rate object to inherit a shipping rate object that has the same toCity & toCountry
+
+            decimal deliveryCharge = 0;
+            decimal rdelCharge = 0;
+            decimal shipRate = 0;
+
+            if (ccObject.IsDeepEqual(new ShippingRate())) // Checks if the ccObject equals to a new shippingrate that has empty values
+            {
+                TempData["ErrorMessage"] = $"Shipping Calculation failed. <br><br>-------------------------------------------------------------------------------------------- <br><br> Invalid ToCity name, please try again with the correct city name. <br><br> --------------------------------------------------------------------------------------------";
+                return RedirectToAction("ShippingCalculator");
+            }
+            else if ((ShipCalc.ToCity.ToLower() == ccObject.ToCity.ToLower()) && (ShipCalc.ToCountry.ToLower() == ccObject.ToCountry.ToLower())) //Checks if the city & country matches the records in shipping rate 
+            {
+                //Computing delivery charge
+                shipRate = ccObject.ShipRate; //Store shiprate into shipRate, to be printed out later as tempData
+                deliveryCharge = Convert.ToDecimal(ShipCalc.ParcelWeight) * ccObject.ShipRate; //Delivery Charge = parcel weight * ship rate
+            }
+
+            //Computing rounded delivery charge
+            rdelCharge = Math.Round(deliveryCharge, MidpointRounding.AwayFromZero); //Rounding the delivery charge to the nearest dollar
+            if (rdelCharge >= 5) //Checks if delivery charge is more than 5
+            {
+                ShipCalc.DeliveryCharge = rdelCharge;
+            }
+            else //If delivery charge is less than 5, the minimum delivery charge is 5 dollars  
+            {
+                ShipCalc.DeliveryCharge = 5;
+            }
+            TempData["Message"] = $"----------------------- Calculated Delivery Charge ----------------------- <br> Parcel Weight: {ShipCalc.ParcelWeight} <br> From city, country: {ShipCalc.FromCity}, {ShipCalc.FromCountry} <br> To city, country: {ShipCalc.ToCity}, {ShipCalc.ToCountry} <br> Shipping Rate: ${String.Format("{0:0.##}", shipRate)} <br> Delivery Charge Cost (Shipping Rate x Parcel Weight): ${String.Format("{0:0.##}", ShipCalc.DeliveryCharge)} <br>(Note: Minimum delivery charge is S$5.00) <br> -------------------------------------------------------------------------------------";
+            return RedirectToAction("ShippingCalculator");
+        }
     }
 }
