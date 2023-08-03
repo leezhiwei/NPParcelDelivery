@@ -63,7 +63,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="ParcelWeight" class="control-label"></label>
-                <input asp-for="ParcelWeight" class="form-control" value="0.0"/>
+                <input asp-for="ParcelWeight" class="form-control" value="0.0" />
                 <span asp-validation-for="ParcelWeight" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -73,17 +73,52 @@
             </div>
             <br />
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="button" value="Create" class="btn btn-primary" id="submitbtn" />
                 <input type="reset" value="Cancel" class="btn btn-primary" />
             </div>
             <br />
             <p style="color:green">@Html.Raw((string)TempData["InsertMessage"])</p>
             <p style="color:red">@Html.Raw((string)TempData["ErrorMessage"])</p>
+            <p style="color:red" id="telnoerror"></p>
         </form>
     </div>
 </div>
 
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        const input1 = document.querySelector("#SenderTelNo");
+        const iti1 = intlTelInput(input1, {
+            utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js",
+            nationalMode: false,
+            initialCountry: "sg",
+            seperateDialCode: true
+        });
+        const input2 = document.querySelector("#ReceiverTelNo");
+        const iti2 = intlTelInput(input2, {
+            utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js",
+            nationalMode: false,
+            initialCountry: "sg",
+            seperateDialCode: true
+        });
+        $('#submitbtn').click(function () {
+            if (iti1.isValidNumber()) {
+                $('#SenderTelNo').val(iti1.getNumber());
+                if (iti2.isValidNumber()) {
+                    $('#ReceiverTelNo').val(iti2.getNumber());
+                    var form = $('form');
+                    form.submit();
+                }
+                else {
+                    $('#telnoerror').text("Error: Invalid Receiver Telephone Number");
+                }
+            }
+            else {
+                $('#telnoerror').text("Error: Invalid Sender Telephone Number");
+            }
+        });
+        </script>
 }

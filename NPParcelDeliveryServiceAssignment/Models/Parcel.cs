@@ -19,8 +19,9 @@ namespace NPParcelDeliveryServiceAssignment.Models
 
         [Required(ErrorMessage = "Please enter a valid phone number.")]
         [Display(Name = "Sender Phone Number")]
-        [RegularExpression(@"^\+[0-9]{1,20}$", ErrorMessage = "Invalid phone number format. Please start with country code, E.g. +65 followed by the phone number.")]
-        [StringLength(20, MinimumLength = 10, ErrorMessage = "Invalid phone number. The phone number should be between 8 and 20 characters in length.")] // Minimum length is 10 due to country code(2 nums) + phone number(8 nums)
+        // Previously used before JS method
+        // [RegularExpression(@"^\+[0-9]{1,20}$", ErrorMessage = "Invalid phone number format. Please start with country code, E.g. +65 followed by the phone number.")]
+        [StringLength(20, MinimumLength = 8, ErrorMessage = "Invalid phone number. The phone number should be between 8 and 20 characters in length.")] // Minimum length is 10 due to country code(2 nums) + phone number(8 nums)
         public string SenderTelNo { get; set; }
 
         [Required(ErrorMessage = "Please enter a receiver name.")]
@@ -30,8 +31,9 @@ namespace NPParcelDeliveryServiceAssignment.Models
 
         [Required(ErrorMessage = "Please enter a receiver's phone number.")]
         [Display(Name = "Receiver Phone Number")]
-        [RegularExpression(@"^\+[0-9]{1,20}$", ErrorMessage = "Invalid phone number format. Please start with country code, E.g. +65 followed by the phone number.")]
-        [StringLength(20, MinimumLength = 10, ErrorMessage = "Invalid phone number. The phone number should be between 8 and 20 characters in length.")] // Minimum length is 10 due to country code(2 nums) + phone number(8 nums)
+        // Previously used before JS method
+        // [RegularExpression(@"^\+[0-9]{1,20}$", ErrorMessage = "Invalid phone number format. Please start with country code, E.g. +65 followed by the phone number.")]
+        [StringLength(20, MinimumLength = 8, ErrorMessage = "Invalid phone number. The phone number should be between 8 and 20 characters in length.")] // Minimum length is 10 due to country code(2 nums) + phone number(8 nums)
         public string ReceiverTelNo { get; set; }
 
         [Required(ErrorMessage = "Please enter a delivery address.")]
