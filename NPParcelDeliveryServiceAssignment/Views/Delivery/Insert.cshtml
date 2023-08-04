@@ -120,5 +120,41 @@
                 $('#telnoerror').text("Error: Invalid Sender Telephone Number");
             }
         });
-        </script>
+        $('#ParcelWeight').keypress(function (event) {
+            if (event.keyCode == 13) {
+                if (iti1.isValidNumber()) {
+                    $('#SenderTelNo').val(iti1.getNumber());
+                    if (iti2.isValidNumber()) {
+                        $('#ReceiverTelNo').val(iti2.getNumber());
+                        var form = $('form');
+                        form.submit();
+                    }
+                    else {
+                        $('#telnoerror').text("Error: Invalid Receiver Telephone Number");
+                    }
+                }
+                else {
+                    $('#telnoerror').text("Error: Invalid Sender Telephone Number");
+                }
+            }
+        });
+        $('#Currency').keypress(function (event) {
+            if (event.keyCode == 13) {
+                if (iti1.isValidNumber()) {
+                    $('#SenderTelNo').val(iti1.getNumber());
+                    if (iti2.isValidNumber()) {
+                        $('#ReceiverTelNo').val(iti2.getNumber());
+                        var form = $('form');
+                        form.submit();
+                    }
+                    else {
+                        $('#telnoerror').text("Error: Invalid Receiver Telephone Number");
+                    }
+                }
+                else {
+                    $('#telnoerror').text("Error: Invalid Sender Telephone Number");
+                }
+            }
+        });
+    </script>
 }
