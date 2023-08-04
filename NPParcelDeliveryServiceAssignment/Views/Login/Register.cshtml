@@ -104,7 +104,7 @@
 
                 <label asp-for="Country" class="control-label"></label>
 
-                <input asp-for="Country" class="form-control" />
+                <select asp-for="Country" asp-items="@(new SelectList(ViewData["Countries"] as List<SelectListItem>,"Value","Text"))" class="form-control"></select>
 
                 <span asp-validation-for="Country" class="text-danger"></span>
 

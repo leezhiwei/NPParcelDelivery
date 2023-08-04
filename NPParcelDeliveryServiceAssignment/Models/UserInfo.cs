@@ -13,9 +13,11 @@ namespace NPParcelDeliveryServiceAssignment.Models
         public string Password { get; set; }
         [DataType(DataType.EmailAddress)]
         public string Email { get; set; }
+        [Display(Name = "Login ID")]
         public string LoginID { get; set; }
         public string Location { get; set; }
         [Required]
+        [Display(Name = "Telephone Number")]
         [StringLength(20, ErrorMessage = "Phone Number length is too long, please reduce length or use another phone number")]
         public string TelNo { get; set; }
         [StringLength(5, ErrorMessage = "Salutation length is too long, please reduce length or use another salutation.")]

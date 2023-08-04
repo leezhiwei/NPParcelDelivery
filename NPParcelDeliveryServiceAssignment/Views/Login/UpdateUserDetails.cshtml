@@ -94,7 +94,7 @@
                 </div>
                 <div class="form-group">
                     <label asp-for="Country" class="control-label"></label>
-                    <input asp-for="Country" class="form-control" />
+                    <select asp-for="Country" asp-items="@(new SelectList(ViewData["Countries"] as List<SelectListItem>,"Value","Text"))" class="form-control"></select>
                     <span asp-validation-for="Country" class="text-danger"></span>
                 </div>
             }
@@ -110,6 +110,15 @@
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 @section Scripts {
+    <script>
+        const input = document.querySelector("#TelNo");
+        const iti = intlTelInput(input, {
+            utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js",
+            nationalMode: false,
+            initialCountry: "sg",
+            seperateDialCode: true
+        });
+    </script>
     <script>
         let obj;
         function getsalt() {
@@ -137,7 +146,11 @@
             var salt = atob(atob(obj.saltString));
             var pass = $("#Password");
             var pass2 = $('#Pass2');
-            if (!(pass.val()==pass2.val())){
+            if (pass == "" || pass2 == ""){
+                $('#error').text("Error: No password is typed in.");
+                return false;
+            }
+            if (!(pass.val() == pass2.val())) {
                 $('#error').text("Error: Both passwords are not the same");
                 return false;
             }
@@ -153,34 +166,68 @@
         }
         $('#sbutton').click(function () {
             if (OnSubmit() == true) {
-                var form = $('form');
-                form.submit();
+                if (iti.isValidNumber()) {
+                    $('#TelNo').val(iti.getNumber());
+                    var form = $('form');
+                    form.submit();
+                }
+                else {
+                    $('#Password').val('');
+                    $('#Pass2').val('');
+                    $('#error').text("Error: Invalid Phone Number");
+                }
             }
         });
         $('#Pass2').keypress(function (event) {
             if (event.keyCode == 13) {
                 if (OnSubmit() == true) {
-                    var form = $('form');
-                    form.submit();
+                    if (iti.isValidNumber()) {
+                        $('#TelNo').val(iti.getNumber());
+                        var form = $('form');
+                        form.submit();
+                    }
+                    else {
+                        $('#Password').val('');
+                        $('#Pass2').val('');
+                        $('#error').text("Error: Invalid Phone Number");
+                    }
                 }
             }
         });
         $('#Location').keypress(function (event) {
             if (event.keyCode == 13) {
                 if (OnSubmit() == true) {
-                    var form = $('form');
-                    form.submit();
+                    if (iti.isValidNumber()) {
+                        $('#TelNo').val(iti.getNumber());
+                        var form = $('form');
+                        form.submit();
+                    }
+                    else {
+                        $('#Password').val('');
+                        $('#Pass2').val('');
+                        $('#error').text("Error: Invalid Phone Number");
+                    }
                 }
             }
         });
         $('#Country').keypress(function (event) {
             if (event.keyCode == 13) {
                 if (OnSubmit() == true) {
-                    var form = $('form');
-                    form.submit();
+                    if (iti.isValidNumber()) {
+                        $('#TelNo').val(iti.getNumber());
+                        var form = $('form');
+                        form.submit();
+                    }
+                    else {
+                        $('#Password').val('');
+                        $('#Pass2').val('');
+                        $('#error').text("Error: Invalid Phone Number");
+                    }
                 }
             }
         });
-</script>
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    </script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
