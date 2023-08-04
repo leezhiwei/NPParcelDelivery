@@ -113,10 +113,24 @@
 					@Html.DisplayFor(model => model.TargetDeliveryDate)
 				</dd>
 				<dt class="col-sm-2">
-					@Html.DisplayNameFor(model => model.DeliveryManID)
+					@if (ViewData["Name"] is null)
+					{
+						@Html.DisplayNameFor(model => model.DeliveryManID)
+					}
+					else
+					{
+						<p>Deliveryman Name</p>
+					}
 				</dt>
 				<dd class="col-sm-10">
-					@Html.DisplayFor(model => model.DeliveryManID)
+					@if (ViewData["Name"] is null)
+					{
+						@Html.DisplayFor(model => model.DeliveryManID)
+					}
+					else
+					{
+						@ViewData["Name"]
+					}
 				</dd>
 				<a asp-controller="Delivery" asp-action="DeliveryHist" asp-route-id="@Model.ParcelID">View Delivery History</a>
 			</dl>

@@ -18,6 +18,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
     {
         private StaffDAL sd = new StaffDAL();
         private MemberDAL md = new MemberDAL();
+        private DeliveryController d = new DeliveryController();
         // GET: LoginController
         public ActionResult Index()
         {
@@ -66,12 +67,14 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
+            ViewData["Countries"] = d.GetCountries();
             return View();
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Register(Member member)
         {
+            ViewData["Countries"] = d.GetCountries();
             if (member.BirthDate > DateTime.Now)
             {
                 ViewData["ErrorMsg"] = "Error: Date of Birth cannot be after current Date. Please Re-select Date of Birth";
@@ -129,6 +132,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 Member m = md.GetMemberfromLoginID(LoginID);
                 if (m is null)
                 {
+                    ViewData["Countries"] = d.GetCountries();
                     TempData["Error"] = "An unknown error occured, please contact the developers.";
                     return View();
                 }
@@ -160,11 +164,13 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 u.Location = s.Location;
             }
             TempData["obj"] = JsonConvert.SerializeObject(u);
+            ViewData["Countries"] = d.GetCountries();
             return View(u);
         }
         [HttpPost]
         public ActionResult UpdateUserDetails(UserInfo u)
         {
+            ViewData["Countries"] = d.GetCountries();
             string tou = HttpContext.Session.GetString("TypeOfUser");
             ViewData["typeofuser"] = tou;
             UserInfo us = JsonConvert.DeserializeObject<UserInfo>((string)TempData["obj"]);

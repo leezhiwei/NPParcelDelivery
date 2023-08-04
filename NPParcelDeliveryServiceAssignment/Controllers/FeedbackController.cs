@@ -45,7 +45,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             {
                 return RedirectToAction("Index", "Login");
             }
-            List<FeedbackEnquiry> l = fdal.GetAllFeedback();
+            List<FeedbackEnquiry> l = fdal.GetUnrespondedFeedback();
             return View(l);
         }
         public IActionResult Respond(int? id)

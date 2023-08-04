@@ -184,5 +184,29 @@ namespace NPParcelDeliveryServiceAssignment.DALs
             return f;
 
         }
+        public List<FeedbackEnquiry> GetUnrespondedFeedback()
+        { //Create a SqlCommand object from connection object
+            SqlCommand cmd = conn.CreateCommand(); //Specify the SELECT SQL statement
+            cmd.CommandText = @"SELECT * FROM FeedbackEnquiry WHERE Status = '0' ORDER BY FeedbackEnquiryID"; //Open a database connection
+            conn.Open(); //Execute the SELECT SQL through a DataReader
+            SqlDataReader reader = cmd.ExecuteReader();
+            //Read all records until the end, save data into a staff list
+            List<FeedbackEnquiry> feedbacklist = new List<FeedbackEnquiry>();
+            while (reader.Read())
+            {
+                feedbacklist.Add(new FeedbackEnquiry
+                {
+                    FeedbackEnquiryID = reader.GetInt32(0),
+                    MemberID = reader.GetInt32(1),
+                    Content = reader.GetString(2),
+                    DateTimePosted = reader.GetDateTime(3),
+                    StaffID = CheckNull(reader, 4),
+                    Response = !reader.IsDBNull(5) ?
+                    reader.GetString(5) : (string)null,
+                    Status = reader.GetString(6),
+                });
+            }
+            return feedbacklist;
+        }
     }
 }

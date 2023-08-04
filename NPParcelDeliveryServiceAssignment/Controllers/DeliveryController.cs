@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using DeepEqual.Syntax;
 using Microsoft.Extensions.Logging.Abstractions;
 using NuGet.Packaging.Signing;
+using System.Diagnostics.CodeAnalysis;
 
 namespace NPParcelDeliveryServiceAssignment.Controllers
 {
@@ -92,7 +93,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 return View(dh);
             }
         }
-        private List<SelectListItem> GetCountries()
+        public List<SelectListItem> GetCountries()
         {
             List<SelectListItem> countries = new List<SelectListItem>();
             countries.Add(new SelectListItem
@@ -408,6 +409,19 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             {
                 ViewData["ShowParcel"] = false;
                 ViewData["Error"] = true;
+                return View();
+            }
+            if (p is null)
+            {
+                ViewData["ShowParcel"] = false;
+                ViewData["Error"] = true;
+                return View();
+            }
+            if (p.DeliveryManID is not null)
+            {
+                ViewData["ShowParcel"] = false;
+                ViewData["Error"] = false;
+                TempData["Error2"] = "The following parcel already has a DeliveryMan assigned.";
                 return View();
             }
             ViewData["ShowParcel"] = true;
@@ -852,6 +866,11 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 else
                 {
                     TempData["ParcelStatus"] = " ";
+                }
+                if (pTemp.DeliveryManID is not null)
+                {
+                    Staff s = sdal.GetOneStaff((int)pTemp.DeliveryManID);
+                    ViewData["Name"] = s.StaffName;
                 }
                 return View(pTemp);
             }
