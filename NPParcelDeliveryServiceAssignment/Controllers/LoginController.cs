@@ -1,16 +1,7 @@
-﻿using DeepEqual.Syntax;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.TagHelpers;
+﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using NPParcelDeliveryServiceAssignment.DALs;
 using NPParcelDeliveryServiceAssignment.Models;
-using System.Buffers.Text;
-using System.Data.SqlTypes;
-using System.Runtime.InteropServices.ObjectiveC;
-using System.Security.Cryptography.X509Certificates;
-using System.Security.Permissions;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace NPParcelDeliveryServiceAssignment.Controllers
 {

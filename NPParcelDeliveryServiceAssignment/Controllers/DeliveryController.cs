@@ -4,9 +4,6 @@ using NPParcelDeliveryServiceAssignment.Models;
 using NPParcelDeliveryServiceAssignment.DALs;
 using Newtonsoft.Json;
 using DeepEqual.Syntax;
-using Microsoft.Extensions.Logging.Abstractions;
-using NuGet.Packaging.Signing;
-using System.Diagnostics.CodeAnalysis;
 
 namespace NPParcelDeliveryServiceAssignment.Controllers
 {
