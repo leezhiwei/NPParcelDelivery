@@ -1,74 +1,96 @@
 ﻿@model IEnumerable<NPParcelDeliveryServiceAssignment.Models.CashVoucher>
 
 @{
-	ViewData["Title"] = "CashvoucherList";
-	Layout = "~/Views/Shared/_fostaffLayout.cshtml";
+    ViewData["Title"] = "CashvoucherList";
+    Layout = "~/Views/Shared/_fostaffLayout.cshtml";
 }
 
-<h1>Cash Voucher Status</h1>
+<h1>Search Cash Voucher Status & Details</h1>
 <hr />
 <div class="row">
     @{
 
-            <form asp-controller="CashVoucher" asp-action="CashvoucherList" method="post">
-                <label for="nameBox">@Html.DisplayNameFor(CashVoucher =>CashVoucher.ReceiverName)</label><br />
-                <input type="text" id="nameBox" name="nameBox" /><br>
-                <label for="telBox">@Html.DisplayNameFor(CashVoucher =>CashVoucher.ReceiverTelNo )</label><br />
-                <input type="text" id="telBox" name="telBox" /><br>
-				<br>
-                <button type="submit">Search Cash Voucher</button>
-			<p style="color:red">@TempData["NOResult"]</p>
-			<p style="color:green">@TempData["Issued"]</p>
-			<p>@TempData["collectcv"]</p>
-            </form>
-		<br>
-		if ((bool)ViewData["showcv"])
-		{
-			@if (Model.ToList().Count > 0)
-			{
-				<div class="table-responsive">
-					<table id="viewStaff" class="table table-striped table-bordered">
-						<thead class="table-dark">
-							<tr>
-								<th>CashVoucherID</th>
-								<th>StaffID</th>
-								<th>Amount</th>
-								<th>Currency</th>
-								<th>IssuingCode</th>
-								<th>ReceiverName</th>
-								<th>ReceiverTelNo</th>
-								<th>DateTimeIssued</th>
-								<th>Status</th>
-							</tr>
-						</thead>
-						<tbody>
-							@foreach (var item in Model)
-							{
-								<tr>
-									<td>@item.CashVoucherID</td>
-									<td>@item.StaffID</td>
-									<td>@item.Amount</td>
-									<td>@item.Currency</td>
-									<td>@item.IssuingCode</td>
-									<td>@item.ReceiverName</td>
-									<td>@item.ReceiverTelNo</td>
-									<td>@item.DateTimeIssued</td>
-									<td>@item.Status</td>
-								<td>
-									<a asp-action="CashVoucherUpdate" asp-controller="CashVoucher"
-									   asp-route-id="@item.CashVoucherID">Collect Cash Voucher</a>
-								</td>
-								</tr>
-							}
-						</tbody>
-					</table>
-				</div>
-			}
-		}
-		}
+        <form asp-controller="CashVoucher" asp-action="CashvoucherList" method="post">
+            <label for="nameBox">@Html.DisplayNameFor(CashVoucher =>CashVoucher.ReceiverName)</label><br />
+            <input type="text" id="nameBox" name="nameBox" /><br>
+            <label for="telBox">@Html.DisplayNameFor(CashVoucher =>CashVoucher.ReceiverTelNo )</label><br />
+            <input type="text" id="telBox" name="telBox" /><br>
+            <br>
+            <button type="button" id="sbutton">Search Cash Voucher</button>
+            <p style="color:red" id="error">@TempData["NOResult"]</p>
+            <p style="color:green">@TempData["Issued"]</p>
+            <p>@TempData["collectcv"]</p>
+        </form>
+        <br>
+        if ((bool)ViewData["showcv"])
+        {
+            @if (Model.ToList().Count > 0)
+            {
+                <div class="table-responsive">
+                    <table id="viewStaff" class="table table-striped table-bordered">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>CashVoucherID</th>
+                                <th>StaffID</th>
+                                <th>Amount</th>
+                                <th>Currency</th>
+                                <th>IssuingCode</th>
+                                <th>ReceiverName</th>
+                                <th>ReceiverTelNo</th>
+                                <th>DateTimeIssued</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@item.CashVoucherID</td>
+                                    <td>@item.StaffID</td>
+                                    <td>@item.Amount</td>
+                                    <td>@item.Currency</td>
+                                    <td>@item.IssuingCode</td>
+                                    <td>@item.ReceiverName</td>
+                                    <td>@item.ReceiverTelNo</td>
+                                    <td>@item.DateTimeIssued</td>
+                                    <td>@item.Status</td>
+                                    <td>
+                                        <a asp-action="CashVoucherUpdate" asp-controller="CashVoucher"
+                           asp-route-id="@item.CashVoucherID">Collect Cash Voucher</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        }
+    }
 
-		@section Scripts {
-	@{
-		await Html.RenderPartialAsync("_ValidationScriptsPartial");
-	}
-}
+    @section Scripts {
+        <script>
+            const input = document.querySelector("#telBox");
+            const iti = intlTelInput(input, {
+                utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js",
+                nationalMode: false,
+                initialCountry: "sg",
+                seperateDialCode: true
+            });
+        </script>
+        <script>
+            $('#sbutton').click(function () {
+                if (iti.isValidNumber()) {
+                    $('#telBox').val(iti.getNumber());
+                    var form = $('form');
+                    form.submit();
+                }
+                else {
+                    $('#error').text("Error: Invalid Phone Number");
+                }
+            });
+        </script>
+
+        @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        }
+    }
