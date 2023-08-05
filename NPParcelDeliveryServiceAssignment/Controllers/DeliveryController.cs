@@ -835,7 +835,18 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             pTemp = pdal.GetEitherByParcelIDReceiverNameOrSenderName(pid, rname, sname);
             if (pTemp is null)
             {
-                TempData["ParcelError"] = $"Parcel with the ID: {ParcelId}, does not exist in the delivery orders.";
+                if (ParcelId != "")
+                {
+					TempData["ParcelError"] = $"Parcel with the ID: {ParcelId}, does not exist in the delivery orders.";
+				}
+                else if (rname != "")
+                {
+					TempData["ParcelError"] = $"Parcel with the Receiver Name: {rname}, does not exist in the delivery orders.";
+				}
+                else
+                {
+					TempData["ParcelError"] = $"Parcel with the Sender Name: {sname}, does not exist in the delivery orders.";
+				}
                 ViewData["ShowDetail"] = false;
                 return View();
             }
