@@ -718,7 +718,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 return View();
             }
             Parcel parcel = pdal.GetPIDByPID(df.ParcelID);
-            if (parcel == new Parcel())
+            if (parcel == null)
             {
                 ViewData["Error"] = "Unable to get Parcel Object";
                 return View();
