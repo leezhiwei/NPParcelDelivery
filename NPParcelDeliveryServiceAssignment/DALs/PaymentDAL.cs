@@ -100,6 +100,10 @@ namespace NPParcelDeliveryServiceAssignment.DALs
                     TranDate = reader.GetDateTime(5), //6: 5th column
                 };
             }
+            //Close DataReader
+            reader.Close();
+            //Close database connection
+            conn.Close();
             return pt;
         }
 

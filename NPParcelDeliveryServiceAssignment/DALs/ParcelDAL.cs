@@ -64,6 +64,10 @@ namespace NPParcelDeliveryServiceAssignment.DALs
                     DeliveryManID = CheckNull(reader, 16),
                 });
             }
+            //Close DataReader
+            reader.Close();
+            //Close database connection
+            conn.Close();
             return parcellist;
         }
 
@@ -200,6 +204,10 @@ namespace NPParcelDeliveryServiceAssignment.DALs
                     DeliveryManID = CheckNull(reader, 16),
                 });
             }
+            //Close DataReader
+            reader.Close();
+            //Close database connection
+            conn.Close();
             return parcellist;
         }
         public List<Parcel> GetParcelFromMember(Member m)
@@ -279,8 +287,9 @@ namespace NPParcelDeliveryServiceAssignment.DALs
                     DeliveryStatus = reader.GetString(15),
                     DeliveryManID = CheckNull(reader, 16),
                 };
+                conn.Close();
                 return p;
-            }
+            }//Double check reader.close & conn.close
             return null;
             
         }
@@ -295,6 +304,7 @@ namespace NPParcelDeliveryServiceAssignment.DALs
             }
             conn.Open(); //Execute the SELECT SQL through a DataReader
             int count = (int)cmd.ExecuteScalar();
+            conn.Close();
             return count;
         }
         public List<SelectListItem> GetDManCount()
@@ -316,6 +326,9 @@ namespace NPParcelDeliveryServiceAssignment.DALs
                     Value = r.GetInt32(1).ToString()
                 });
             }
+            //Close DataReader
+            r.Close();
+            //Close database connection
             conn.Close();
             return list;
         }
@@ -356,8 +369,9 @@ namespace NPParcelDeliveryServiceAssignment.DALs
                     DeliveryStatus = reader.GetString(15),
                     DeliveryManID = CheckNull(reader, 16),
                 };
+                conn.Close();
                 return p;
-            }
+            }// Double Check reader.close & conn.close
             return null;
 
         }
