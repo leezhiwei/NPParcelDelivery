@@ -193,6 +193,10 @@
             var salt = atob(atob(obj.saltString));
             var pass = $("#Password");
             var pass2 = $('#Pass2');
+            if (pass.val() == "" || pass2.val() == "") {
+                $('#ErrorMsg').text("Error: No password is typed in.");
+                return false;
+            }
             if (!(pass.val() == pass2.val())) {
                 $('#ErrorMsg').text("Error: Both passwords are not the same");
                 return false;
