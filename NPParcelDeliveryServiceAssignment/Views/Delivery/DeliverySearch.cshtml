@@ -5,7 +5,9 @@
 	Layout = "~/Views/Shared/_smanagerLayout.cshtml";
 }
 
-<h1>DeliverySearch</h1>
+<h1>Delivery Tracking Details</h1>
+<hr />
+<br />
 <form asp-controller="Delivery" asp-action="DeliverySearch" method="post">
 	<label for="nameBox">@Html.DisplayNameFor(Parcel => Parcel.ParcelID)</label><br />
 	<input type="text" id="ParcelID" name="ParcelID" /><br>
@@ -13,6 +15,7 @@
 	<input type="text" id="rnameSearch" name="rnameSearch" /><br>
 	<label for="telBox">@Html.DisplayNameFor(Parcel =>Parcel.SenderName)</label><br />
 	<input type="text" id="snameSearch" name="snameSearch" /><br>
+	<br />
 	<button type="submit">Search Parcel Delivery Record</button>
 </form>
 @{

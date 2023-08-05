@@ -5,10 +5,9 @@
     Layout = "~/Views/Shared/_smanagerLayout.cshtml";
 }
 
-<h1>Update</h1>
-
-<h4>Parcel</h4>
+<h1>Update Parcel</h1>
 <hr />
+<br />
 <div class="row">
     <form asp-controller="Delivery" asp-action="AssignParcels" method="post">
         <label for="idbox">@Html.DisplayNameFor(Parcel => Parcel.ParcelID)</label><br />
@@ -88,6 +87,7 @@
                     <label asp-for="DeliveryManID" class="control-label"></label>
                     <select asp-for="DeliveryManID" asp-items="@(new SelectList(ViewData["SelectList"] as List<SelectListItem>,"Value","Text"))" class="form-select"></select>
                 </div>
+                <br>
                 <div class="form-group">
                     <input type="submit" value="Update" class="btn btn-primary" />
                 </div>
