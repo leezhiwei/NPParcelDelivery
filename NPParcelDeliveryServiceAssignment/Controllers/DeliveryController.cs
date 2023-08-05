@@ -174,9 +174,14 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             decimal shipRate = 0;
             int transitTime = 0;
 
-            if (ccObject.IsDeepEqual(new ShippingRate())) // Checks if the ccObject equals to a new shippingrate that has empty values
+            if (p.ParcelWeight > 70) //Checks if the parcel weight is above 70.
             {
-                TempData["ErrorMessage"] = $"Parcel creation failed. <br><br>------------------------------------------------------------ <br><br> Invalid ToCity & ToCountry, please try again with the correct city & country names. <br><br> ------------------------------------------------------------";
+                TempData["ErrorMessage"] = $"Parcel creation failed. <br><br>------------------------------------------------------------------------- <br><br> Parcel weight should be 70kg or below. <br>Only freight shipments allow weights above 70kg. <br><br> -------------------------------------------------------------------------";
+                return RedirectToAction("Insert");
+            }
+            else if (ccObject.IsDeepEqual(new ShippingRate())) // Checks if the ccObject equals to a new shippingrate that has empty values
+            {
+                TempData["ErrorMessage"] = $"Parcel creation failed. <br><br>---------------------------------------------------------------------------------- <br><br> Invalid city or it does not belong to the country selected, <br>please try again with the correct city & country names. <br><br> ----------------------------------------------------------------------------------";
                 return RedirectToAction("Insert");
             }
             else if ((p.ToCity.ToLower() == ccObject.ToCity.ToLower()) && (p.ToCountry.ToLower() == ccObject.ToCountry.ToLower())) //Checks if the city & country matches the records in shipping rate 
@@ -209,7 +214,6 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
 
             //Basic Feature 1 - Parcel Receiving, adding parcel delivery record
             string desc = $"Recieved parcel by {HttpContext.Session.GetString("UserID")} on {DateTime.Now.ToString("dd MMM yyyy hh:mm tt")}.";
-
             DeliveryHistory dh = new DeliveryHistory
             {
                 ParcelID = pdal.Add(p), //Obtaining parcel ID by adding details to parcel
