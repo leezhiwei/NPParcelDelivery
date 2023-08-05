@@ -258,6 +258,10 @@ namespace NPParcelDeliveryServiceAssignment.DALs
             cmd.Parameters.AddWithValue("@co", m.Country);
             cmd.Parameters.AddWithValue("@ci", m.City);
             cmd.Parameters.AddWithValue("@mid", m.MemberID);
+            if (conn.State == System.Data.ConnectionState.Open)
+            {
+                conn.Close();
+            }
             //Open a database connection
             conn.Open();
             //ExecuteNonQuery is used for UPDATE and DELETE
