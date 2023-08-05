@@ -251,14 +251,6 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 return RedirectToAction("ShowShippingRateInfo");
             }
             List<ShippingRate> sr = srd.GetAllShippingRate();
-            /*foreach (ShippingRate s in sr)
-            {
-                if (s.ShippingRateID == idd)
-                {
-                    TempData["PrevObj"] = JsonConvert.SerializeObject(s);
-                    return View(s);
-                }
-            }*/
             if (srd.GetSRIDByID(id).ShippingRateID == idd)
             {
                 TempData["PrevObj"] = JsonConvert.SerializeObject(srd.GetSRIDByID(id));
@@ -321,14 +313,6 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             Merge(oldobj, s);
             string loginID = (string)HttpContext.Session.GetString("UserID");
             List<Staff> ls = sdal.GetAllStaff();
-            /*foreach (Staff st in ls)
-            {
-                if (st.LoginID == loginID)
-                {
-                    s.LastUpdatedBy = st.StaffID;
-                    break;
-                }
-            }*/
             int staffIDCheck = sdal.ReturnStaffID(loginID);
             if (staffIDCheck <= -1)
             {
@@ -350,14 +334,6 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 return RedirectToAction("Index", "Login");
             }
             List<ShippingRate> sr = srd.GetAllShippingRate();
-            /*foreach (ShippingRate s in sr)
-            {
-                if (s.ShippingRateID == id)
-                {
-                    TempData["shiprateobj"] = JsonConvert.SerializeObject(s);
-                    return View(s);
-                }
-            }*/
             if (srd.GetSRIDByID(Convert.ToString(id)).ShippingRateID == id)
             {
                 TempData["shiprateobj"] = JsonConvert.SerializeObject(srd.GetSRIDByID(Convert.ToString(id)));
@@ -553,13 +529,6 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 }
                 string loginID = HttpContext.Session.GetString("UserID");
                 List<Staff> staffli = sdal.GetAllStaff();
-                /*foreach (Staff s in staffli)
-                {
-                    if (s.LoginID == loginID)
-                    {
-                        shippingRate.LastUpdatedBy = Convert.ToInt32(s.StaffID);
-                    }
-                }*/
                 int staffIDCheck = sdal.ReturnStaffID(loginID);
                 if (staffIDCheck <= -1)
                 {
@@ -842,7 +811,18 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             pTemp = pdal.GetEitherByParcelIDReceiverNameOrSenderName(pid, rname, sname);
             if (pTemp is null)
             {
-                TempData["ParcelError"] = $"Parcel with the ID: {ParcelId}, does not exist in the delivery orders.";
+                if (ParcelId != "")
+                {
+					TempData["ParcelError"] = $"Parcel with the ID: {ParcelId}, does not exist in the delivery orders.";
+				}
+                else if (rname != "")
+                {
+					TempData["ParcelError"] = $"Parcel with the Receiver Name: {rname}, does not exist in the delivery orders.";
+				}
+                else
+                {
+					TempData["ParcelError"] = $"Parcel with the Sender Name: {sname}, does not exist in the delivery orders.";
+				}
                 ViewData["ShowDetail"] = false;
                 return View();
             }

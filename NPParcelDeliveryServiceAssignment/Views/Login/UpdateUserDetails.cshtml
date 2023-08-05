@@ -145,7 +145,7 @@
             var salt = atob(atob(obj.saltString));
             var pass = $("#Password");
             var pass2 = $('#Pass2');
-            if (pass == "" || pass2 == ""){
+            if (pass.val() == "" || pass2.val() == ""){
                 $('#error').text("Error: No password is typed in.");
                 return false;
             }

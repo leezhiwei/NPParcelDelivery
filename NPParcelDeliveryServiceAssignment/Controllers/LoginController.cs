@@ -68,7 +68,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             ViewData["Countries"] = d.GetCountries();
             if (member.BirthDate > DateTime.Now)
             {
-                ViewData["ErrorMsg"] = "Error: Date of Birth cannot be after current Date. Please Re-select Date of Birth";
+                ViewData["ErrorMsg"] = "Error: Date of Birth cannot be after current Date.";
                 return View(member);
             }
             var props = typeof(Member).GetProperties(); // getallprop from typeofmember

@@ -17,6 +17,7 @@
 	<input type="text" id="snameSearch" name="snameSearch" /><br>
 	<br />
 	<button type="submit">Search Parcel Delivery Record</button>
+	<p style="color:red">@TempData["ParcelError"]</p>
 </form>
 @{
 	if ((bool)ViewData["ShowDetail"])
