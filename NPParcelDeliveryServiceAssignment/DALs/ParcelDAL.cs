@@ -262,7 +262,7 @@ namespace NPParcelDeliveryServiceAssignment.DALs
                 conn.Close();
             }
             conn.Open(); //Execute the SELECT SQL through a DataReader
-            Parcel p = new Parcel();
+            Parcel p = null;
             SqlDataReader reader = cmd.ExecuteReader();
             while (reader.Read())
             {
@@ -287,10 +287,10 @@ namespace NPParcelDeliveryServiceAssignment.DALs
                     DeliveryStatus = reader.GetString(15),
                     DeliveryManID = CheckNull(reader, 16),
                 };
-                conn.Close();
-                return p;
-            }//Double check reader.close & conn.close
-            return null;
+            }
+            reader.Close();
+            conn.Close();
+            return p;
             
         }
         public int GetCountFromStaffID(int staffID)
@@ -344,7 +344,7 @@ namespace NPParcelDeliveryServiceAssignment.DALs
                 conn.Close();
             }
             conn.Open(); //Execute the SELECT SQL through a DataReader
-            Parcel p = new Parcel();
+            Parcel p = null;
             SqlDataReader reader = cmd.ExecuteReader();
             while (reader.Read())
             {
@@ -369,10 +369,10 @@ namespace NPParcelDeliveryServiceAssignment.DALs
                     DeliveryStatus = reader.GetString(15),
                     DeliveryManID = CheckNull(reader, 16),
                 };
-                conn.Close();
-                return p;
-            }// Double Check reader.close & conn.close
-            return null;
+            }
+            reader.Close();
+            conn.Close();
+            return p;
 
         }
     }
