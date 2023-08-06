@@ -267,7 +267,6 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
 
                 TempData["Issued"] = "You have yet to issue a cash voucher, you are allow to issue a cash voucher!";
             }
-            //dfsfhjbdefsivesgudeiogeshboiuejbioeusbhnseighealighiregerogeroriu
             return View(cashVoucher);
 
         }
