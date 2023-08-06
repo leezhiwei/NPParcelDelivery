@@ -204,10 +204,11 @@ namespace NPParcelDeliveryServiceAssignment.DALs
                 conn.Close();
             }
             conn.Open(); //Execute the SELECT SQL through a DataReader
+            Member mem = null;
             SqlDataReader reader = cmd.ExecuteReader();
             while (reader.Read())
             {
-                Member mem = new Member
+                mem = new Member
                 {
                     MemberID = reader.GetInt32(0), //0: 1st column
                     Name = reader.GetString(1), //1: 2nd column 
@@ -220,9 +221,10 @@ namespace NPParcelDeliveryServiceAssignment.DALs
                     City = reader.GetString(7),
                     Country = reader.GetString(8),
                 };
-                return mem;
             }
-            return null;
+            reader.Close();
+            conn.Close();
+            return mem;
         }
         public bool CheckEmail(string email)
         {

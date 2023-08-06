@@ -146,10 +146,11 @@ namespace NPParcelDeliveryServiceAssignment.DALs
                 conn.Close();
             }
             conn.Open(); //Execute the SELECT SQL through a DataReader
+            Staff sta = null;
             SqlDataReader reader = cmd.ExecuteReader();
             while (reader.Read())
             {
-                Staff sta = new Staff
+                sta = new Staff
                 {
                     StaffID = reader.GetInt32(0), //0: 1st column
                     StaffName = reader.GetString(1), //1: 2nd column 
@@ -160,9 +161,10 @@ namespace NPParcelDeliveryServiceAssignment.DALs
                     OfficeTelNo = reader.GetString(5), //6: 5th column
                     Location = reader.GetString(6), //9: 6th column 
                 };
-                return sta;
             }
-            return null;
+            reader.Close();
+            conn.Close();
+            return sta;
         }
         public int Update(Staff s)
         {
