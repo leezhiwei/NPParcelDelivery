@@ -254,7 +254,12 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             }
             if (allowAdd == true)
             {//$"Follow up with sender for delivery failure  completed by StationMgrSG on {DateTime.Now}"
-                DeliveryFailure dfff = dflist.GetOne(par.ParcelID);
+                DeliveryFailure dfff = dflist.GetOneByParcelID(par.ParcelID);
+                if (dfff is null)
+                {
+                    TempData["readyIssued"] = "Error: Invalid DeliveryFailure object";
+                    return View();
+                }
                 dfff.StationMgrID = cashVoucher.StaffID;
                 dfff.FollowUpAction = $"Follow up with sender for delivery failure completed by {stID} on {DateTime.Now}";
                 dflist.Update(dfff);
