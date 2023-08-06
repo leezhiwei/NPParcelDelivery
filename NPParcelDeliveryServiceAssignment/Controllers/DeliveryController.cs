@@ -4,6 +4,7 @@ using NPParcelDeliveryServiceAssignment.Models;
 using NPParcelDeliveryServiceAssignment.DALs;
 using Newtonsoft.Json;
 using DeepEqual.Syntax;
+using System.Security.Cryptography;
 
 namespace NPParcelDeliveryServiceAssignment.Controllers
 {
@@ -60,7 +61,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         public ActionResult DeliveryHistory(IFormCollection form)
         {
             List<DeliveryHistory> dh = dhdal.GetAllHistory();
-            List<DeliveryHistory> dhTemp = new List<DeliveryHistory>();
+            List<DeliveryHistory> dhTempList = new List<DeliveryHistory>();
             int rId = 0;
             try
             {
@@ -71,23 +72,19 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 TempData["rError"] = $"The search textbox is empty, contains letters or special characters, unable to search for any delivery history!  Please enter numeric values.";
                 return View(dh);
             }
-            foreach (DeliveryHistory dhh in dh)
-            {
-                if (dhh.RecordID == rId)
-                {
-                    dhTemp.Add(dhh); //If recordID matches the record in the list, add record to deliveryhistoryTemp for viewing
-                }
-            }
 
-            if (dhTemp.Count > 0) //If deliveryhistoryTemp is NOT empty and contains information
-            {
-                TempData["rFound"] = $"Delivery History with the record ID: {rId}, found.";
-                return View(dhTemp);
-            }
-            else //prints the error msg that record is not found, since the deliveryhistoryTemp is empty
+            DeliveryHistory dhTemp = dhdal.GetDHByID(rId); //Temp delivery history object to store information by id
+
+            if (dhTemp is null) //prints the error msg that record is not found, since the deliveryhistoryTemp is empty
             {
                 TempData["rError"] = $"Delivery History with the ID: {rId}, does not exist in the delivery history records.";
                 return View(dh);
+            }
+            else //If deliveryhistoryTemp is NOT empty and contains information
+            {
+                dhTempList.Add(dhTemp); //Add temp delivery history into list to display
+                TempData["rFound"] = $"Delivery History with the record ID: {rId}, found.";
+                return View(dhTempList);
             }
         }
         public List<SelectListItem> GetCountries()
@@ -642,7 +639,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         public ActionResult ParcelDeliveryOrder(IFormCollection form)
         {
             List<Parcel> pl = pdal.GetAllParcel();
-            List<Parcel> ppTemp = new List<Parcel>();
+            List<Parcel> ppTempList = new List<Parcel>();
             int pId = 0;
             try
             {
@@ -653,23 +650,19 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 TempData["ParcelError"] = $"The search textbox is empty, contains letters or special characters, unable to search for any existing parcels!  Please enter numeric values.";
                 return View(pl);
             }
-            foreach (Parcel parcel in pl)
-            {
-                if (parcel.ParcelID == pId)
-                {
-                    ppTemp.Add(parcel); //If parcel matches the record in the list, add parcel to tempparcel for viewing
-                }
-            }
 
-            if (ppTemp.Count > 0) //If tempparcel is NOT empty and contains information
-            {
-                TempData["ParcelFound"] = $"Parcel with the ID: {pId}, found.";
-                return View(ppTemp);
-            }
-            else //prints the error msg that parcel is not found, since the tempparcel is empty
+            Parcel prTemp = pdal.GetPIDByPID(pId); //tempparcel to store parcel object by id
+
+            if (prTemp is null) //prints the error msg that parcel is not found, since the tempparcel is empty
             {
                 TempData["ParcelError"] = $"Parcel with the ID: {pId}, does not exist in the delivery orders.";
                 return View(pl);
+            }
+            else //If tempparcel is NOT empty and contains information
+            {
+                ppTempList.Add(prTemp); //Add tempparcel into list to display
+                TempData["ParcelFound"] = $"Parcel with the ID: {pId}, found.";
+                return View(ppTempList);
             }
         }
         public ActionResult Report()
@@ -1051,23 +1044,19 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 TempData["tError"] = $"The search textbox is empty, contains letters or special characters, unable to search for any payment transaction!  Please enter numeric values.";
                 return View(pt);
             }
-            foreach (PaymentTransaction ptn in pt)
-            {
-                if (ptn.TransactionID == tId)
-                {
-                    ptnTemp.Add(ptn); //If transaction matches the record in the list, add transaction to tempTransaction for viewing
-                }
-            }
 
-            if (ptnTemp.Count > 0) //If tempTransaction is NOT empty and contains information
-            {
-                TempData["tFound"] = $"Payment Transaction with the ID: {tId}, found.";
-                return View(ptnTemp);
-            }
-            else //prints the error msg that transaction is not found, since the tempparcel is empty
+            PaymentTransaction ptTemp = paydal.GetPTHByID(tId); // temp payment transaction to store object information from id
+
+            if (ptTemp is null) //prints the error msg that payment transaction is not found, since the temp payment transaction is empty
             {
                 TempData["tError"] = $"Payment Transaction with the ID: {tId}, does not exist in the transaction history.";
                 return View(pt);
+            }
+            else //If temp payment transaction is NOT empty and contains information
+            {
+                ptnTemp.Add(ptTemp); // Add temp payment transaction into list to display
+                TempData["tFound"] = $"Payment Transaction with the ID: {tId}, found.";
+                return View(ptnTemp);
             }
         }
         public async Task<IActionResult> GetInfoOfMember(string id)
