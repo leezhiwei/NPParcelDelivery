@@ -50,6 +50,7 @@ namespace NPParcelDeliveryServiceAssignment.DALs
                     LastUpdatedBy = reader.GetInt32(8), //9: 8th column
                 });
             }
+            reader.Close();
             conn.Close();
             return shippingRateList;
         }
@@ -190,6 +191,8 @@ namespace NPParcelDeliveryServiceAssignment.DALs
                     LastUpdatedBy = reader.GetInt32(8), //9: 8th column
                 };
             }
+            reader.Close();
+            conn.Close();
             return sr;
         }
 
@@ -221,6 +224,8 @@ namespace NPParcelDeliveryServiceAssignment.DALs
                     LastUpdatedBy = reader.GetInt32(8), //9: 8th column
                 };
             }
+            reader.Close();
+            conn.Close();
             return sr;
         }
     }

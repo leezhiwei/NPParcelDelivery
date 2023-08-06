@@ -41,6 +41,8 @@ namespace NPParcelDeliveryServiceAssignment.DALs
                     Location = reader.GetString(6), //9: 6th column 
                 });
             }
+            reader.Close();
+            conn.Close();
             return staffList;
         }
         public Staff CheckStaff(string LoginID, string Password)
@@ -67,6 +69,7 @@ namespace NPParcelDeliveryServiceAssignment.DALs
                     Location = reader.GetString(6), //9: 6th column 
                 };
             }
+            reader.Close();
             conn.Close();
             return s;
         }
@@ -128,6 +131,7 @@ namespace NPParcelDeliveryServiceAssignment.DALs
                     Location = reader.GetString(6), //9: 6th column 
                 };
             }
+            reader.Close();
             conn.Close();
             return s;
         }

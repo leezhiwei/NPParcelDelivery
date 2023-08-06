@@ -50,6 +50,7 @@ namespace NPParcelDeliveryServiceAssignment.DALs
                     Country = reader.GetString(8),
                 });
             }
+            reader.Close();
             conn.Close();
             return memberList;
         }
@@ -125,6 +126,8 @@ namespace NPParcelDeliveryServiceAssignment.DALs
                     Country = reader.GetString(8),
                 };
             }
+            reader.Close();
+            conn.Close();
             return m;
         }
         public List<Member> GetMemberDOBMonth()
@@ -154,6 +157,8 @@ namespace NPParcelDeliveryServiceAssignment.DALs
                     Country = reader.GetString(8),
                 });
             }
+            reader.Close();
+            conn.Close();
             return members;
         }
 
@@ -185,6 +190,8 @@ namespace NPParcelDeliveryServiceAssignment.DALs
 					Country = reader.GetString(8),
 				};
 			}
+            reader.Close();
+            conn.Close();
 			return m;
 		}
         public Member GetMIDByID(int id)

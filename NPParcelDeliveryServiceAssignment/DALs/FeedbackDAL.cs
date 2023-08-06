@@ -53,6 +53,8 @@ namespace NPParcelDeliveryServiceAssignment.DALs
                     Status = reader.GetString(6),
                 });
             }
+            reader.Close();
+            conn.Close();
             return feedbacklist;
         }
 
@@ -155,6 +157,8 @@ namespace NPParcelDeliveryServiceAssignment.DALs
                     Status = reader.GetString(6),
                 });
             }
+            reader.Close();
+            conn.Close();
             return feedbacklist;
 
         }
@@ -181,6 +185,8 @@ namespace NPParcelDeliveryServiceAssignment.DALs
                     Status = reader.GetString(6),
                 };
             }
+            reader.Close();
+            conn.Close();
             return f;
 
         }
@@ -206,6 +212,8 @@ namespace NPParcelDeliveryServiceAssignment.DALs
                     Status = reader.GetString(6),
                 });
             }
+            reader.Close();
+            conn.Close();
             return feedbacklist;
         }
     }
