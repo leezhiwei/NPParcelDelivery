@@ -932,6 +932,11 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                         TempData["ErrorMsg"] = "You do not own any vouchers at the moment. Please choose a different transaction type.";
                         return View(pt);
                     }
+                    else if (Convert.ToInt32(tempVoucher.Status) == 0) //Checks if user's cash voucher status is 0 or 1 (0 = pending collection, 1 = collected)
+                    {
+                        TempData["ErrorMsg"] = "You have not collected the vouchers yet. Please choose a different transaction type.";
+                        return View(pt);
+                    }
                     else // If temporary voucher contains information. If so, the current user has vouchers to be used
                     {
                         if (pt.AmtTran != Math.Floor(pt.AmtTran)) //Checks if the amount entered for transaction is a whole number
