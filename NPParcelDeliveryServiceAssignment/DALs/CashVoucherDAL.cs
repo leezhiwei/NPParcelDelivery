@@ -168,6 +168,8 @@ namespace NPParcelDeliveryServiceAssignment.DALs
                     Status = reader.GetString(8),//2: 9th column
                 };
             }
+            reader.Close();
+            conn.Close();
             return cv;
         }
         public CashVoucher GetCVIDByID(int id)

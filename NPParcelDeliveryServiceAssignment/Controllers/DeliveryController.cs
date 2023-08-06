@@ -146,6 +146,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             return countries;
         }
 
+        // GET: Insert
         public ActionResult Insert()
         {
             if (HttpContext.Session.GetString("UserID") is null)
@@ -167,6 +168,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Insert(Parcel p)
         {
+            ViewData["Countries"] = GetCountries();
             ShippingRate ccObject = srd.GetSRbyCC(p.ToCity, p.ToCountry); //Creating a shipping rate object to inherit a shipping rate object that has the same tocity & tocountry
 
             decimal deliveryCharge = 0;
@@ -177,12 +179,17 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             if (p.ParcelWeight > 70) //Checks if the parcel weight is above 70.
             {
                 TempData["ErrorMessage"] = $"Parcel creation failed. <br><br>------------------------------------------------------------------------- <br><br> Parcel weight should be 70kg or below. <br>Only freight shipments allow weights above 70kg. <br><br> -------------------------------------------------------------------------";
-                return RedirectToAction("Insert");
+                return View(p);
             }
             else if (ccObject.IsDeepEqual(new ShippingRate())) // Checks if the ccObject equals to a new shippingrate that has empty values
             {
                 TempData["ErrorMessage"] = $"Parcel creation failed. <br><br>---------------------------------------------------------------------------------- <br><br> Invalid city or it does not belong to the country selected, <br>please try again with the correct city & country names. <br><br> ----------------------------------------------------------------------------------";
-                return RedirectToAction("Insert");
+                return View(p);
+            }
+            else if (p.SenderTelNo == p.ReceiverTelNo)// Checks if the sender tel number matches the receiver tel number
+            {
+                TempData["ErrorMessage"] = $"Parcel creation failed. <br><br>-------------------------------------------------------------------------------------------- <br><br> Sender telephone number should not be the same as receiver's telephone number, please try again with a different telephone number. <br><br> --------------------------------------------------------------------------------------------";
+                return View(p);
             }
             else if ((p.ToCity.ToLower() == ccObject.ToCity.ToLower()) && (p.ToCountry.ToLower() == ccObject.ToCountry.ToLower())) //Checks if the city & country matches the records in shipping rate 
             {
@@ -891,6 +898,7 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult PaymentTransaction(PaymentTransaction pt)
         {
+            ViewData["TranType"] = PopulateCVlist();
             List<SelectListItem> templist = PopulateCVlist();
             List<Parcel> pcls = pdal.GetAllParcel();
             List<CashVoucher> cv = cvdal.GetAllCashVoucher();
@@ -901,7 +909,6 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             decimal? tAmt;
 
             Parcel tempParcel = pdal.GetPIDByPID(pt.ParcelID); //Creating a temporary parcel to hold information from parcel id
-            
 
             if(tempParcel is not null) //Checks if tempParcel is not null and contains information
             {
@@ -911,6 +918,10 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                 if (tAmt is null) //If total amount is null, that means the person has not made any previous payment with cash or voucher
                 {
                     tAmt = 0; //Total Amount value will be 0
+                }else if (pt.AmtTran == 0)
+                {
+                    TempData["ErrorMsg"] = "Amount Transaction should not be zero, please enter a valid numeric value for payment.";
+                    return View(pt);
                 }
 
                 if (pt.TranType == "VOUC") // Transaction type is voucher
@@ -919,24 +930,24 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                     if (tempVoucher is null) //Checks if temporary voucher is null. If so, the user currently do not own any vouchers
                     {
                         TempData["ErrorMsg"] = "You do not own any vouchers at the moment. Please choose a different transaction type.";
-                        return RedirectToAction("PaymentTransaction");
+                        return View(pt);
                     }
                     else // If temporary voucher contains information. If so, the current user has vouchers to be used
                     {
                         if (pt.AmtTran != Math.Floor(pt.AmtTran)) //Checks if the amount entered for transaction is a whole number
                         {
                             TempData["ErrorMsg"] = "Voucher amount should be whole numbers and do not contain decimal places! Pleaase try again.";
-                            return RedirectToAction("PaymentTransaction");
+                            return View(pt);
                         }
                         if (pt.AmtTran > tempVoucher.Amount) //Checks if amount exceeds available voucher
                         {
                             TempData["ErrorMsg"] = "Transaction amount exceeded available cash voucher! Please try again.";
-                            return RedirectToAction("PaymentTransaction");
+                            return View(pt);
                         }
                         else if ((pt.AmtTran + Convert.ToDecimal(tAmt)) > tempParcel.DeliveryCharge) //Checks if amount + total amount made by previous payment exceeds delivery charge
                         {
                             TempData["ErrorMsg"] = "Transaction amount exceeded delivery charge. You are not ALLOWED to pay extra! Please try again.";
-                            return RedirectToAction("PaymentTransaction");
+                            return View(pt);
                         }
                         // Update voucher details, if user used $5 voucher out of $10. Update remaining voucher details
                         decimal originalVamt = cvdal.GetVByName(sName);
@@ -950,14 +961,14 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
                     if ((pt.AmtTran + Convert.ToDecimal(tAmt)) > tempParcel.DeliveryCharge)
                     {
                         TempData["ErrorMsg"] = "Transaction Amount exceeded delivery charge. You are not ALLOWED to pay extra! Please try again.";
-                        return RedirectToAction("PaymentTransaction");
+                        return View(pt);
                     }
                 }
             }
             else
             {
                 TempData["ErrorMsg"] = $"Parcel ID: {pt.ParcelID} does not EXIST.";
-                return RedirectToAction("PaymentTransaction");
+                return View(pt);
             }
 
             PaymentTransaction pts = new PaymentTransaction

@@ -63,6 +63,8 @@ namespace NPParcelDeliveryServiceAssignment.DALs
                     DateCreated = reader.GetDateTime(7),
                 });
             }
+            reader.Close();
+            conn.Close();
             return dflist;
         }
 
@@ -176,6 +178,7 @@ namespace NPParcelDeliveryServiceAssignment.DALs
             }
             conn.Open(); //Execute the SELECT SQL through a DataReader
             int count = (int)cmd.ExecuteScalar();
+            conn.Close();
             if (count > 0)
             {
                 return true;
