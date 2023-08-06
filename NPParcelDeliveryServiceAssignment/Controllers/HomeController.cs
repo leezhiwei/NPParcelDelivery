@@ -13,6 +13,10 @@ namespace NPParcelDeliveryServiceAssignment.Controllers
             _logger = logger;
         }
 
+        public IActionResult IndexNoLogin()
+        {
+            return View();
+        }
         public IActionResult Index()
         {
             if (HttpContext.Session.GetString("UserID") is null)
